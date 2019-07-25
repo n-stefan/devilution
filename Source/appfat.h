@@ -33,4 +33,8 @@ void DiskFreeDlg(char *error);
 BOOL InsertCDDlg();
 void DirErrorDlg(char *error);
 
+#define DS_ERROR(code) ErrDlg(0, (code), __FILE__, __LINE__)
+#define DX_ERROR(code) ErrDlg(0, (code), __FILE__, __LINE__)
+#define ERROR_DLG(tmpl, code) ErrDlg((tmpl), (code), __FILE__, __LINE__)
+
 #endif /* __APPFAT_H__ */

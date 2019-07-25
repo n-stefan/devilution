@@ -1,10 +1,9 @@
 #include "diablo.h"
 #include "../3rdParty/Storm/Source/storm.h"
 
-PALETTEENTRY logical_palette[256];
 PALETTEENTRY system_palette[256];
 PALETTEENTRY orig_palette[256];
-int gdwPalEntries;
+PALETTEENTRY logical_palette[256];
 
 /* data */
 
@@ -15,32 +14,14 @@ BOOLEAN sgbFadedIn = TRUE;
 void SaveGamma()
 {
 	SRegSaveValue("Diablo", "Gamma Correction", 0, gamma_correction);
-	SRegSaveValue("Diablo", "Color Cycling", FALSE, color_cycling_enabled);
+	SRegSaveValue("Diablo", "Color Cycling", 0, color_cycling_enabled);
 }
 
 void palette_init()
 {
-	DWORD error_code;
-
 	LoadGamma();
 	memcpy(system_palette, orig_palette, sizeof(orig_palette));
 	LoadSysPal();
-#ifdef __cplusplus
-	error_code = lpDDInterface->CreatePalette(DDPCAPS_ALLOW256 | DDPCAPS_8BIT, system_palette, &lpDDPalette, NULL);
-#else
-	error_code = lpDDInterface->lpVtbl->CreatePalette(lpDDInterface, DDPCAPS_ALLOW256 | DDPCAPS_8BIT, system_palette, &lpDDPalette, NULL);
-#endif
-	if (error_code)
-		ErrDlg(IDD_DIALOG8, error_code, "C:\\Src\\Diablo\\Source\\PALETTE.CPP", 143);
-#ifdef __cplusplus
-	error_code = lpDDSPrimary->SetPalette(lpDDPalette);
-#else
-	error_code = lpDDSPrimary->lpVtbl->SetPalette(lpDDSPrimary, lpDDPalette);
-#endif
-#ifndef RGBMODE
-	if (error_code)
-		ErrDlg(IDD_DIALOG8, error_code, "C:\\Src\\Diablo\\Source\\PALETTE.CPP", 146);
-#endif
 }
 
 void LoadGamma()
@@ -65,29 +46,8 @@ void LoadGamma()
 
 void LoadSysPal()
 {
-	HDC hDC;
-	int i, iStartIndex;
-
-	for (i = 0; i < 256; i++)
+	for (int i = 0; i < 256; i++)
 		system_palette[i].peFlags = PC_NOCOLLAPSE | PC_RESERVED;
-
-	if (!fullscreen) {
-		hDC = GetDC(NULL);
-
-		gdwPalEntries = GetDeviceCaps(hDC, NUMRESERVED) / 2;
-		GetSystemPaletteEntries(hDC, 0, gdwPalEntries, system_palette);
-		for (i = 0; i < gdwPalEntries; i++)
-			system_palette[i].peFlags = 0;
-
-		iStartIndex = 256 - gdwPalEntries;
-		GetSystemPaletteEntries(hDC, iStartIndex, gdwPalEntries, &system_palette[iStartIndex]);
-		if (iStartIndex < 256) {
-			for (i = iStartIndex; i < 256; i++)
-				system_palette[i].peFlags = 0;
-		}
-
-		ReleaseDC(NULL, hDC);
-	}
 }
 
 void LoadPalette(char *pszFileName)
@@ -124,16 +84,6 @@ void LoadRndLvlPal(int l)
 
 void ResetPal()
 {
-	if (!lpDDSPrimary
-#ifdef __cplusplus
-	    || lpDDSPrimary->IsLost() != DDERR_SURFACELOST
-	    || !lpDDSPrimary->Restore()) {
-#else
-	    || lpDDSPrimary->lpVtbl->IsLost(lpDDSPrimary) != DDERR_SURFACELOST
-	    || !lpDDSPrimary->lpVtbl->Restore(lpDDSPrimary)) {
-#endif
-		SDrawRealizePalette();
-	}
 }
 
 void IncreaseGamma()
@@ -149,18 +99,6 @@ void IncreaseGamma()
 
 void palette_update()
 {
-	int nentries;
-	int max_entries;
-
-	if (lpDDPalette) {
-		nentries = 0;
-		max_entries = 256;
-		if (!fullscreen) {
-			nentries = gdwPalEntries;
-			max_entries = 2 * (128 - gdwPalEntries);
-		}
-		SDrawUpdatePalette(nentries, max_entries, &system_palette[nentries], 0);
-	}
 }
 
 void ApplyGamma(PALETTEENTRY *dst, PALETTEENTRY *src, int n)
@@ -209,20 +147,12 @@ void SetFadeLevel(DWORD fadeval)
 {
 	int i;
 
-	if (lpDDInterface) {
-		for (i = 0; i < 255; i++) {
-			system_palette[i].peRed = (fadeval * logical_palette[i].peRed) >> 8;
-			system_palette[i].peGreen = (fadeval * logical_palette[i].peGreen) >> 8;
-			system_palette[i].peBlue = (fadeval * logical_palette[i].peBlue) >> 8;
-		}
-		Sleep(3);
-#ifdef __cplusplus
-		lpDDInterface->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL);
-#else
-		lpDDInterface->lpVtbl->WaitForVerticalBlank(lpDDInterface, DDWAITVB_BLOCKBEGIN, NULL);
-#endif
-		palette_update();
+	for (i = 0; i < 255; i++) {
+		system_palette[i].peRed = (fadeval * logical_palette[i].peRed) >> 8;
+		system_palette[i].peGreen = (fadeval * logical_palette[i].peGreen) >> 8;
+		system_palette[i].peBlue = (fadeval * logical_palette[i].peBlue) >> 8;
 	}
+  palette_update();
 }
 
 void PaletteFadeIn(int fr)

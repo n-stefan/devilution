@@ -98,7 +98,7 @@
 #define ZOOM_HEIGHT		224
 
 // If defined, use 32-bit colors instead of 8-bit [Default -> Undefined]
-//#define RGBMODE
+#define RGBMODE
 
 #ifndef RGBMODE
 #define SCREEN_BPP		8

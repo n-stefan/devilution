@@ -3,23 +3,77 @@
 #ifndef _TYPES_H
 #define _TYPES_H
 
+//#define NO_WINDOWS
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <math.h>
+#include <time.h>
+
+#ifdef NO_WINDOWS
+
+typedef unsigned long DWORD;
+typedef int BOOL;
+typedef unsigned char BYTE;
+typedef unsigned short WORD;
+typedef float FLOAT;
+typedef FLOAT *PFLOAT;
+typedef BOOL *PBOOL;
+typedef BOOL *LPBOOL;
+typedef BYTE *PBYTE;
+typedef BYTE *LPBYTE;
+typedef int *PINT;
+typedef int *LPINT;
+typedef WORD *PWORD;
+typedef WORD *LPWORD;
+typedef long *LPLONG;
+typedef DWORD *PDWORD;
+typedef DWORD *LPDWORD;
+typedef void *LPVOID;
+typedef const void *LPCVOID;
+
+typedef char CHAR;
+typedef short SHORT;
+typedef long LONG;
+typedef int INT;
+typedef unsigned int UINT;
+typedef unsigned int *PUINT;
+typedef BYTE BOOLEAN;
+typedef BOOLEAN *PBOOLEAN;
+
+typedef unsigned long ULONG;
+typedef ULONG *PULONG;
+typedef unsigned short USHORT;
+typedef USHORT *PUSHORT;
+typedef unsigned char UCHAR;
+typedef UCHAR *PUCHAR;
+typedef char *PSZ;
+
+typedef int HWND;
+
+typedef struct _FILETIME
+{
+  DWORD dwLowDateTime;
+  DWORD dwHighDateTime;
+} FILETIME, *PFILETIME, *LPFILETIME;
+
+#else
+
 #define WIN32_LEAN_AND_MEAN
 
 #include "resource.h"
 
 #include <windows.h>
 #include <mmsystem.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <ddraw.h>
+//#include <ddraw.h>
 #include <dsound.h>
 #include <io.h>
-#include <limits.h>
-#include <math.h>
-#include <time.h>
 #include <process.h>
 #include <shlobj.h>
 #include <shellapi.h>
+
+#endif
 
 #ifdef __GNUC__
 #include <ctype.h>

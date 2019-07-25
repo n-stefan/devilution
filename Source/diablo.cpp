@@ -996,8 +996,6 @@ void diablo_hotkey_msg(DWORD dwMsg)
 
 void ReleaseKey(int vkey)
 {
-	if (vkey == VK_SNAPSHOT)
-		CaptureScreen();
 }
 
 void PressKey(int vkey)

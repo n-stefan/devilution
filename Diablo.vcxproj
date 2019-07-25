@@ -94,7 +94,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Source/WinDebug\</AssemblerListingLocation>
       <ObjectFileName>.\Source/WinDebug\</ObjectFileName>
       <ProgramDataBaseFileName>.\Source/WinDebug\</ProgramDataBaseFileName>
@@ -126,7 +126,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source\appfat.cpp" />
+    <ClCompile Include="Source\appfat.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Source\appfat_glue.cpp" />
     <ClCompile Include="Source\automap.cpp" />
     <ClCompile Include="Source\capture.cpp" />
     <ClCompile Include="Source\codec.cpp" />
@@ -197,6 +200,7 @@
     <ClCompile Include="Source\towners.cpp" />
     <ClCompile Include="Source\track.cpp" />
     <ClCompile Include="Source\trigs.cpp" />
+    <ClCompile Include="Source\ui\init.cpp" />
     <ClCompile Include="Source\wave.cpp" />
     <ClCompile Include="Source\render.cpp" />
   </ItemGroup>
@@ -281,6 +285,8 @@
     <ClInclude Include="Source\towners.h" />
     <ClInclude Include="Source\track.h" />
     <ClInclude Include="Source\trigs.h" />
+    <ClInclude Include="Source\ui\common.h" />
+    <ClInclude Include="Source\ui\diabloui.h" />
     <ClInclude Include="Source\wave.h" />
     <ClInclude Include="Source\render.h" />
     <ClInclude Include="structs.h" />

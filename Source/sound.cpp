@@ -135,7 +135,7 @@ void snd_play_snd(TSnd *pSnd, int lVolume, int lPan)
 
 	if (error_code != DSERR_BUFFERLOST) {
 		if (error_code != DS_OK) {
-			DSErrMsg(error_code, 261, "C:\\Src\\Diablo\\Source\\SOUND.CPP");
+      DS_ERROR(error_code);
 		}
 	} else if (sound_file_reload(pSnd, DSB)) {
 #ifdef __cplusplus
@@ -241,7 +241,7 @@ TSnd *sound_file_load(char *path)
 	error_code = pSnd->DSB->lpVtbl->Lock(pSnd->DSB, 0, pSnd->chunk.dwSize, &buf1, &size1, &buf2, &size2, 0);
 #endif
 	if (error_code != DS_OK)
-		DSErrMsg(error_code, 318, "C:\\Src\\Diablo\\Source\\SOUND.CPP");
+    DS_ERROR(error_code);
 
 	memcpy(buf1, wave_file + pSnd->chunk.dwOffset, size1);
 
@@ -251,7 +251,7 @@ TSnd *sound_file_load(char *path)
 	error_code = pSnd->DSB->lpVtbl->Unlock(pSnd->DSB, buf1, size1, buf2, size2);
 #endif
 	if (error_code != DS_OK)
-		DSErrMsg(error_code, 325, "C:\\Src\\Diablo\\Source\\SOUND.CPP");
+    DS_ERROR(error_code);
 
 	mem_free_dbg((void *)wave_file);
 	WCloseFile(file);
@@ -276,7 +276,7 @@ void sound_CreateSoundBuffer(TSnd *sound_file)
 	error_code = sglpDS->lpVtbl->CreateSoundBuffer(sglpDS, &DSB, &sound_file->DSB, NULL);
 #endif
 	if (error_code != ERROR_SUCCESS)
-		DSErrMsg(error_code, 282, "C:\\Src\\Diablo\\Source\\SOUND.CPP");
+    DS_ERROR(error_code);
 }
 
 void sound_file_cleanup(TSnd *sound_file)
@@ -354,7 +354,7 @@ void sound_create_primary_buffer(HANDLE music_track)
 		error_code = sglpDS->lpVtbl->CreateSoundBuffer(sglpDS, &dsbuf, &sglpDSB, NULL);
 #endif
 		if (error_code != DS_OK)
-			DSErrMsg(error_code, 375, "C:\\Src\\Diablo\\Source\\SOUND.CPP");
+      DS_ERROR(error_code);
 	}
 
 	if (sglpDSB) {
@@ -367,7 +367,7 @@ void sound_create_primary_buffer(HANDLE music_track)
 		error_code = sglpDS->lpVtbl->GetCaps(sglpDS, &dsbcaps);
 #endif
 		if (error_code != DS_OK)
-			DSErrMsg(error_code, 383, "C:\\Src\\Diablo\\Source\\SOUND.CPP");
+      DS_ERROR(error_code);
 
 		if (!music_track || !LoadWaveFormat(music_track, &format)) {
 			memset(&format, 0, sizeof(WAVEFORMATEX));

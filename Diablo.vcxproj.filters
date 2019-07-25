@@ -13,11 +13,14 @@
       <UniqueIdentifier>{8003aed2-27a6-444b-8fb0-bb8a59530005}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl</Extensions>
     </Filter>
+    <Filter Include="glue">
+      <UniqueIdentifier>{319a52fe-2b26-4202-b40f-2a33d752b754}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{4a6492f8-5191-4e6e-9461-76263432c80a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\appfat.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\automap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -58,9 +61,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\dthread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\dx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\effects.cpp">
@@ -159,9 +159,6 @@
     <ClCompile Include="Source\pack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\palette.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\path.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -190,9 +187,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\sha.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\sound.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\spelldat.cpp">
@@ -234,6 +228,24 @@
     <ClCompile Include="Source\render.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\dx.cpp">
+      <Filter>glue</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\palette.cpp">
+      <Filter>glue</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\appfat.cpp">
+      <Filter>glue</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\sound.cpp">
+      <Filter>glue</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\appfat_glue.cpp">
+      <Filter>glue</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ui\init.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Diablo.ico">
@@ -247,9 +259,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\appfat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\automap.h">
@@ -292,9 +301,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\dthread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\dx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\effects.h">
@@ -393,9 +399,6 @@
     <ClInclude Include="Source\pack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\palette.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\path.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -424,9 +427,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\sha.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\sound.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\spelldat.h">
@@ -479,6 +479,24 @@
     </ClInclude>
     <ClInclude Include="types.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\palette.h">
+      <Filter>glue</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\dx.h">
+      <Filter>glue</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\appfat.h">
+      <Filter>glue</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\sound.h">
+      <Filter>glue</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ui\common.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ui\diabloui.h">
+      <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

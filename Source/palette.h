@@ -2,10 +2,7 @@
 #ifndef __PALETTE_H__
 #define __PALETTE_H__
 
-extern PALETTEENTRY logical_palette[256];
 extern PALETTEENTRY system_palette[256];
-extern PALETTEENTRY orig_palette[256];
-extern int gdwPalEntries;
 
 void SaveGamma();
 void palette_init();

@@ -12,7 +12,6 @@ DWORD level_cel_block;
 DWORD sgdwCursXOld;
 DWORD sgdwCursYOld;
 char arch_draw_type;
-DDSURFACEDESC DDS_desc;
 int cel_transparency_active;
 int level_piece_id;
 DWORD sgdwCursWdt;
@@ -2335,252 +2334,48 @@ void scrollrt_draw_cursor_item()
 
 void DrawMain(int dwHgt, BOOL draw_desc, BOOL draw_hp, BOOL draw_mana, BOOL draw_sbar, BOOL draw_btn)
 {
-	int ysize;
-	DWORD dwTicks;
-	BOOL retry;
-	HRESULT hDDVal;
-
-	ysize = dwHgt;
-
-	if (!gbActive || lpDDSPrimary == NULL) {
-		return;
-	}
-
-#ifdef __cplusplus
-	if (lpDDSPrimary->IsLost() == DDERR_SURFACELOST) {
-		if (lpDDSPrimary->Restore() != DD_OK) {
-			return;
-		}
-#else
-	if (lpDDSPrimary->lpVtbl->IsLost(lpDDSPrimary) == DDERR_SURFACELOST) {
-		if (lpDDSPrimary->lpVtbl->Restore(lpDDSPrimary) != DD_OK) {
-			return;
-		}
-#endif
-		ResetPal();
-		ysize = SCREEN_HEIGHT;
-	}
-
-	if (lpDDSBackBuf == NULL) {
-		retry = TRUE;
-		dwTicks = GetTickCount();
-		while (1) {
-			DDS_desc.dwSize = sizeof(DDS_desc);
-#ifdef __cplusplus
-			hDDVal = lpDDSPrimary->Lock(NULL, &DDS_desc, DDLOCK_WRITEONLY | DDLOCK_WAIT, NULL);
-#else
-			hDDVal = lpDDSPrimary->lpVtbl->Lock(lpDDSPrimary, NULL, &DDS_desc, DDLOCK_WRITEONLY | DDLOCK_WAIT, NULL);
-#endif
-			if (hDDVal == DD_OK) {
-				break;
-			}
-			if (dwTicks - GetTickCount() > 5000) {
-				break;
-			}
-			Sleep(1);
-			if (hDDVal == DDERR_SURFACELOST) {
-				return;
-			}
-			if (hDDVal != DDERR_WASSTILLDRAWING && hDDVal != DDERR_SURFACEBUSY) {
-				if (!retry || hDDVal != DDERR_GENERIC) {
-					break;
-				}
-				retry = FALSE;
-				dx_reinit();
-				ysize = SCREEN_HEIGHT;
-				dwTicks = GetTickCount();
-			}
-		}
-		if (hDDVal == DDERR_SURFACELOST
-		    || hDDVal == DDERR_WASSTILLDRAWING
-		    || hDDVal == DDERR_SURFACEBUSY) {
-			return;
-		}
-		if (hDDVal != DD_OK) {
-			DDErrMsg(hDDVal, 3707, "C:\\Src\\Diablo\\Source\\SCROLLRT.CPP");
-		}
-	}
+	int ysize = dwHgt;
+  if ( !draw_lock( &ysize ) )
+  {
+    return;
+  }
 
 	/// ASSERT: assert(ysize >= 0 && ysize <= 480); // SCREEN_HEIGHT
 
 	if (ysize > 0) {
-		DoBlitScreen(0, 0, SCREEN_WIDTH, ysize);
+		draw_blit(0, 0, SCREEN_WIDTH, ysize);
 	}
 	if (ysize < SCREEN_HEIGHT) {
 		if (draw_sbar) {
-			DoBlitScreen(204, 357, 232, 28);
+      draw_blit(204, 357, 232, 28);
 		}
 		if (draw_desc) {
-			DoBlitScreen(176, 398, 288, 60);
+      draw_blit(176, 398, 288, 60);
 		}
 		if (draw_mana) {
-			DoBlitScreen(460, 352, 88, 72);
-			DoBlitScreen(564, 416, 56, 56);
+      draw_blit(460, 352, 88, 72);
+      draw_blit(564, 416, 56, 56);
 		}
 		if (draw_hp) {
-			DoBlitScreen(96, 352, 88, 72);
+      draw_blit(96, 352, 88, 72);
 		}
 		if (draw_btn) {
-			DoBlitScreen(8, 357, 72, 119);
-			DoBlitScreen(556, 357, 72, 48);
+      draw_blit(8, 357, 72, 119);
+      draw_blit(556, 357, 72, 48);
 			if (gbMaxPlayers > 1) {
-				DoBlitScreen(84, 443, 36, 32);
-				DoBlitScreen(524, 443, 36, 32);
+        draw_blit(84, 443, 36, 32);
+        draw_blit(524, 443, 36, 32);
 			}
 		}
 		if (sgdwCursWdtOld != 0) {
-			DoBlitScreen(sgdwCursXOld, sgdwCursYOld, sgdwCursWdtOld, sgdwCursHgtOld);
+      draw_blit(sgdwCursXOld, sgdwCursYOld, sgdwCursWdtOld, sgdwCursHgtOld);
 		}
 		if (sgdwCursWdt != 0) {
-			DoBlitScreen(sgdwCursX, sgdwCursY, sgdwCursWdt, sgdwCursHgt);
+      draw_blit(sgdwCursX, sgdwCursY, sgdwCursWdt, sgdwCursHgt);
 		}
 	}
 
-	if (lpDDSBackBuf == NULL) {
-#ifdef __cplusplus
-		hDDVal = lpDDSPrimary->Unlock(NULL);
-#else
-		hDDVal = lpDDSPrimary->lpVtbl->Unlock(lpDDSPrimary, NULL);
-#endif
-		if (hDDVal != DDERR_SURFACELOST && hDDVal != DD_OK) {
-			DDErrMsg(hDDVal, 3779, "C:\\Src\\Diablo\\Source\\SCROLLRT.CPP");
-		}
-	}
-
-#ifdef _DEBUG
-	DrawFPS();
-#endif
-}
-
-#ifdef _DEBUG
-void DrawFPS()
-{
-	DWORD tc, frames;
-	char String[12];
-	HDC hdc;
-
-	if (frameflag && gbActive) {
-		frameend++;
-		tc = GetTickCount();
-		frames = tc - framestart;
-		if (tc - framestart >= 1000) {
-			framestart = tc;
-			framerate = 1000 * frameend / frames;
-			frameend = 0;
-		}
-		if (framerate > 99)
-			framerate = 99;
-		wsprintf(String, "%2d", framerate);
-#ifdef __cplusplus
-		if (!lpDDSPrimary->GetDC(&hdc)) {
-			TextOut(hdc, 0, 400, String, strlen(String));
-			lpDDSPrimary->ReleaseDC(hdc);
-		}
-#else
-		if (!lpDDSPrimary->lpVtbl->GetDC(lpDDSPrimary, &hdc)) {
-			TextOut(hdc, 0, 400, String, strlen(String));
-			lpDDSPrimary->lpVtbl->ReleaseDC(lpDDSPrimary, hdc);
-		}
-#endif
-	}
-}
-#endif
-
-void DoBlitScreen(DWORD dwX, DWORD dwY, DWORD dwWdt, DWORD dwHgt)
-{
-	int nSrcOff, nDstOff, nSrcWdt, nDstWdt;
-	DWORD dwTicks;
-	HRESULT hDDVal;
-	RECT SrcRect;
-
-	/// ASSERT: assert(! (dwX & 3));
-	/// ASSERT: assert(! (dwWdt & 3));
-
-	if (lpDDSBackBuf != NULL) {
-		SrcRect.left = dwX + SCREEN_X;
-		SrcRect.top = dwY + SCREEN_Y;
-		SrcRect.right = SrcRect.left + dwWdt - 1;
-		SrcRect.bottom = SrcRect.top + dwHgt - 1;
-		/// ASSERT: assert(! gpBuffer);
-		dwTicks = GetTickCount();
-		while (1) {
-#ifdef __cplusplus
-			hDDVal = lpDDSPrimary->BltFast(dwX, dwY, lpDDSBackBuf, &SrcRect, DDBLTFAST_WAIT);
-#else
-			hDDVal = lpDDSPrimary->lpVtbl->BltFast(lpDDSPrimary, dwX, dwY, lpDDSBackBuf, &SrcRect, DDBLTFAST_WAIT);
-#endif
-			if (hDDVal == DD_OK) {
-				break;
-			}
-			if (dwTicks - GetTickCount() > 5000) {
-				break;
-			}
-			Sleep(1);
-			if (hDDVal == DDERR_SURFACELOST) {
-				return;
-			}
-			if (hDDVal != DDERR_WASSTILLDRAWING && hDDVal != DDERR_SURFACEBUSY) {
-				break;
-			}
-		}
-		if (hDDVal != DDERR_SURFACELOST
-		    && hDDVal != DDERR_WASSTILLDRAWING
-		    && hDDVal != DDERR_SURFACEBUSY
-		    && hDDVal != DD_OK) {
-			DDErrMsg(hDDVal, 3596, "C:\\Src\\Diablo\\Source\\SCROLLRT.CPP");
-		}
-	} else {
-		nSrcOff = SCREENXY(dwX, dwY);
-		nDstOff = dwX * (SCREEN_BPP / 8) + dwY * DDS_desc.lPitch;
-		nSrcWdt = BUFFER_WIDTH - dwWdt;
-		nDstWdt = DDS_desc.lPitch - dwWdt * (SCREEN_BPP / 8);
-		dwWdt >>= 2;
-
-		lock_buf(6);
-
-		/// ASSERT: assert(gpBuffer);
-
-#if defined(USE_ASM) && !defined(RGBMODE)
-		__asm {
-			mov		esi, gpBuffer
-			mov		edi, DDS_desc.lpSurface
-			add		esi, nSrcOff
-			add		edi, nDstOff
-			mov		eax, nSrcWdt
-			mov		ebx, nDstWdt
-			mov		edx, dwHgt
-		blitline:
-			mov		ecx, dwWdt
-			rep movsd
-			add		esi, eax
-			add		edi, ebx
-			dec		edx
-			jnz		blitline
-		}
-#else
-		int wdt, hgt;
-		BYTE *src, *dst;
-
-		src = &gpBuffer[nSrcOff];
-		dst = (BYTE *)DDS_desc.lpSurface + nDstOff;
-
-		for (hgt = 0; hgt < dwHgt; hgt++, src += nSrcWdt, dst += nDstWdt) {
-			for (wdt = 0; wdt < 4 * dwWdt; wdt++) {
-#ifndef RGBMODE
-				*dst++ = *src++;
-#else
-				PALETTEENTRY pal = system_palette[*src++];
-				dst[0] = pal.peBlue;
-				dst[1] = pal.peGreen;
-				dst[2] = pal.peRed;
-				dst += 4;
-#endif
-			}
-		}
-#endif
-
-		unlock_buf(6);
-	}
+  draw_unlock();
 }
 
 void DrawAndBlit()
