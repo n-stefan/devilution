@@ -93,7 +93,7 @@ void mainmenu_loop()
 
   GameState::activate(get_title_dialog());
 
-  while (GameState::running()) {
+  while (GameState::current()) {
     unsigned int time = GetTickCount();
     if (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE)) {
       SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);

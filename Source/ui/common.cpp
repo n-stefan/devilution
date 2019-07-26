@@ -30,19 +30,22 @@ void UiFadeIn(unsigned int time) {
 void(__stdcall *gfnSoundFunction)(char *file);
 
 
-static GameState* game_state = nullptr;
+static GameStatePtr game_state;
 
 void GameState::activate(GameState* state) {
+  if (state == game_state) {
+    return;
+  }
   if (game_state) {
-    game_state->release();
+    game_state->onDeactivate();
   }
   game_state = state;
   if (game_state) {
-    game_state->retain();
+    game_state->onActivate();
   }
 }
-bool GameState::running() {
-  return game_state != nullptr;
+GameState* GameState::current() {
+  return game_state;
 }
 
 void GameState::render(unsigned int time) {
@@ -60,10 +63,18 @@ void GameState::processMouse(const MouseEvent& e) {
   }
 }
 
-void GameState::processKey(const KeyEvent& e) {
+void GameState::processKey(const KeyEvent &e) {
   if (auto state = game_state) {
     state->retain();
     state->onKey(e);
+    state->release();
+  }
+}
+
+void GameState::processChar(char chr) {
+  if (auto state = game_state) {
+    state->retain();
+    state->onChar(chr);
     state->release();
   }
 }
@@ -98,8 +109,8 @@ void LoadArt(char *pszFile, Art *art, int frames, PALETTEENTRY *pPalette) {
     return;
 
   art->height /= frames;
+  art->frames = frames;
 }
-
 
 void LoadBackgroundArt(char *pszFile) {
   PALETTEENTRY pPal[256];

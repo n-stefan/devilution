@@ -11,21 +11,36 @@ public:
     addItem({{64, 320, 574, 363}, ControlType::List, ControlFlags::Huge | ControlFlags::Gold | ControlFlags::Center, 3, "Show Credits"});
     addItem({{64, 363, 574, 406}, ControlType::List, ControlFlags::Huge | ControlFlags::Gold | ControlFlags::Center, 4, "Exit Diablo"});
     addItem({{17, 444, 622, 465}, ControlType::Text, ControlFlags::Small, 0, "Diablo v1.09"});
+    addItem({{125, 0, 515, 154}, ControlType::Image, 0, -60, "", &ArtLogos[LOGO_MED]});
   }
 
-  void renderExtra(unsigned int time) override {
-    DrawArt((SCREEN_WIDTH - ArtLogos[LOGO_MED].width) / 2, 0, &ArtLogos[LOGO_MED], (time / 60) % 15);
+  void onActivate() override {
+    LoadBackgroundArt( "ui_art\\mainmenu.pcx" );
+  }
+
+  void onKey(const KeyEvent& e) {
+    DialogState::onKey(e);
+    if (e.action == KeyEvent::Press && e.key == KeyCode::ESCAPE) {
+      GameState::activate(nullptr);
+    }
   }
 
   void onInput(int index) override {
-    if (index == 0) {
-      pfile_create_player_description("Riv", 3);
+    switch (index) {
+    case 2:
+      GameState::activate(get_video_state("gendata\\diablo1.smk", true, false,
+                                          get_main_menu_dialog()));
+      break;
+    case 3:
+      GameState::activate(get_credits_dialog());
+      break;
+    case 4:
       GameState::activate(nullptr);
+      break;
     }
   }
 };
 
 GameState* get_main_menu_dialog() {
-  LoadBackgroundArt("ui_art\\mainmenu.pcx");
   return new MainMenuDialog();
 }

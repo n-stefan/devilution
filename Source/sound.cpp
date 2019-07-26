@@ -189,6 +189,10 @@ BOOL sound_file_reload(TSnd *sound_file, LPDIRECTSOUNDBUFFER DSB)
 
 	rv = FALSE;
 
+  if (!sound_file->sound_path) {
+    return FALSE;
+  }
+
 	WOpenFile(sound_file->sound_path, &file, FALSE);
 	WSetFilePointer(file, sound_file->chunk.dwOffset, NULL, 0);
 
@@ -257,6 +261,39 @@ TSnd *sound_file_load(char *path)
 	WCloseFile(file);
 
 	return pSnd;
+}
+
+TSnd *sound_from_buffer(const unsigned char *buffer, unsigned long size, int channels, int depth, int rate) {
+  TSnd *pSnd = (TSnd *)DiabloAllocPtr(sizeof(TSnd));
+  memset(pSnd, 0, sizeof(TSnd));
+  pSnd->start_tc = GetTickCount() - 81;
+
+  pSnd->chunk.dwOffset = 0;
+  pSnd->chunk.dwSize = size;
+
+  pSnd->fmt.cbSize = 0;
+  pSnd->fmt.wFormatTag = WAVE_FORMAT_PCM;
+  pSnd->fmt.nChannels = channels;
+  pSnd->fmt.nSamplesPerSec = rate;
+  pSnd->fmt.nAvgBytesPerSec = rate * (channels * depth / 8);
+  pSnd->fmt.nBlockAlign = channels * depth / 8;
+  pSnd->fmt.wBitsPerSample = depth;
+
+  sound_CreateSoundBuffer(pSnd);
+
+	LPVOID buf1, buf2;
+	DWORD size1, size2;
+  HRESULT error_code = pSnd->DSB->Lock(0, size, &buf1, &size1, &buf2, &size2, 0);
+  if (error_code != DS_OK)
+    DS_ERROR(error_code);
+
+  memcpy(buf1, buffer, size);
+
+  error_code = pSnd->DSB->Unlock(buf1, size1, buf2, size2);
+  if (error_code != DS_OK)
+    DS_ERROR(error_code);
+
+  return pSnd;
 }
 
 void sound_CreateSoundBuffer(TSnd *sound_file)

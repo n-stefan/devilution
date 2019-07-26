@@ -14,7 +14,10 @@ void dx_cleanup();
 
 BOOL draw_lock( int* ysize );
 void draw_unlock();
-void draw_blit( DWORD dwX, DWORD dwY, DWORD dwWdt, DWORD dwHgt );
+void draw_flush();
+void draw_blit(DWORD dwX, DWORD dwY, DWORD dwWdt, DWORD dwHgt);
+
+void draw_text( int x, int y, const char* text, int color );
 
 /* data */
 

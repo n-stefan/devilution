@@ -19,6 +19,9 @@
     <Filter Include="ui">
       <UniqueIdentifier>{4a6492f8-5191-4e6e-9461-76263432c80a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="smacker">
+      <UniqueIdentifier>{d7a8c6e6-6083-41d2-83a5-8994589eedc1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\automap.cpp">
@@ -256,6 +259,27 @@
       <Filter>ui</Filter>
     </ClCompile>
     <ClCompile Include="Source\ui\main_menu.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\main.cpp">
+      <Filter>glue</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ui\credits.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ui\video.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\libsmacker\smacker.c">
+      <Filter>smacker</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\libsmacker\smk_bitstream.c">
+      <Filter>smacker</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\libsmacker\smk_hufftree.c">
+      <Filter>smacker</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ui\selyesno.cpp">
       <Filter>ui</Filter>
     </ClCompile>
   </ItemGroup>
@@ -515,6 +539,18 @@
     </ClInclude>
     <ClInclude Include="Source\ui\dialog.h">
       <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\libsmacker\smacker.h">
+      <Filter>smacker</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\libsmacker\smk_bitstream.h">
+      <Filter>smacker</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\libsmacker\smk_hufftree.h">
+      <Filter>smacker</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\libsmacker\smk_malloc.h">
+      <Filter>smacker</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

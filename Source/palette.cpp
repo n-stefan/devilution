@@ -231,3 +231,8 @@ void set_palette(PALETTEENTRY* pal) {
   memcpy(logical_palette, orig_palette, sizeof(orig_palette));
   ApplyGamma(system_palette, logical_palette, 256);
 }
+void get_palette(PALETTEENTRY *pal) {
+  for (int i = 0; i < 256; i++) {
+    pal[i] = orig_palette[i];
+  }
+}

@@ -229,53 +229,6 @@ void free_game()
 	FreeGameMem();
 }
 
-int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-{
-	HINSTANCE hInst;
-	int nData;
-	char szFileName[MAX_PATH];
-	BOOL bNoEvent;
-
-	hInst = hInstance;
-	ghInst = hInst;
-
-	ShowCursor(FALSE);
-	srand(GetTickCount());
-	InitHash();
-	fault_get_filter();
-
-	diablo_init_screen();
-	diablo_parse_flags(lpCmdLine);
-	init_create_window(nCmdShow);
-	sound_init();
-	UiInitialize(effects_play_sound);
-
-	//play_movie("gendata\\logo.smk", TRUE);
-
-	{
-		char szValueName[] = "Intro";
-		if (!SRegLoadValue("Diablo", szValueName, 0, &nData))
-			nData = 1;
-		//if (nData)
-			//play_movie("gendata\\diablo1.smk", TRUE);
-		SRegSaveValue("Diablo", szValueName, 0, 0);
-}
-
-	//UiTitleDialog(7);
-	//BlackPalette();
-
-	mainmenu_loop();
-	UiDestroy();
-	SaveGamma();
-
-	if (ghMainWnd) {
-		Sleep(300);
-		DestroyWindow(ghMainWnd);
-	}
-
-	return FALSE;
-}
-
 void diablo_parse_flags(char *args)
 {
 	char c;
@@ -736,7 +689,7 @@ LRESULT CALLBACK GM_Game(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return MainWndProc(hWnd, uMsg, wParam, lParam);
 }
 
-BOOL LeftMouseDown(int wParam)
+BOOL LeftMouseDown(BOOL bShift)
 {
 	if (!gmenu_left_mouse(TRUE) && !control_check_talk_btn() && !sgnTimeoutCurs) {
 		if (deathflag) {
@@ -771,7 +724,7 @@ BOOL LeftMouseDown(int wParam)
 						if (plr[myplr]._pStatPts && !spselflag)
 							CheckLvlBtn();
 						if (!lvlbtndown)
-							return LeftMouseCmd(wParam == MK_SHIFT + MK_LBUTTON);
+							return LeftMouseCmd(bShift);
 					}
 				}
 			} else {

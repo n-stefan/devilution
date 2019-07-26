@@ -1,0 +1,5 @@
+{
+	BasedOnStyle: LLVM,
+	TabWidth: 2,
+	UseTab: Never,
+}

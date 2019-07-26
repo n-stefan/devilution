@@ -64,14 +64,10 @@ void DrawProgress(int screen_x, int screen_y, int progress_id)
 
 void ShowProgress(unsigned int uMsg)
 {
-	WNDPROC saveProc;
-
 	gbSomebodyWonGameKludge = FALSE;
 	plrmsg_delay(TRUE);
 
 	/// ASSERT: assert(ghMainWnd);
-	saveProc = SetWindowProc(DisableInputWndProc);
-
 	interface_msg_pump();
 	ClearScreenBuffer();
 	scrollrt_draw_game_screen(TRUE);
@@ -219,9 +215,6 @@ void ShowProgress(unsigned int uMsg)
 
 	PaletteFadeOut(8);
 	FreeInterface();
-
-	saveProc = SetWindowProc(saveProc);
-	/// ASSERT: assert(saveProc == DisableInputWndProc);
 
 	NetSendCmdLocParam1(TRUE, CMD_PLAYER_JOINLEVEL, plr[myplr].WorldX, plr[myplr].WorldY, plr[myplr].plrlevel);
 	plrmsg_delay(FALSE);

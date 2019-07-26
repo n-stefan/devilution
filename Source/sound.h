@@ -13,6 +13,7 @@ void snd_play_snd(TSnd *pSnd, int lVolume, int lPan);
 IDirectSoundBuffer *sound_dup_channel(IDirectSoundBuffer *DSB);
 BOOL sound_file_reload(TSnd *sound_file, IDirectSoundBuffer *DSB);
 TSnd *sound_file_load(char *path);
+TSnd *sound_from_buffer(const unsigned char* buffer, unsigned long size, int channels, int depth, int rate);
 void sound_CreateSoundBuffer(TSnd *sound_file);
 void sound_file_cleanup(TSnd *sound_file);
 void snd_init(HWND hWnd);

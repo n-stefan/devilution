@@ -29,6 +29,7 @@ HRESULT dx_DirectDrawCreate( LPGUID guid, LPDIRECTDRAW *lplpDD, LPUNKNOWN pUnkOu
 HDC hDC;
 HBITMAP hBitmap;
 HDC hPaintDC;
+HFONT hFont;
 
 void dx_init(HWND hWnd)
 {
@@ -38,6 +39,9 @@ void dx_init(HWND hWnd)
   hPaintDC = CreateCompatibleDC( hDC );
   hBitmap = CreateCompatibleBitmap( hDC, SCREEN_WIDTH, SCREEN_HEIGHT );
   SelectObject( hPaintDC, hBitmap );
+
+  hFont = CreateFont( -17, 0, 0, 0, 700, 0, 0, 0, 0, 0, 0, 0, 0x12, "Times New Roman" );
+  SelectObject( hPaintDC, hFont );
 
   SetFocus(hWnd);
 	ShowWindow(hWnd, SW_SHOWNORMAL);
@@ -120,7 +124,11 @@ void draw_unlock()
   bi.biClrUsed = 0;
   bi.biClrImportant = 0;
   SetDIBits( hDC, hBitmap, 0, SCREEN_HEIGHT, sgpFrontBuf, (BITMAPINFO*) &bi, DIB_RGB_COLORS );
-  BitBlt( hDC, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, hPaintDC, 0, 0, SRCCOPY );
+}
+
+void draw_flush()
+{
+  BitBlt(hDC, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, hPaintDC, 0, 0, SRCCOPY);
 }
 
 void draw_blit( DWORD dwX, DWORD dwY, DWORD dwWdt, DWORD dwHgt )
@@ -159,4 +167,11 @@ void draw_blit( DWORD dwX, DWORD dwY, DWORD dwWdt, DWORD dwHgt )
   }
 
   unlock_buf( 6 );
+}
+
+void draw_text(int x, int y, const char *text, int color) {
+  PALETTEENTRY pal = system_palette[color];
+  SetTextColor(hPaintDC, RGB(pal.peRed, pal.peGreen, pal.peBlue));
+  SetBkMode(hPaintDC, TRANSPARENT);
+  TextOut(hPaintDC, x, y, text, strlen(text));
 }

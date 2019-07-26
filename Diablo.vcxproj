@@ -159,9 +159,13 @@
     <ClCompile Include="Source\inv.cpp" />
     <ClCompile Include="Source\itemdat.cpp" />
     <ClCompile Include="Source\items.cpp" />
+    <ClCompile Include="Source\libsmacker\smacker.c" />
+    <ClCompile Include="Source\libsmacker\smk_bitstream.c" />
+    <ClCompile Include="Source\libsmacker\smk_hufftree.c" />
     <ClCompile Include="Source\lighting.cpp" />
     <ClCompile Include="Source\loadsave.cpp" />
     <ClCompile Include="Source\logging.cpp" />
+    <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\mainmenu.cpp" />
     <ClCompile Include="Source\minitext.cpp" />
     <ClCompile Include="Source\misdat.cpp" />
@@ -201,10 +205,13 @@
     <ClCompile Include="Source\track.cpp" />
     <ClCompile Include="Source\trigs.cpp" />
     <ClCompile Include="Source\ui\common.cpp" />
+    <ClCompile Include="Source\ui\credits.cpp" />
     <ClCompile Include="Source\ui\diabloui.cpp" />
     <ClCompile Include="Source\ui\dialog.cpp" />
     <ClCompile Include="Source\ui\main_menu.cpp" />
+    <ClCompile Include="Source\ui\selyesno.cpp" />
     <ClCompile Include="Source\ui\titlescreen.cpp" />
+    <ClCompile Include="Source\ui\video.cpp" />
     <ClCompile Include="Source\wave.cpp" />
     <ClCompile Include="Source\render.cpp" />
   </ItemGroup>
@@ -248,6 +255,10 @@
     <ClInclude Include="Source\inv.h" />
     <ClInclude Include="Source\itemdat.h" />
     <ClInclude Include="Source\items.h" />
+    <ClInclude Include="Source\libsmacker\smacker.h" />
+    <ClInclude Include="Source\libsmacker\smk_bitstream.h" />
+    <ClInclude Include="Source\libsmacker\smk_hufftree.h" />
+    <ClInclude Include="Source\libsmacker\smk_malloc.h" />
     <ClInclude Include="Source\lighting.h" />
     <ClInclude Include="Source\loadsave.h" />
     <ClInclude Include="Source\logging.h" />

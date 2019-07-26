@@ -19,10 +19,10 @@ void DrawSelector(const DialogState::Item& item, unsigned int time) {
   DrawArt(item.rect.right - ArtFocus[size].width, y, &ArtFocus[size], frame);
 }
 
-int GetStrWidth(const char* text, int size) {
+int GetStrWidth(const char* text, size_t count, int size) {
   int strWidth = 0;
 
-  for (size_t i = 0; text[i]; i++) {
+  for (size_t i = 0; i < count; i++) {
     BYTE chr = (BYTE) text[i];
     BYTE w = FontTables[size][chr + 2];
     if (w) {
@@ -35,9 +35,9 @@ int GetStrWidth(const char* text, int size) {
   return strWidth;
 }
 
-int TextAlignment(int width, const char* text, TXT_JUST align, _artFontTables size) {
+int TextAlignment(int width, const char* text, size_t count, TXT_JUST align, _artFontTables size) {
   if (align != JustLeft) {
-    int w = GetStrWidth(text, size);
+    int w = GetStrWidth(text, count, size);
     if (align == JustCentre) {
       return (width - w) / 2;
     } else if (align == JustRight) {
@@ -45,6 +45,34 @@ int TextAlignment(int width, const char* text, TXT_JUST align, _artFontTables si
     }
   }
   return 0;
+}
+
+std::string wordWrap( const std::string &text, _artFontTables size, int width ) {
+  std::string result;
+  int x = 0;
+  for (size_t i = 0; i < text.size(); ++i) {
+    char chr = text[i];
+    if (chr == ' ') {
+      size_t next = i + 1;
+      while (next < text.size() && !isspace((BYTE)text[next])) {
+        ++next;
+      }
+      if (x + GetStrWidth(text.c_str() + i, next - i, size) > width) {
+        chr = '\n';
+      }
+    }
+    if (chr == '\n') {
+      x = 0;
+    } else {
+      BYTE w = FontTables[size][chr + 2];
+      if (w == 0) {
+        w = FontTables[size][0];
+      }
+      x += w;
+    }
+    result.push_back(chr);
+  }
+  return result;
 }
 
 void DrawArtStr(const DialogState::Item& item, unsigned int time) {
@@ -66,7 +94,12 @@ void DrawArtStr(const DialogState::Item& item, unsigned int time) {
     align = JustRight;
   }
 
-  int x = item.rect.left + TextAlignment(item.rect.right - item.rect.left, item.text.c_str(), align, size);
+  std::string text = item.text;
+  if (item.flags & ControlFlags::WordWrap) {
+    text = wordWrap(text, size, item.rect.right - item.rect.left);
+  }
+
+  int x = item.rect.left + TextAlignment(item.rect.right - item.rect.left, text.c_str(), text.size(), align, size);
 
   int sx = x;
   int sy = item.rect.top;
@@ -74,7 +107,7 @@ void DrawArtStr(const DialogState::Item& item, unsigned int time) {
     sy = (item.rect.top + item.rect.bottom - ArtFonts[size][color].height) / 2;
   }
 
-  for (BYTE chr : item.text) {
+  for (BYTE chr : text) {
     if (chr == '\n') {
       sx = x;
       sy += ArtFonts[size][color].height;
@@ -106,7 +139,7 @@ void DrawEditBox(const DialogState::Item& item, unsigned int time) {
 
 void DialogState::onRender(unsigned int time) {
   lock_buf(1);
-  for (const auto& item : items_) {
+  for (const auto& item : items) {
     if (item.flags & ControlFlags::Hidden) {
       continue;
     }
@@ -126,7 +159,15 @@ void DialogState::onRender(unsigned int time) {
       DrawArtStr(item, time);
       break;
     case ControlType::Image:
-      DrawArt(item.rect.left, item.rect.top, item.image, item.value, item.rect.right - item.rect.left);
+      if ( item.value < 0 )
+      {
+        int frame = ( time / ( -item.value ) ) % item.image->frames;
+        DrawArt( item.rect.left, item.rect.top, item.image, frame, item.rect.right - item.rect.left );
+      }
+      else
+      {
+        DrawArt( item.rect.left, item.rect.top, item.image, item.value, item.rect.right - item.rect.left );
+      }
       break;
     }
   }
@@ -139,12 +180,13 @@ void DialogState::onRender(unsigned int time) {
   if (draw_lock(nullptr)) {
     draw_blit(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     draw_unlock();
+    draw_flush();
   }
 }
 
 void DialogState::setFocus_(int index, bool wrap) {
   int minVal = 1000, maxVal = -1000;
-  for (auto& item : items_) {
+  for (auto& item : items) {
     if (item.type == ControlType::List && !item.text.empty()) {
       if (item.value < minVal) {
         minVal = item.value;
@@ -175,8 +217,7 @@ void DialogState::setFocus_(int index, bool wrap) {
 void DialogState::onMouse(const MouseEvent& event) {
   mouseX_ = event.x;
   mouseY_ = event.y;
-  for (const auto& item : items_) {
-    int index = int(&item - &items_[0]);
+  for (const auto& item : items) {
     if (item.type != ControlType::List && item.type != ControlType::Button) {
       continue;
     }
@@ -192,7 +233,7 @@ void DialogState::onMouse(const MouseEvent& event) {
         }
       } else {
         if (event.action == MouseEvent::Press && event.button == KeyCode::LBUTTON) {
-          onInput(index);
+          onInput(item.value);
         }
       }
     }
@@ -224,6 +265,25 @@ void DialogState::onKey(const KeyEvent& e) {
     case KeyCode::RETURN:
     case KeyCode::SPACE:
       onInput(selected);
+      break;
+    case KeyCode::BACK:
+      for (auto &item : items) {
+        if (item.type == ControlType::Edit) {
+          if (!item.text.empty()) {
+            item.text.pop_back();
+          }
+          break;
+        }
+      }
+      break;
+    }
+  }
+}
+
+void DialogState::onChar(char chr) {
+  for (auto &item : items) {
+    if (item.type == ControlType::Edit) {
+      item.text.push_back(chr);
       break;
     }
   }

@@ -134,12 +134,12 @@ SNetGetGameInfo(
 
 
 // Game info fields
-#define GAMEINFO_NAME           1
-#define GAMEINFO_PASSWORD       2
-#define GAMEINFO_STATS          3
-#define GAMEINFO_MODEFLAG       4
-#define GAMEINFO_GAMETEMPLATE   5
-#define GAMEINFO_PLAYERS        6
+//#define GAMEINFO_NAME           1
+//#define GAMEINFO_PASSWORD       2
+//#define GAMEINFO_STATS          3
+//#define GAMEINFO_MODEFLAG       4
+//#define GAMEINFO_GAMETEMPLATE   5
+//#define GAMEINFO_PLAYERS        6
 
 
 BOOL STORMAPI SNetGetNumPlayers(int *firstplayerid, int *lastplayerid, int *activeplayers);

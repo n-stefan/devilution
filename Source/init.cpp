@@ -145,7 +145,7 @@ void init_create_window(int nCmdShow)
 	pfile_init_save_directory();
 	memset(&wcex, 0, sizeof(wcex));
 	wcex.cbSize = sizeof(wcex);
-	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 	wcex.lpfnWndProc = WindowProc;
 	wcex.hInstance = ghInst;
 	wcex.hIcon = LoadIcon(ghInst, MAKEINTRESOURCE(IDI_ICON1));
@@ -400,7 +400,7 @@ LRESULT __stdcall MainWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
   case WM_LBUTTONUP:
   case WM_RBUTTONDOWN:
   case WM_RBUTTONUP:
-    if (GameState::running()) {
+    if (GameState::current()) {
       MouseEvent e;
       if (Msg == WM_LBUTTONDOWN || Msg == WM_RBUTTONDOWN) {
         e.action = MouseEvent::Press;
@@ -429,7 +429,7 @@ LRESULT __stdcall MainWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     return 0;
   case WM_KEYDOWN:
   case WM_KEYUP:
-    if (GameState::running()) {
+    if (GameState::current()) {
       KeyEvent e;
       if (Msg == WM_KEYDOWN) {
         e.action = KeyEvent::Press;
@@ -444,6 +444,11 @@ LRESULT __stdcall MainWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
       }
       e.key = wParam;
       GameState::processKey(e);
+    }
+    return 0;
+  case WM_CHAR:
+    if (wParam >= 32 && wParam <= 128 && isprint(wParam)) {
+      GameState::processChar((char) wParam);
     }
     return 0;
   case WM_ACTIVATEAPP:

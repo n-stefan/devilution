@@ -114,6 +114,8 @@ extern int PauseMode;
 extern char sgbMouseDown;
 extern int color_cycle_timer;
 
+void post_event(int code);
+
 void FreeGameMem();
 BOOL StartGame(BOOL bNewGame, BOOL bSinglePlayer);
 void run_game_loop(unsigned int uMsg);
@@ -128,7 +130,7 @@ void diablo_reload_process(HINSTANCE hInstance);
 BOOL PressEscKey();
 LRESULT CALLBACK DisableInputWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK GM_Game(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-BOOL LeftMouseDown(int wParam);
+BOOL LeftMouseDown(BOOL bShift);
 BOOL LeftMouseCmd(BOOL bShift);
 BOOL TryIconCurs();
 void LeftMouseUp();
