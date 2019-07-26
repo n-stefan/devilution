@@ -1,6 +1,6 @@
 #include "diablo.h"
 #include "../3rdParty/Storm/Source/storm.h"
-#include "../DiabloUI/diabloui.h"
+#include "ui/diabloui.h"
 
 static DWORD sgdwOwnerWait;
 static DWORD sgdwRecvOffset;

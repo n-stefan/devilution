@@ -120,7 +120,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OutputFile>.\Source/WinDebug\Diablo.exe</OutputFile>
-      <AdditionalDependencies>DiabloUI/WinDebug/DiabloUI.lib;3rdParty/Storm/Source/WinDebug/Storm.lib;3rdParty/PKWare/WinDebug/PKWare.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>3rdParty/Storm/Source/WinDebug/Storm.lib;3rdParty/PKWare/WinDebug/PKWare.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DataExecutionPrevention>false</DataExecutionPrevention>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
@@ -200,7 +200,11 @@
     <ClCompile Include="Source\towners.cpp" />
     <ClCompile Include="Source\track.cpp" />
     <ClCompile Include="Source\trigs.cpp" />
-    <ClCompile Include="Source\ui\init.cpp" />
+    <ClCompile Include="Source\ui\common.cpp" />
+    <ClCompile Include="Source\ui\diabloui.cpp" />
+    <ClCompile Include="Source\ui\dialog.cpp" />
+    <ClCompile Include="Source\ui\main_menu.cpp" />
+    <ClCompile Include="Source\ui\titlescreen.cpp" />
     <ClCompile Include="Source\wave.cpp" />
     <ClCompile Include="Source\render.cpp" />
   </ItemGroup>
@@ -287,6 +291,8 @@
     <ClInclude Include="Source\trigs.h" />
     <ClInclude Include="Source\ui\common.h" />
     <ClInclude Include="Source\ui\diabloui.h" />
+    <ClInclude Include="Source\ui\dialog.h" />
+    <ClInclude Include="Source\ui\event.h" />
     <ClInclude Include="Source\wave.h" />
     <ClInclude Include="Source\render.h" />
     <ClInclude Include="structs.h" />
@@ -295,10 +301,6 @@
   <ItemGroup>
     <ProjectReference Include="3rdParty\Storm\Source\Storm.vcxproj">
       <Project>{b28f69ce-15a1-424d-bbb5-2727258d675b}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="DiabloUI\DiabloUI.vcxproj">
-      <Project>{8408e35e-3cf5-4d4e-b873-af3952cdabd4}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>

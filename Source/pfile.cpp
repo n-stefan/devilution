@@ -1,6 +1,6 @@
 #include "diablo.h"
 #include "../3rdParty/Storm/Source/storm.h"
-#include "../DiabloUI/diabloui.h"
+#include "ui/diabloui.h"
 
 #define PASSWORD_SINGLE "xrgyrkj1"
 #define PASSWORD_MULTI "szqnlsk1"

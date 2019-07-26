@@ -25,6 +25,8 @@ void palette_update_quest_palette(int n);
 BOOL palette_get_colour_cycling();
 BOOL palette_set_color_cycling(BOOL enabled);
 
+void set_palette(PALETTEENTRY* pal);
+
 /* rdata */
 
 /* data */

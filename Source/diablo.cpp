@@ -1,6 +1,6 @@
 #include "diablo.h"
 #include "../3rdParty/Storm/Source/storm.h"
-#include "../DiabloUI/diabloui.h"
+#include "ui/diabloui.h"
 
 HWND ghMainWnd;
 int glMid1Seed[NUMLEVELS];
@@ -229,13 +229,6 @@ void free_game()
 	FreeGameMem();
 }
 
-BOOL diablo_get_not_running()
-{
-	SetLastError(0);
-	CreateEvent(NULL, FALSE, FALSE, "DiabloEvent");
-	return GetLastError() != ERROR_ALREADY_EXISTS;
-}
-
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	HINSTANCE hInst;
@@ -244,66 +237,40 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	BOOL bNoEvent;
 
 	hInst = hInstance;
-#ifndef DEBUGGER
-	diablo_reload_process(hInstance);
-#endif
 	ghInst = hInst;
-
-	if (RestrictedTest())
-		ErrOkDlg(IDD_DIALOG10, 0, "C:\\Src\\Diablo\\Source\\DIABLO.CPP", 877);
-	if (ReadOnlyTest()) {
-		if (!GetModuleFileName(ghInst, szFileName, sizeof(szFileName)))
-			szFileName[0] = '\0';
-		DirErrorDlg(szFileName);
-	}
 
 	ShowCursor(FALSE);
 	srand(GetTickCount());
 	InitHash();
 	fault_get_filter();
 
-	bNoEvent = diablo_get_not_running();
-	if (!diablo_find_window("DIABLO") && bNoEvent) {
-#ifdef _DEBUG
-		SFileEnableDirectAccess(TRUE);
-#endif
-		diablo_init_screen();
-		diablo_parse_flags(lpCmdLine);
-		init_create_window(nCmdShow);
-		sound_init();
-		UiInitialize();
+	diablo_init_screen();
+	diablo_parse_flags(lpCmdLine);
+	init_create_window(nCmdShow);
+	sound_init();
+	UiInitialize(effects_play_sound);
 
-#ifdef _DEBUG
-		if (showintrodebug)
-#endif
-			play_movie("gendata\\logo.smk", TRUE);
+	//play_movie("gendata\\logo.smk", TRUE);
 
-		{
-			char szValueName[] = "Intro";
-			if (!SRegLoadValue("Diablo", szValueName, 0, &nData))
-				nData = 1;
-			if (nData)
-				play_movie("gendata\\diablo1.smk", TRUE);
-			SRegSaveValue("Diablo", szValueName, 0, 0);
-		}
+	{
+		char szValueName[] = "Intro";
+		if (!SRegLoadValue("Diablo", szValueName, 0, &nData))
+			nData = 1;
+		//if (nData)
+			//play_movie("gendata\\diablo1.smk", TRUE);
+		SRegSaveValue("Diablo", szValueName, 0, 0);
+}
 
-#ifdef _DEBUG
-		if (showintrodebug) {
-#endif
-			UiTitleDialog(7);
-			BlackPalette();
-#ifdef _DEBUG
-		}
-#endif
+	//UiTitleDialog(7);
+	//BlackPalette();
 
-		mainmenu_loop();
-		UiDestroy();
-		SaveGamma();
+	mainmenu_loop();
+	UiDestroy();
+	SaveGamma();
 
-		if (ghMainWnd) {
-			Sleep(300);
-			DestroyWindow(ghMainWnd);
-		}
+	if (ghMainWnd) {
+		Sleep(300);
+		DestroyWindow(ghMainWnd);
 	}
 
 	return FALSE;

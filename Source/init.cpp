@@ -1,6 +1,8 @@
 #include "diablo.h"
 #include "../3rdParty/Storm/Source/storm.h"
-#include "../DiabloUI/diabloui.h"
+#include "ui/diabloui.h"
+#include "ui/common.h"
+#include <windowsx.h>
 
 _SNETVERSIONDATA fileinfo;
 int gbActive;
@@ -154,16 +156,16 @@ void init_create_window(int nCmdShow)
 	wcex.hIconSm = (HICON)LoadImage(ghInst, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
 	if (!RegisterClassEx(&wcex))
 		app_fatal("Unable to register window class");
-	if (GetSystemMetrics(SM_CXSCREEN) < SCREEN_WIDTH)
-		nWidth = SCREEN_WIDTH;
-	else
-		nWidth = GetSystemMetrics(SM_CXSCREEN);
-	if (GetSystemMetrics(SM_CYSCREEN) < SCREEN_HEIGHT)
-		nHeight = SCREEN_HEIGHT;
-	else
-		nHeight = GetSystemMetrics(SM_CYSCREEN);
-	hWnd = CreateWindowEx(0, "DIABLO", "DIABLO", WS_POPUP, 0, 0, nWidth, nHeight, NULL, NULL, ghInst, NULL);
-	if (!hWnd)
+
+  nWidth = SCREEN_WIDTH;
+  nHeight = SCREEN_HEIGHT;
+  RECT rc = {0, 0, nWidth, nHeight};
+  DWORD wsStyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+  DWORD wsExStyle = WS_EX_CLIENTEDGE;
+  AdjustWindowRectEx(&rc, wsStyle, FALSE, wsExStyle);
+  hWnd = CreateWindowEx(wsExStyle, "DIABLO", "DIABLO", wsStyle, CW_USEDEFAULT, 0, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, ghInst, NULL);
+
+  if (!hWnd)
 		app_fatal("Unable to create main window");
 	ShowWindow(hWnd, SW_SHOWNORMAL); // nCmdShow used only in beta: ShowWindow(hWnd, nCmdShow)
 	UpdateWindow(hWnd);
@@ -393,7 +395,58 @@ LRESULT __stdcall MainWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_CLOSE:
 		return 0;
-	case WM_ACTIVATEAPP:
+  case WM_MOUSEMOVE:
+  case WM_LBUTTONDOWN:
+  case WM_LBUTTONUP:
+  case WM_RBUTTONDOWN:
+  case WM_RBUTTONUP:
+    if (GameState::running()) {
+      MouseEvent e;
+      if (Msg == WM_LBUTTONDOWN || Msg == WM_RBUTTONDOWN) {
+        e.action = MouseEvent::Press;
+      } else if (Msg == WM_LBUTTONUP || Msg == WM_RBUTTONUP) {
+        e.action = MouseEvent::Release;
+      } else {
+        e.action = MouseEvent::Move;
+      }
+      if (Msg == WM_LBUTTONDOWN || Msg == WM_LBUTTONUP) {
+        e.button = KeyCode::LBUTTON;
+      } else if (Msg == WM_RBUTTONDOWN || Msg == WM_RBUTTONUP) {
+        e.button = KeyCode::RBUTTON;
+      } else {
+        e.button = 0;
+      }
+      if (wParam & MK_CONTROL) {
+        e.modifiers |= ModifierKey::CONTROL;
+      }
+      if (wParam & MK_SHIFT) {
+        e.modifiers |= ModifierKey::SHIFT;
+      }
+      e.x = GET_X_LPARAM(lParam);
+      e.y = GET_Y_LPARAM(lParam);
+      GameState::processMouse(e);
+    }
+    return 0;
+  case WM_KEYDOWN:
+  case WM_KEYUP:
+    if (GameState::running()) {
+      KeyEvent e;
+      if (Msg == WM_KEYDOWN) {
+        e.action = KeyEvent::Press;
+      } else {
+        e.action = KeyEvent::Release;
+      }
+      if (GetKeyState(VK_CONTROL)) {
+        e.modifiers |= ModifierKey::CONTROL;
+      }
+      if (GetKeyState(VK_SHIFT)) {
+        e.modifiers |= ModifierKey::SHIFT;
+      }
+      e.key = wParam;
+      GameState::processKey(e);
+    }
+    return 0;
+  case WM_ACTIVATEAPP:
 		init_activate_window(hWnd, wParam);
 		break;
 	case WM_QUERYNEWPALETTE:

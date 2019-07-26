@@ -1,6 +1,8 @@
 #include "diablo.h"
 #include "../3rdParty/Storm/Source/storm.h"
-#include "../DiabloUI/diabloui.h"
+
+#include "ui/common.h"
+#include "ui/diabloui.h"
 
 char gszHero[16];
 
@@ -84,9 +86,43 @@ void mainmenu_loop()
 {
 	BOOL done;
 	int menu;
+  MSG msg;
 
 	done = FALSE;
 	mainmenu_refresh_music();
+
+  GameState::activate(get_main_menu_dialog());
+
+  while (GameState::running()) {
+    unsigned int time = GetTickCount();
+    if (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE)) {
+      SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
+      while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+        if (msg.message == WM_QUIT) {
+          gbRunGameResult = FALSE;
+          gbRunGame = FALSE;
+          GameState::activate(nullptr);
+          break;
+        }
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+      }
+      bool bLoop = gbRunGame && nthread_has_500ms_passed(FALSE);
+      SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL);
+      if (!bLoop) {
+        continue;
+      }
+    } else if (!nthread_has_500ms_passed(FALSE)) {
+#ifdef SLEEPFIX
+      Sleep(1);
+#endif
+      continue;
+    }
+    GameState::render(time);
+  }
+
+  StartGame(TRUE, TRUE);
+  return;
 
 	do {
 		menu = 0;

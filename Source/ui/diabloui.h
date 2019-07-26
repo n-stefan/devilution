@@ -25,15 +25,15 @@ struct ProfFntStruct
 };
 
 void UiDestroy();
-BOOL iTitleDialog( int a1 );
-void iInitialize();
+BOOL UiTitleDialog( int a1 );
+void UiInitialize(void(__stdcall *fnSound)(char *file));
 BOOL UiCopyProtError( int *pdwResult );
 void UiAppActivate( BOOL bActive );
 BOOL __fastcall UiValidPlayerName( char *name ); /* check */
-BOOL UiSelHeroMultDialog( BOOL( *fninfo )( BOOL( *fninfofunc )( _uiheroinfo * ) ), BOOL( *fncreate )( _uiheroinfo * ), BOOL( *fnremove )( _uiheroinfo * ), BOOL( *fnstats )( unsigned int, _uidefaultstats * ), int *dlgresult, int *a6, char *name );
-BOOL UiSelHeroSingDialog( BOOL( *fninfo )( BOOL( *fninfofunc )( _uiheroinfo * ) ), BOOL( *fncreate )( _uiheroinfo * ), BOOL( *fnremove )( _uiheroinfo * ), BOOL( *fnstats )( unsigned int, _uidefaultstats * ), int *dlgresult, char *name, int *difficulty );
+BOOL UiSelHeroMultDialog( BOOL(__stdcall *fninfo )( BOOL(__stdcall *fninfofunc )( _uiheroinfo * ) ), BOOL(__stdcall *fncreate )( _uiheroinfo * ), BOOL(__stdcall *fnremove )( _uiheroinfo * ), BOOL(__stdcall *fnstats )( unsigned int, _uidefaultstats * ), int *dlgresult, int *a6, char *name );
+BOOL UiSelHeroSingDialog( BOOL(__stdcall *fninfo )( BOOL(__stdcall *fninfofunc )( _uiheroinfo * ) ), BOOL(__stdcall  *fncreate )( _uiheroinfo * ), BOOL(__stdcall *fnremove )( _uiheroinfo * ), BOOL(__stdcall *fnstats )( unsigned int, _uidefaultstats * ), int *dlgresult, char *name, int *difficulty );
 BOOL UiCreditsDialog( int a1 );
-BOOL UiMainMenuDialog( char *name, int *pdwResult, void( *fnSound )( char *file ), int a4 );
+BOOL UiMainMenuDialog( char *name, int *pdwResult, void(__stdcall *fnSound )( char *file ), int a4 );
 BOOL UiProgressDialog( HWND window, char *msg, int enable, int( *fnfunc )( ), int rate );
 int UiProfileGetString();
 void __cdecl UiProfileCallback();

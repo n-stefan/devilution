@@ -220,3 +220,14 @@ BOOL palette_set_color_cycling(BOOL enabled)
 	color_cycling_enabled = enabled;
 	return enabled;
 }
+
+void set_palette(PALETTEENTRY* pal) {
+  for (int i = 0; i < 256; i++) {
+    orig_palette[i].peFlags = 0;
+    orig_palette[i].peRed = pal[i].peRed;
+    orig_palette[i].peGreen = pal[i].peGreen;
+    orig_palette[i].peBlue = pal[i].peBlue;
+  }
+  memcpy(logical_palette, orig_palette, sizeof(orig_palette));
+  ApplyGamma(system_palette, logical_palette, 256);
+}

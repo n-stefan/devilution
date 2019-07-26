@@ -243,7 +243,19 @@
     <ClCompile Include="Source\appfat_glue.cpp">
       <Filter>glue</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ui\init.cpp">
+    <ClCompile Include="Source\ui\common.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ui\dialog.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ui\titlescreen.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ui\diabloui.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ui\main_menu.cpp">
       <Filter>ui</Filter>
     </ClCompile>
   </ItemGroup>
@@ -496,6 +508,12 @@
       <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="Source\ui\diabloui.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ui\event.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ui\dialog.h">
       <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>

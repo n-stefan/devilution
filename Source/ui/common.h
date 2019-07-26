@@ -2,7 +2,7 @@
 
 #include "../diablo.h"
 #include "../../types.h"
-#include "diabloui.h"
+#include "event.h"
 
 typedef enum _artFocus
 {
@@ -32,33 +32,6 @@ typedef enum _artFontColors
   AFC_GOLD,
 } _artFontColors;
 
-typedef enum UiTypes
-{
-  UI_TEXT,
-  UI_IMAGE,
-  UI_BUTTON,
-  UI_LIST,
-  UI_EDIT,
-} UiTypes;
-
-typedef enum UiFlags
-{
-  UIS_SMALL = 1 << 0,
-  UIS_MED = 1 << 1,
-  UIS_BIG = 1 << 2,
-  UIS_HUGE = 1 << 3,
-  UIS_CENTER = 1 << 4,
-  UIS_RIGHT = 1 << 5,
-  UIS_VCENTER = 1 << 6,
-  UIS_SILVER = 1 << 7,
-  UIS_GOLD = 1 << 8,
-  UIS_SML1 = 1 << 9,
-  UIS_SML2 = 1 << 10,
-  UIS_LIST = 1 << 11,
-  UIS_DISABLED = 1 << 12,
-  UIS_HIDDEN = 1 << 13,
-} UiFlags;
-
 typedef struct Art
 {
   BYTE *data;
@@ -68,16 +41,6 @@ typedef struct Art
   BYTE mask;
 } Art;
 
-typedef struct UI_Item
-{
-  RECT rect;
-  UiTypes type;
-  int flags;
-  int value;
-  char *caption;
-  const void *context;
-} UI_Item;
-
 extern BYTE *FontTables[4];
 extern Art ArtFonts[4][2];
 extern Art ArtLogos[3];
@@ -85,6 +48,15 @@ extern Art ArtFocus[3];
 extern Art ArtBackground;
 extern Art ArtCursor;
 extern Art ArtHero;
+
+void LoadArt(char *pszFile, Art *art, int frames, PALETTEENTRY *pPalette = nullptr);
+void DrawArt(int screenX, int screenY, Art *art, int nFrame = 0, int drawW = 0);
+void LoadBackgroundArt(char *pszFile);
+void LoadMaskedArtFont(char *pszFile, Art *art, int frames, int mask = 250);
+void LoadArtFont(char *pszFile, int size, int color);
+
+void UiPlayMoveSound();
+void UiPlaySelectSound();
 
 typedef enum TXT_JUST
 {
@@ -99,4 +71,29 @@ constexpr size_t size( T( &)[N] )
   return N;
 }
 
-extern void( *gfnSoundFunction )( char *file );
+extern void(__stdcall *gfnSoundFunction )( char *file );
+
+class GameState {
+public:
+  virtual ~GameState() {};
+
+  static void activate(GameState* state);
+  static bool running();
+
+  static void render(unsigned int time);
+  static void processMouse(const MouseEvent& e);
+  static void processKey(const KeyEvent& e);
+
+protected:
+  virtual void onRender(unsigned int time) = 0;
+  virtual void onMouse(const MouseEvent& e) = 0;
+  virtual void onKey(const KeyEvent& e) = 0;
+
+private:
+  void retain();
+  void release();
+  int counter_ = 0;
+};
+
+GameState* get_title_dialog();
+GameState* get_main_menu_dialog();
