@@ -130,7 +130,11 @@ void DialogState::onRender(unsigned int time) {
       break;
     }
   }
-  DrawArt(mouseX_, mouseY_, &ArtCursor);
+  renderExtra(time);
+  if (cursor) {
+    DrawArt(mouseX_, mouseY_, &ArtCursor);
+  }
+  UiFadeIn(time);
   unlock_buf(1);
   if (draw_lock(nullptr)) {
     draw_blit(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);

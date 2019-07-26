@@ -54,6 +54,8 @@ void DrawArt(int screenX, int screenY, Art *art, int nFrame = 0, int drawW = 0);
 void LoadBackgroundArt(char *pszFile);
 void LoadMaskedArtFont(char *pszFile, Art *art, int frames, int mask = 250);
 void LoadArtFont(char *pszFile, int size, int color);
+void UiFadeReset();
+void UiFadeIn(unsigned int time);
 
 void UiPlayMoveSound();
 void UiPlaySelectSound();

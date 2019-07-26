@@ -10,7 +10,11 @@ public:
     addItem({{64, 277, 574, 320}, ControlType::List, ControlFlags::Huge | ControlFlags::Gold | ControlFlags::Center, 2, "Replay Intro"});
     addItem({{64, 320, 574, 363}, ControlType::List, ControlFlags::Huge | ControlFlags::Gold | ControlFlags::Center, 3, "Show Credits"});
     addItem({{64, 363, 574, 406}, ControlType::List, ControlFlags::Huge | ControlFlags::Gold | ControlFlags::Center, 4, "Exit Diablo"});
-    addItem({{17, 444, 622, 465}, ControlType::Text, ControlFlags::Small, 0, ""});
+    addItem({{17, 444, 622, 465}, ControlType::Text, ControlFlags::Small, 0, "Diablo v1.09"});
+  }
+
+  void renderExtra(unsigned int time) override {
+    DrawArt((SCREEN_WIDTH - ArtLogos[LOGO_MED].width) / 2, 0, &ArtLogos[LOGO_MED], (time / 60) % 15);
   }
 
   void onInput(int index) override {
@@ -22,5 +26,6 @@ public:
 };
 
 GameState* get_main_menu_dialog() {
+  LoadBackgroundArt("ui_art\\mainmenu.pcx");
   return new MainMenuDialog();
 }

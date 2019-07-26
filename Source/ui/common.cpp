@@ -9,6 +9,24 @@ Art ArtBackground;
 Art ArtCursor;
 Art ArtHero;
 
+unsigned int fadeStart = 0;
+
+void UiFadeReset() {
+  fadeStart = 0;
+}
+void UiFadeIn(unsigned int time) {
+  if (!fadeStart) {
+    fadeStart = time;
+  }
+
+  int fadeValue = int(time - fadeStart) / 60 * 16;
+  if (fadeValue > 256) {
+    fadeValue = 256;
+  }
+
+  SetFadeLevel(fadeValue);
+}
+
 void(__stdcall *gfnSoundFunction)(char *file);
 
 
@@ -85,6 +103,9 @@ void LoadArt(char *pszFile, Art *art, int frames, PALETTEENTRY *pPalette) {
 
 void LoadBackgroundArt(char *pszFile) {
   PALETTEENTRY pPal[256];
+
+  free(ArtBackground.data);
+  ArtBackground.data = nullptr;
 
   LoadArt(pszFile, &ArtBackground, 1, pPal);
   set_palette(pPal);

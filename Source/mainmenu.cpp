@@ -91,7 +91,7 @@ void mainmenu_loop()
 	done = FALSE;
 	mainmenu_refresh_music();
 
-  GameState::activate(get_main_menu_dialog());
+  GameState::activate(get_title_dialog());
 
   while (GameState::running()) {
     unsigned int time = GetTickCount();

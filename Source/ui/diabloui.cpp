@@ -20,13 +20,13 @@ void UiInitialize(void(__stdcall *fnSound)(char *file)) {
   LoadArtFont("ui_art\\font30g.pcx", AFT_BIG, AFC_GOLD);
   LoadArtFont("ui_art\\font42g.pcx", AFT_HUGE, AFC_GOLD);
 
+  LoadMaskedArtFont("ui_art\\logo.pcx", &ArtLogos[LOGO_BIG], 15);
   LoadMaskedArtFont("ui_art\\smlogo.pcx", &ArtLogos[LOGO_MED], 15);
   LoadMaskedArtFont("ui_art\\focus16.pcx", &ArtFocus[FOCUS_SMALL], 8);
   LoadMaskedArtFont("ui_art\\focus.pcx", &ArtFocus[FOCUS_MED], 8);
   LoadMaskedArtFont("ui_art\\focus42.pcx", &ArtFocus[FOCUS_BIG], 8);
   LoadMaskedArtFont("ui_art\\cursor.pcx", &ArtCursor, 1, 0);
   LoadArt("ui_art\\heros.pcx", &ArtHero, 4);
-  LoadBackgroundArt("ui_art\\title.pcx");
 }
 BOOL UiCopyProtError(int *pdwResult) {
   return TRUE;

@@ -41,10 +41,6 @@ public:
     Art* image;
   };
 
-  virtual void onRender(unsigned int time) override;
-  virtual void onMouse(const MouseEvent& e) override;
-  virtual void onKey(const KeyEvent& e) override;
-
 protected:
   void addItem(Item&& item) {
     items_.emplace_back(std::move(item));
@@ -58,9 +54,16 @@ protected:
 
   int selected = -1;
   bool wraps = true;
+  bool cursor = true;
 
   virtual void onInput(int id) {};
   virtual void onFocus(int value) {};
+
+  virtual void onRender(unsigned int time) override;
+  virtual void onMouse(const MouseEvent& e) override;
+  virtual void onKey(const KeyEvent& e) override;
+
+  virtual void renderExtra(unsigned int time) {};
 
 private:
   std::vector<Item> items_;
