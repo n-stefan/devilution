@@ -1,0 +1,103 @@
+call emcc Source\appfat_glue.cpp -o emcc/appfat_glue.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\automap.cpp -o emcc/automap.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\capture.cpp -o emcc/capture.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\codec.cpp -o emcc/codec.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\control.cpp -o emcc/control.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\cursor.cpp -o emcc/cursor.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\dead.cpp -o emcc/dead.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\debug.cpp -o emcc/debug.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\diablo.cpp -o emcc/diablo.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\doom.cpp -o emcc/doom.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\drlg_l1.cpp -o emcc/drlg_l1.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\drlg_l2.cpp -o emcc/drlg_l2.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\drlg_l3.cpp -o emcc/drlg_l3.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\drlg_l4.cpp -o emcc/drlg_l4.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\dx.cpp -o emcc/dx.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\effects.cpp -o emcc/effects.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\encrypt.cpp -o emcc/encrypt.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\engine.cpp -o emcc/engine.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\error.cpp -o emcc/error.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\gamemenu.cpp -o emcc/gamemenu.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\gendung.cpp -o emcc/gendung.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\gmenu.cpp -o emcc/gmenu.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\help.cpp -o emcc/help.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\init_glue.cpp -o emcc/init_glue.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\interfac.cpp -o emcc/interfac.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\inv.cpp -o emcc/inv.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\itemdat.cpp -o emcc/itemdat.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\items.cpp -o emcc/items.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\jsfs.cpp -o emcc/jsfs.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\libsmacker\smacker.c -o emcc/smacker.bc -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\libsmacker\smk_bitstream.c -o emcc/smk_bitstream.bc -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\libsmacker\smk_hufftree.c -o emcc/smk_hufftree.bc -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\lighting.cpp -o emcc/lighting.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\loadsave.cpp -o emcc/loadsave.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\main.cpp -o emcc/main.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\mainmenu.cpp -o emcc/mainmenu.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\minitext.cpp -o emcc/minitext.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\misdat.cpp -o emcc/misdat.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\missiles.cpp -o emcc/missiles.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\monstdat.cpp -o emcc/monstdat.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\monster.cpp -o emcc/monster.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\movie.cpp -o emcc/movie.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\mpqapi.cpp -o emcc/mpqapi.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\msg.cpp -o emcc/msg.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\msgcmd.cpp -o emcc/msgcmd.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\multi.cpp -o emcc/multi.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\objdat.cpp -o emcc/objdat.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\objects.cpp -o emcc/objects.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\pack.cpp -o emcc/pack.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\palette.cpp -o emcc/palette.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\path.cpp -o emcc/path.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\pfile.cpp -o emcc/pfile.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\player.cpp -o emcc/player.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\plrmsg.cpp -o emcc/plrmsg.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\portal.cpp -o emcc/portal.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\quests.cpp -o emcc/quests.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\render.cpp -o emcc/render.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\rmpq\adpcm\adpcm.cpp -o emcc/adpcm.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\rmpq\arccommon.cpp -o emcc/arccommon.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\rmpq\archive.cpp -o emcc/archive.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\rmpq\checksum.cpp -o emcc/checksum.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\rmpq\compress.cpp -o emcc/compress.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\rmpq\file.cpp -o emcc/file.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\rmpq\huffman\huff.cpp -o emcc/huff.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\rmpq\locale.cpp -o emcc/locale.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\rmpq\pklib\crc32.c -o emcc/crc32.bc -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\rmpq\pklib\explode.c -o emcc/explode.bc -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\rmpq\pklib\implode.c -o emcc/implode.bc -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\scrollrt.cpp -o emcc/scrollrt.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\setmaps.cpp -o emcc/setmaps.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\sha.cpp -o emcc/sha.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\sound_common.cpp -o emcc/sound_common.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\sound_glue.cpp -o emcc/sound_glue.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\spelldat.cpp -o emcc/spelldat.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\spells.cpp -o emcc/spells.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\stores.cpp -o emcc/stores.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\storm\sbmp.cpp -o emcc/sbmp.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\storm\smpq.cpp -o emcc/smpq.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\storm\sreg.cpp -o emcc/sreg.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\storm\storm.cpp -o emcc/storm.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\sync.cpp -o emcc/sync.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\textdat.cpp -o emcc/textdat.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\themes.cpp -o emcc/themes.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\tmsg.cpp -o emcc/tmsg.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\town.cpp -o emcc/town.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\towners.cpp -o emcc/towners.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\trace.cpp -o emcc/trace.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\track.cpp -o emcc/track.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\trigs.cpp -o emcc/trigs.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\ui\common.cpp -o emcc/common.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\ui\credits.cpp -o emcc/credits.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\ui\diabloui.cpp -o emcc/diabloui.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\ui\dialog.cpp -o emcc/dialog.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\ui\main_menu.cpp -o emcc/main_menu.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\ui\play.cpp -o emcc/play.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\ui\selhero.cpp -o emcc/selhero.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\ui\titlescreen.cpp -o emcc/titlescreen.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\ui\video.cpp -o emcc/video.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\ui\yesno.cpp -o emcc/yesno.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+call emcc Source\wave.cpp -o emcc/wave.bc --std=c++11 -O1 -DNO_SYSTEM -DEMSCRIPTEN -DZ_SOLO -Wno-logical-op-parentheses -I.
+
+call emcc emcc/appfat_glue.bc emcc/automap.bc emcc/capture.bc emcc/codec.bc emcc/control.bc emcc/cursor.bc emcc/dead.bc emcc/debug.bc emcc/diablo.bc emcc/doom.bc emcc/drlg_l1.bc emcc/drlg_l2.bc emcc/drlg_l3.bc emcc/drlg_l4.bc emcc/dx.bc emcc/effects.bc emcc/encrypt.bc emcc/engine.bc emcc/error.bc emcc/gamemenu.bc emcc/gendung.bc emcc/gmenu.bc emcc/help.bc emcc/init_glue.bc emcc/interfac.bc emcc/inv.bc emcc/itemdat.bc emcc/items.bc emcc/jsfs.bc emcc/smacker.bc emcc/smk_bitstream.bc emcc/smk_hufftree.bc emcc/lighting.bc emcc/loadsave.bc emcc/main.bc emcc/mainmenu.bc emcc/minitext.bc emcc/misdat.bc emcc/missiles.bc emcc/monstdat.bc emcc/monster.bc emcc/movie.bc emcc/mpqapi.bc emcc/msg.bc emcc/msgcmd.bc emcc/multi.bc emcc/objdat.bc emcc/objects.bc emcc/pack.bc emcc/palette.bc emcc/path.bc emcc/pfile.bc emcc/player.bc emcc/plrmsg.bc emcc/portal.bc emcc/quests.bc emcc/render.bc emcc/adpcm.bc emcc/arccommon.bc emcc/archive.bc emcc/checksum.bc emcc/compress.bc emcc/file.bc emcc/huff.bc emcc/locale.bc emcc/crc32.bc emcc/explode.bc emcc/implode.bc emcc/scrollrt.bc emcc/setmaps.bc emcc/sha.bc emcc/sound_common.bc emcc/sound_glue.bc emcc/spelldat.bc emcc/spells.bc emcc/stores.bc emcc/sbmp.bc emcc/smpq.bc emcc/sreg.bc emcc/storm.bc emcc/sync.bc emcc/textdat.bc emcc/themes.bc emcc/tmsg.bc emcc/town.bc emcc/towners.bc emcc/trace.bc emcc/track.bc emcc/trigs.bc emcc/common.bc emcc/credits.bc emcc/diabloui.bc emcc/dialog.bc emcc/main_menu.bc emcc/play.bc emcc/selhero.bc emcc/titlescreen.bc emcc/video.bc emcc/yesno.bc emcc/wave.bc -o Diablo.js -s EXPORT_NAME="Diablo" -O1 -s WASM=1 -s MODULARIZE=1 -s NO_FILESYSTEM=1 -s EXPORTED_FUNCTIONS="['_malloc', '_free']" --post-js ./module-post.js -s ALLOW_MEMORY_GROWTH=1 -s TOTAL_MEMORY=1073741824 -s DISABLE_EXCEPTION_CATCHING=0
+move Diablo.js Diablo.jscc

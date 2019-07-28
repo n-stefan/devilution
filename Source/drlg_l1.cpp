@@ -127,7 +127,7 @@ void DRLG_Init_Globals()
 	memset(dLight, c, sizeof(dLight));
 }
 
-void LoadL1Dungeon(char *sFileName, int vx, int vy)
+void LoadL1Dungeon(const char *sFileName, int vx, int vy)
 {
 	int i, j, rw, rh;
 	BYTE *pLevelMap, *lm;
@@ -171,7 +171,9 @@ void LoadL1Dungeon(char *sFileName, int vx, int vy)
 	DRLG_L1Pass3();
 	DRLG_Init_Globals();
 	DRLG_InitL1Vals();
+#ifndef SPAWN
 	SetMapMonsters(pLevelMap, 0, 0);
+#endif
 	SetMapObjects(pLevelMap, 0, 0);
 	mem_free_dbg(pLevelMap);
 }
@@ -323,7 +325,7 @@ void DRLG_InitL1Vals()
 	}
 }
 
-void LoadPreL1Dungeon(char *sFileName, int vx, int vy)
+void LoadPreL1Dungeon(const char *sFileName, int vx, int vy)
 {
 	int i, j, rw, rh;
 	BYTE *pLevelMap, *lm;
@@ -923,8 +925,8 @@ void L5roomGen(int x, int y, int w, int h, int dir)
 
 	dirProb = random(0, 4);
 
-	switch (dir == 1 ? dirProb != 0 : dirProb == 0) {
-	case FALSE:
+	switch ((dir == 1 ? dirProb != 0 : dirProb == 0) ? 1 : 0) {
+	case 0:
 		num = 0;
 		do {
 			cw = (random(0, 5) + 2) & 0xFFFFFFFE;
@@ -946,7 +948,7 @@ void L5roomGen(int x, int y, int w, int h, int dir)
 		if (ran2 == TRUE)
 			L5roomGen(cx2, cy1, cw, ch, 1);
 		break;
-	case TRUE:
+	case 1:
 		num = 0;
 		do {
 			width = (random(0, 5) + 2) & 0xFFFFFFFE;

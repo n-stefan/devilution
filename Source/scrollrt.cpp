@@ -1,4 +1,4 @@
-#include "../3rdParty/Storm/Source/storm.h"
+#include "storm/storm.h"
 #include "diablo.h"
 
 int light_table_index;
@@ -23,7 +23,7 @@ DWORD sgdwCursHgtOld;
 /* data */
 
 /* used in 1.00 debug */
-char *szMonModeAssert[18] = {"standing",
+const char *szMonModeAssert[18] = {"standing",
                              "walking (1)",
                              "walking (2)",
                              "walking (3)",
@@ -42,7 +42,7 @@ char *szMonModeAssert[18] = {"standing",
                              "healing",
                              "talking"};
 
-char *szPlrModeAssert[12] = {
+const char *szPlrModeAssert[12] = {
     "standing",        "walking (1)",       "walking (2)",
     "walking (3)",     "attacking (melee)", "attacking (ranged)",
     "blocking",        "getting hit",       "dying",
@@ -2320,7 +2320,7 @@ void ScrollView() {
 
 void EnableFrameCount() {
   frameflag = frameflag == 0;
-  framestart = GetTickCount();
+  framestart = _GetTickCount();
 }
 #endif
 

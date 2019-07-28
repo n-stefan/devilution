@@ -2247,6 +2247,7 @@ typedef enum _talker_id {
 	TOWN_PRIEST  = 0xA,
 } _talker_id;
 
+#ifndef SPAWN
 typedef enum _music_id {
 	TMUSIC_TOWN  = 0,
 	TMUSIC_L1    = 1,
@@ -2256,6 +2257,14 @@ typedef enum _music_id {
 	TMUSIC_INTRO = 5,
 	NUM_MUSIC    = 6,
 } _music_id;
+#else
+typedef enum _music_id {
+  TMUSIC_TOWN = 0,
+  TMUSIC_L1 = 1,
+  TMUSIC_INTRO = 2,
+  NUM_MUSIC = 3,
+} _music_id;
+#endif
 
 typedef enum _mainmenu_selections {
 	MAINMENU_SINGLE_PLAYER = 1,

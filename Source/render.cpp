@@ -1,6 +1,10 @@
 #include "diablo.h"
 #include "_asm.cpp"
 
+static inline BYTE byteptr(const void* ptr) {
+  return (BYTE) ((size_t) ptr);
+}
+
 int WorldBoolFlag = 0;
 DWORD gdwCurrentMask = 0;
 // char world_4B3264 = 0;
@@ -158,7 +162,7 @@ void drawTopArchesUpperScreen(BYTE *pBuff)
 				} while (i);
 				break;
 			case 1: // upper (top transparent), with lighting
-				WorldBoolFlag = (BYTE)pBuff & 1;
+				WorldBoolFlag = byteptr(pBuff) & 1;
 				xx_32 = 32;
 				do {
 					yy_32 = 32;
@@ -175,7 +179,7 @@ void drawTopArchesUpperScreen(BYTE *pBuff)
 						}
 						if (dst < gpBufEnd)
 							return;
-						if (((BYTE)dst & 1) == WorldBoolFlag) {
+						if ((byteptr(dst) & 1) == WorldBoolFlag) {
 							asm_trans_light_cel_0_2(width, tbl, &dst, &src);
 						} else {
 							asm_trans_light_cel_1_3(width, tbl, &dst, &src);
@@ -232,7 +236,7 @@ void drawTopArchesUpperScreen(BYTE *pBuff)
 					} else {
 						asm_trans_light_cel_1_3(32 - xx_32, tbl, &dst, &src);
 					}
-					src += (BYTE)src & 2;
+					src += byteptr(src) & 2;
 					dst = &dst[xx_32 - (SCREEN_WIDTH + 160)];
 					xx_32 -= 2;
 					if (xx_32 < 0) {
@@ -246,7 +250,7 @@ void drawTopArchesUpperScreen(BYTE *pBuff)
 							} else {
 								asm_trans_light_cel_1_3(32 - yy_32, tbl, &dst, &src);
 							}
-							src += (BYTE)src & 2;
+							src += byteptr(src) & 2;
 							dst = &dst[yy_32 - (SCREEN_WIDTH + 160)];
 							yy_32 += 2;
 						} while (yy_32 != 32);
@@ -295,7 +299,7 @@ void drawTopArchesUpperScreen(BYTE *pBuff)
 					} else {
 						asm_trans_light_cel_1_3(32 - xx_32, tbl, &dst, &src);
 					}
-					src += (BYTE)src & 2;
+					src += byteptr(src) & 2;
 					dst = &dst[xx_32 - (SCREEN_WIDTH + 160)];
 					xx_32 -= 2;
 					if (xx_32 < 0) {
@@ -353,7 +357,7 @@ void drawTopArchesUpperScreen(BYTE *pBuff)
 			} while (i);
 			break;
 		case 9: // upper (top transparent), without lighting
-			WorldBoolFlag = (BYTE)pBuff & 1;
+			WorldBoolFlag = byteptr(pBuff) & 1;
 			yy_32 = 32;
 		LABEL_251:
 			xx_32 = 32;
@@ -377,7 +381,7 @@ void drawTopArchesUpperScreen(BYTE *pBuff)
 				xx_32 -= width;
 				if (dst < gpBufEnd)
 					return;
-				if (((BYTE)dst & 1) == WorldBoolFlag) {
+				if ((byteptr(dst) & 1) == WorldBoolFlag) {
 					chk_sh_and = width >> 1;
 					if (!(width & 1))
 						goto LABEL_258;
@@ -769,7 +773,7 @@ void drawTopArchesUpperScreen(BYTE *pBuff)
 		} while (i);
 		break;
 	case 1: // upper (top transparent), black
-		WorldBoolFlag = (BYTE)pBuff & 1;
+		WorldBoolFlag = byteptr(pBuff) & 1;
 		xx_32 = 32;
 		while (1) {
 			yy_32 = 32;
@@ -782,7 +786,7 @@ void drawTopArchesUpperScreen(BYTE *pBuff)
 					if (dst < gpBufEnd)
 						return;
 					src += width;
-					if (((BYTE)dst & 1) == WorldBoolFlag) {
+					if ((byteptr(dst) & 1) == WorldBoolFlag) {
 						chk_sh_and = width >> 1;
 						if (!(width & 1))
 							goto LABEL_378;
@@ -1378,7 +1382,7 @@ void drawBottomArchesUpperScreen(BYTE *pBuff, DWORD *pMask)
 							++dst;
 							--i;
 						} while (i);
-						src += (BYTE)src & 2;
+						src += byteptr(src) & 2;
 						dst -= (SCREEN_WIDTH + 160);
 						--gpDrawMask;
 						--yy_32;
@@ -1463,7 +1467,7 @@ void drawBottomArchesUpperScreen(BYTE *pBuff, DWORD *pMask)
 				xx_32 = 30;
 				while (dst >= gpBufEnd) {
 					asm_cel_light_edge(32 - xx_32, tbl, &dst, &src);
-					src += (BYTE)src & 2;
+					src += byteptr(src) & 2;
 					dst = &dst[xx_32 - (SCREEN_WIDTH + 160)];
 					xx_32 -= 2;
 					if (xx_32 < 0) {
@@ -1472,7 +1476,7 @@ void drawBottomArchesUpperScreen(BYTE *pBuff, DWORD *pMask)
 							if (dst < gpBufEnd)
 								break;
 							asm_cel_light_edge(32 - yy_32, tbl, &dst, &src);
-							src += (BYTE)src & 2;
+							src += byteptr(src) & 2;
 							dst = &dst[yy_32 - (SCREEN_WIDTH + 160)];
 							yy_32 += 2;
 						} while (yy_32 != 32);
@@ -1494,7 +1498,7 @@ void drawBottomArchesUpperScreen(BYTE *pBuff, DWORD *pMask)
 						do {
 							if (dst < gpBufEnd)
 								break;
-							src += (BYTE)src & 2;
+							src += byteptr(src) & 2;
 							asm_trans_light_mask(32, tbl, &dst, &src, *gpDrawMask);
 							dst -= (SCREEN_WIDTH + 160);
 							--gpDrawMask;
@@ -1508,7 +1512,7 @@ void drawBottomArchesUpperScreen(BYTE *pBuff, DWORD *pMask)
 				xx_32 = 30;
 				while (dst >= gpBufEnd) {
 					asm_cel_light_edge(32 - xx_32, tbl, &dst, &src);
-					src += (BYTE)src & 2;
+					src += byteptr(src) & 2;
 					dst = &dst[xx_32 - (SCREEN_WIDTH + 160)];
 					xx_32 -= 2;
 					if (xx_32 < 0) {
@@ -1518,7 +1522,7 @@ void drawBottomArchesUpperScreen(BYTE *pBuff, DWORD *pMask)
 							if (dst < gpBufEnd)
 								break;
 							asm_trans_light_mask(32, tbl, &dst, &src, *gpDrawMask);
-							src += (BYTE)src & 2;
+							src += byteptr(src) & 2;
 							dst -= (SCREEN_WIDTH + 160);
 							--gpDrawMask;
 							--yy_32;
@@ -2096,7 +2100,7 @@ void drawUpperScreen(BYTE *pBuff)
 				xx_32 = 30;
 				while (dst >= gpBufEnd) {
 					asm_cel_light_edge(32 - xx_32, tbl, &dst, &src);
-					src += (BYTE)src & 2;
+					src += byteptr(src) & 2;
 					dst = &dst[xx_32 - (SCREEN_WIDTH + 160)];
 					xx_32 -= 2;
 					if (xx_32 < 0) {
@@ -2105,7 +2109,7 @@ void drawUpperScreen(BYTE *pBuff)
 							if (dst < gpBufEnd)
 								break;
 							asm_cel_light_edge(32 - yy_32, tbl, &dst, &src);
-							src += (BYTE)src & 2;
+							src += byteptr(src) & 2;
 							dst = &dst[yy_32 - (SCREEN_WIDTH + 160)];
 							yy_32 += 2;
 						} while (yy_32 != 32);
@@ -2138,7 +2142,7 @@ void drawUpperScreen(BYTE *pBuff)
 				xx_32 = 30;
 				while (dst >= gpBufEnd) {
 					asm_cel_light_edge(32 - xx_32, tbl, &dst, &src);
-					src += (BYTE)src & 2;
+					src += byteptr(src) & 2;
 					dst = &dst[xx_32 - (SCREEN_WIDTH + 160)];
 					xx_32 -= 2;
 					if (xx_32 < 0) {
@@ -2451,7 +2455,7 @@ void drawTopArchesLowerScreen(BYTE *pBuff)
 			} while (i);
 			break;
 		case 1: // lower (top transparent), black
-			WorldBoolFlag = (BYTE)pBuff & 1;
+			WorldBoolFlag = byteptr(pBuff) & 1;
 			xx_32 = 32;
 		LABEL_412:
 			yy_32 = 32;
@@ -2475,7 +2479,7 @@ void drawTopArchesLowerScreen(BYTE *pBuff)
 				yy_32 -= width;
 				if (dst < gpBufEnd) {
 					src += width;
-					if (((BYTE)dst & 1) == WorldBoolFlag) {
+					if ((byteptr(dst) & 1) == WorldBoolFlag) {
 						chk_sh_and = width >> 1;
 						if (!(width & 1))
 							goto LABEL_420;
@@ -2881,7 +2885,7 @@ void drawTopArchesLowerScreen(BYTE *pBuff)
 			} while (i);
 			break;
 		case 1: // lower (top transparent), with lighting
-			WorldBoolFlag = (BYTE)pBuff & 1;
+			WorldBoolFlag = byteptr(pBuff) & 1;
 			xx_32 = 32;
 			do {
 				yy_32 = 32;
@@ -2898,7 +2902,7 @@ void drawTopArchesLowerScreen(BYTE *pBuff)
 					}
 					yy_32 -= width;
 					if (dst < gpBufEnd) {
-						if (((BYTE)dst & 1) == WorldBoolFlag) {
+						if ((byteptr(dst) & 1) == WorldBoolFlag) {
 							asm_trans_light_cel_0_2(width, tbl, &dst, &src);
 						} else {
 							asm_trans_light_cel_1_3(width, tbl, &dst, &src);
@@ -2997,7 +3001,7 @@ void drawTopArchesLowerScreen(BYTE *pBuff)
 						} else {
 							asm_trans_light_cel_1_3(32 - yy_32, tbl, &dst, &src);
 						}
-						src += (BYTE)src & 2;
+						src += byteptr(src) & 2;
 						dst = &dst[yy_32 - (SCREEN_WIDTH + 160)];
 						yy_32 += 2;
 					} while (yy_32 != 32);
@@ -3017,7 +3021,7 @@ void drawTopArchesLowerScreen(BYTE *pBuff)
 				} else {
 					asm_trans_light_cel_1_3(32 - xx_32, tbl, &dst, &src);
 				}
-				src += (BYTE)src & 2;
+				src += byteptr(src) & 2;
 				dst = &dst[xx_32 - (SCREEN_WIDTH + 160)];
 				xx_32 -= 2;
 			} while (xx_32 >= 0);
@@ -3114,7 +3118,7 @@ void drawTopArchesLowerScreen(BYTE *pBuff)
 				} else {
 					asm_trans_light_cel_1_3(32 - xx_32, tbl, &dst, &src);
 				}
-				src += (BYTE)src & 2;
+				src += byteptr(src) & 2;
 				dst = &dst[xx_32 - (SCREEN_WIDTH + 160)];
 				xx_32 -= 2;
 			} while (xx_32 >= 0);
@@ -3161,7 +3165,7 @@ LABEL_11:
 		} while (i);
 		break;
 	case 9: // lower (top transparent), without lighting
-		WorldBoolFlag = (BYTE)pBuff & 1;
+		WorldBoolFlag = byteptr(pBuff) & 1;
 		xx_32 = 32;
 		while (1) {
 			yy_32 = 32;
@@ -3172,7 +3176,7 @@ LABEL_11:
 						break;
 					yy_32 -= width;
 					if (dst < gpBufEnd) {
-						if (((BYTE)dst & 1) == WorldBoolFlag) {
+						if ((byteptr(dst) & 1) == WorldBoolFlag) {
 							chk_sh_and = width >> 1;
 							if (!(width & 1))
 								goto LABEL_280;
@@ -4013,7 +4017,7 @@ void drawBottomArchesLowerScreen(BYTE *pBuff, DWORD *pMask)
 						do {
 							asm_cel_light_edge(32 - yy_32, tbl, &dst, &src);
 							/// BUGFIX: uncomment this line
-							// src += (BYTE)src & 2;
+							 src += byteptr(src) & 2;
 							dst = &dst[yy_32 - (SCREEN_WIDTH + 160)];
 							yy_32 += 2;
 						} while (yy_32 != 32);
@@ -4026,7 +4030,7 @@ void drawBottomArchesLowerScreen(BYTE *pBuff, DWORD *pMask)
 				}
 				do {
 					asm_cel_light_edge(32 - xx_32, tbl, &dst, &src);
-					src += (BYTE)src & 2;
+					src += byteptr(src) & 2;
 					dst = &dst[xx_32 - (SCREEN_WIDTH + 160)];
 					xx_32 -= 2;
 				} while (xx_32 >= 0);
@@ -4080,7 +4084,7 @@ void drawBottomArchesLowerScreen(BYTE *pBuff, DWORD *pMask)
 						do {
 							if (dst < gpBufEnd) {
 								asm_trans_light_mask(32, tbl, &dst, &src, *gpDrawMask);
-								src += (BYTE)src & 2;
+								src += byteptr(src) & 2;
 							} else {
 								src += 32;
 								dst += 32;
@@ -4098,7 +4102,7 @@ void drawBottomArchesLowerScreen(BYTE *pBuff, DWORD *pMask)
 				}
 				do {
 					asm_cel_light_edge(32 - xx_32, tbl, &dst, &src);
-					src += (BYTE)src & 2;
+					src += byteptr(src) & 2;
 					dst = &dst[xx_32 - (SCREEN_WIDTH + 160)];
 					xx_32 -= 2;
 				} while (xx_32 >= 0);
@@ -4380,7 +4384,7 @@ void drawBottomArchesLowerScreen(BYTE *pBuff, DWORD *pMask)
 							++dst;
 							--i;
 						} while (i);
-						src += (BYTE)src & 2;
+						src += byteptr(src) & 2;
 					} else {
 						src += 32;
 						dst += 32;
@@ -4802,7 +4806,7 @@ void drawLowerScreen(BYTE *pBuff)
 						}
 						do {
 							asm_cel_light_edge(32 - yy_32, tbl, &dst, &src);
-							src += (BYTE)src & 2;
+							src += byteptr(src) & 2;
 							dst = &dst[yy_32 - (SCREEN_WIDTH + 160)];
 							yy_32 += 2;
 						} while (yy_32 != 32);
@@ -4815,7 +4819,7 @@ void drawLowerScreen(BYTE *pBuff)
 				}
 				do {
 					asm_cel_light_edge(32 - xx_32, tbl, &dst, &src);
-					src += (BYTE)src & 2;
+					src += byteptr(src) & 2;
 					dst = &dst[xx_32 - (SCREEN_WIDTH + 160)];
 					xx_32 -= 2;
 				} while (xx_32 >= 0);
@@ -4882,7 +4886,7 @@ void drawLowerScreen(BYTE *pBuff)
 				}
 				do {
 					asm_cel_light_edge(32 - xx_32, tbl, &dst, &src);
-					src += (BYTE)src & 2;
+					src += byteptr(src) & 2;
 					dst = &dst[xx_32 - (SCREEN_WIDTH + 160)];
 					xx_32 -= 2;
 				} while (xx_32 >= 0);

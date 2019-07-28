@@ -33,7 +33,7 @@ BYTE ItemCAnimTbl[169] = {
 	14, 17, 17, 17, 0, 34, 1, 0, 3, 17,
 	8, 8, 6, 1, 3, 3, 11, 3, 4
 };
-char *ItemDropStrs[35] = {
+const char *ItemDropStrs[35] = {
 	"Armor2",
 	"Axe",
 	"FBttle",
@@ -308,7 +308,7 @@ void CalcPlrItemVals(int p, BOOL Loadgfx)
 	int dadd = 0; // added dexterity
 	int vadd = 0; // added vitality
 
-	unsigned __int64 spl = 0; // bitarray for all enabled/active spells
+  uint64_t spl = 0; // bitarray for all enabled/active spells
 
 	int fr = 0; // fire resistance
 	int lr = 0; // lightning resistance
@@ -339,7 +339,7 @@ void CalcPlrItemVals(int p, BOOL Loadgfx)
 			maxd += itm->_iMaxDam;
 
 			if (itm->_iSpell != SPL_NULL) {
-				spl |= (unsigned __int64)1 << (itm->_iSpell - 1);
+				spl |= 1ULL << (itm->_iSpell - 1);
 			}
 
 			if (itm->_iMagical == ITEM_QUALITY_NORMAL || itm->_iIdentified) {
@@ -447,7 +447,7 @@ void CalcPlrItemVals(int p, BOOL Loadgfx)
 
 	// check if the current RSplType is a valid/allowed spell
 	if (plr[p]._pRSplType == RSPLTYPE_CHARGES
-	    && !(spl & ((unsigned __int64)1 << (plr[p]._pRSpell - 1)))) {
+	    && !(spl & (1ULL << (plr[p]._pRSpell - 1)))) {
 		plr[p]._pRSpell = SPL_INVALID;
 		plr[p]._pRSplType = RSPLTYPE_INVALID;
 		drawpanflag = 255;
@@ -608,14 +608,14 @@ void CalcPlrScrolls(int p)
 	for (i = 0; i < plr[p]._pNumInv; i++) {
 		if (plr[p].InvList[i]._itype != ITYPE_NONE && (plr[p].InvList[i]._iMiscId == IMISC_SCROLL || plr[p].InvList[i]._iMiscId == IMISC_SCROLLT)) {
 			if (plr[p].InvList[i]._iStatFlag)
-				plr[p]._pScrlSpells |= (__int64)1 << (plr[p].InvList[i]._iSpell - 1);
+				plr[p]._pScrlSpells |= 1LL << (plr[p].InvList[i]._iSpell - 1);
 		}
 	}
 
 	for (j = 0; j < MAXBELTITEMS; j++) {
 		if (plr[p].SpdList[j]._itype != ITYPE_NONE && (plr[p].SpdList[j]._iMiscId == IMISC_SCROLL || plr[p].SpdList[j]._iMiscId == IMISC_SCROLLT)) {
 			if (plr[p].SpdList[j]._iStatFlag)
-				plr[p]._pScrlSpells |= (__int64)1 << (plr[p].SpdList[j]._iSpell - 1);
+				plr[p]._pScrlSpells |= 1LL << (plr[p].SpdList[j]._iSpell - 1);
 		}
 	}
 	if (plr[p]._pRSplType == RSPLTYPE_SCROLL) {
@@ -633,7 +633,7 @@ void CalcPlrStaff(int p)
 	if (plr[p].InvBody[INVLOC_HAND_LEFT]._itype != ITYPE_NONE
 	    && plr[p].InvBody[INVLOC_HAND_LEFT]._iStatFlag
 	    && plr[p].InvBody[INVLOC_HAND_LEFT]._iCharges > 0) {
-		plr[p]._pISpells |= (__int64)1 << (plr[p].InvBody[INVLOC_HAND_LEFT]._iSpell - 1);
+		plr[p]._pISpells |= 1LL << (plr[p].InvBody[INVLOC_HAND_LEFT]._iSpell - 1);
 	}
 }
 
@@ -1697,7 +1697,7 @@ void GetItemPower(int i, int minlvl, int maxlvl, int flgs, BOOL onlygood)
 		for (j = 0; PL_Suffix[j].PLPower != -1; j++) {
 			if (PL_Suffix[j].PLIType & flgs
 			    && PL_Suffix[j].PLMinLvl >= minlvl && PL_Suffix[j].PLMinLvl <= maxlvl
-			    && (goe | LOBYTE(PL_Suffix[j].PLGOE)) != 17
+			    && (goe | (PL_Suffix[j].PLGOE & 0xFF)) != 17
 			    && (!onlygood || PL_Suffix[j].PLOk)) {
 				l[nl] = j;
 				nl++;
@@ -2893,7 +2893,7 @@ void DrawUTextBack()
 #include "asm_trans_rect.inc"
 }
 
-void PrintUString(int x, int y, BOOL cjustflag, char *str, int col)
+void PrintUString(int x, int y, BOOL cjustflag, const char *str, int col)
 {
 	int len, width, off, i, k;
 	BYTE c;
@@ -3252,7 +3252,7 @@ void UseItem(int p, int Mid, int spl)
 		}
 		break;
 	case IMISC_BOOK:
-		plr[p]._pMemSpells |= (__int64)1 << (spl - 1);
+		plr[p]._pMemSpells |= 1LL << (spl - 1);
 		if (plr[p]._pSplLvl[spl] < 15)
 			plr[p]._pSplLvl[spl]++;
 		plr[p]._pMana += spelldata[spl].sManaCost << 6;
@@ -3999,7 +3999,7 @@ BOOL GetItemRecord(int nSeed, WORD wCI, int nIndex)
 	int i;
 	DWORD dwTicks;
 
-	dwTicks = GetTickCount();
+	dwTicks = _GetTickCount();
 
 	for (i = 0; i < gnNumGetRecords; i++) {
 		if (dwTicks - itemrecord[i].dwTimestamp > 6000) {
@@ -4031,7 +4031,7 @@ void SetItemRecord(int nSeed, WORD wCI, int nIndex)
 {
 	DWORD dwTicks;
 
-	dwTicks = GetTickCount();
+	dwTicks = _GetTickCount();
 
 	if (gnNumGetRecords == MAXITEMS) {
 		return;
@@ -4049,7 +4049,7 @@ void PutItemRecord(int nSeed, WORD wCI, int nIndex)
 	int i;
 	DWORD dwTicks;
 
-	dwTicks = GetTickCount();
+	dwTicks = _GetTickCount();
 
 	for (i = 0; i < gnNumGetRecords; i++) {
 		if (dwTicks - itemrecord[i].dwTimestamp > 6000) {

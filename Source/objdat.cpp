@@ -222,7 +222,7 @@ ObjDataStruct AllObjects[99] = {
 };
 
 // might be const
-char *ObjMasterLoadList[56] = {
+const char *ObjMasterLoadList[56] = {
 	"L1Braz",
 	"L1Doors",
 	"Lever",

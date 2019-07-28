@@ -14,7 +14,7 @@ int numobjfiles;
 
 int bxadd[8] = { -1, 0, 1, -1, 1, -1, 0, 1 };
 int byadd[8] = { -1, -1, -1, 0, 0, 1, 1, 1 };
-char *shrinestrs[NUM_SHRINETYPE] = {
+const char *shrinestrs[NUM_SHRINETYPE] = {
 	"Mysterious",
 	"Hidden",
 	"Gloomy",
@@ -58,7 +58,7 @@ BYTE shrineavail[NUM_SHRINETYPE] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 2, 0,
 	0, 0, 0, 0, 0, 2
 };
-char *StoryBookName[9] = {
+const char *StoryBookName[9] = {
 	"The Great Conflict",
 	"The Wages of Sin are War",
 	"The Tale of the Horadrim",
@@ -594,6 +594,7 @@ void LoadMapObjs(BYTE *pMap, int startx, int starty)
 	InitObjFlag = FALSE;
 }
 
+#ifndef SPAWN
 void AddDiabObjs()
 {
 	BYTE *lpSetPiece;
@@ -608,6 +609,7 @@ void AddDiabObjs()
 	LoadMapObjects(lpSetPiece, 2 * diabquad3x, 2 * diabquad3y, diabquad4x, diabquad4y, 9, 9, 3);
 	mem_free_dbg(lpSetPiece);
 }
+#endif
 
 void AddStoryBooks()
 {
@@ -742,7 +744,9 @@ void InitObjects()
 
 	ClrAllObjects();
 	if (currlevel == 16) {
-		AddDiabObjs();
+#ifndef SPAWN
+    AddDiabObjs();
+#endif
 	} else {
 		InitObjFlag = TRUE;
 		GetRndSeed();
@@ -1530,7 +1534,7 @@ void Obj_Circle(int i)
 			AddMissile(plr[myplr].WorldX, plr[myplr].WorldY, 35, 46, plr[myplr]._pdir, MIS_RNDTELEPORT, 0, myplr, 0, 0);
 			track_repeat_walk(0);
 			sgbMouseDown = 0;
-			ReleaseCapture();
+			//_ReleaseCapture();
 			ClrPlrPath(myplr);
 			StartStand(myplr, 0);
 		}
@@ -2466,7 +2470,7 @@ void OperateBook(int pnum, int i)
 		return;
 
 	if (setlvlnum == SL_BONECHAMB) {
-		plr[myplr]._pMemSpells |= ((__int64)1 << (SPL_GUARDIAN - 1));
+		plr[myplr]._pMemSpells |= (1LL << (SPL_GUARDIAN - 1));
 		if (plr[pnum]._pSplLvl[SPL_GUARDIAN] < 15)
 			plr[myplr]._pSplLvl[SPL_GUARDIAN]++;
 		quests[QTYPE_BONE]._qactive = 3;
@@ -2850,7 +2854,7 @@ void OperateShrine(int pnum, int i, int sType)
 	DWORD lv, t;
 	int xx, yy;
 	int v1, v2, v3, v4;
-	unsigned __int64 spell, spells;
+  uint64_t spell, spells;
 
 	if (dropGoldFlag) {
 		dropGoldFlag = FALSE;
@@ -3096,7 +3100,7 @@ void OperateShrine(int pnum, int i, int sType)
 			}
 			do {
 				r = random(0, 37);
-			} while (!(plr[pnum]._pMemSpells & ((__int64)1 << r)));
+			} while (!(plr[pnum]._pMemSpells & (1LL << r)));
 			if (plr[pnum]._pSplLvl[r] >= 2)
 				plr[pnum]._pSplLvl[r] -= 2;
 			else
@@ -3127,7 +3131,7 @@ void OperateShrine(int pnum, int i, int sType)
 			return;
 		if (pnum != myplr)
 			return;
-		plr[pnum]._pMemSpells |= (__int64)1 << (SPL_FIREBOLT - 1);
+		plr[pnum]._pMemSpells |= 1LL << (SPL_FIREBOLT - 1);
 		if (plr[pnum]._pSplLvl[SPL_FIREBOLT] < 15)
 			plr[pnum]._pSplLvl[SPL_FIREBOLT]++;
 		if (plr[pnum]._pSplLvl[SPL_FIREBOLT] < 15)
@@ -3260,7 +3264,7 @@ void OperateShrine(int pnum, int i, int sType)
 	case SHRINE_SACRED:
 		if (deltaload || pnum != myplr)
 			return;
-		plr[pnum]._pMemSpells |= (__int64)1 << (SPL_CBOLT - 1);
+		plr[pnum]._pMemSpells |= 1LL << (SPL_CBOLT - 1);
 		if (plr[pnum]._pSplLvl[SPL_CBOLT] < 15)
 			plr[pnum]._pSplLvl[SPL_CBOLT]++;
 		if (plr[pnum]._pSplLvl[SPL_CBOLT] < 15)
@@ -3363,7 +3367,7 @@ void OperateShrine(int pnum, int i, int sType)
 			return;
 		if (pnum != myplr)
 			return;
-		plr[pnum]._pMemSpells |= (__int64)1 << (SPL_HBOLT - 1);
+		plr[pnum]._pMemSpells |= 1LL << (SPL_HBOLT - 1);
 		if (plr[pnum]._pSplLvl[SPL_HBOLT] < 15)
 			plr[pnum]._pSplLvl[SPL_HBOLT]++;
 		if (plr[pnum]._pSplLvl[SPL_HBOLT] < 15)

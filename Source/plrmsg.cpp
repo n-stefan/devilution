@@ -12,11 +12,11 @@ void plrmsg_delay(BOOL delay)
 	static DWORD plrmsg_ticks;
 
 	if (delay) {
-		plrmsg_ticks = -GetTickCount();
+		plrmsg_ticks = -_GetTickCount();
 		return;
 	}
 
-	plrmsg_ticks += GetTickCount();
+	plrmsg_ticks += _GetTickCount();
 	pMsg = plr_msgs;
 	for (i = 0; i < PMSG_COUNT; i++, pMsg++)
 		pMsg->time += plrmsg_ticks;
@@ -28,7 +28,7 @@ char *ErrorPlrMsg(const char *pszMsg)
 	_plrmsg *pMsg = &plr_msgs[plr_msg_slot];
 	plr_msg_slot = (plr_msg_slot + 1) & (PMSG_COUNT - 1);
 	pMsg->player = MAX_PLRS;
-	pMsg->time = GetTickCount();
+	pMsg->time = _GetTickCount();
 	result = strncpy(pMsg->str, pszMsg, sizeof(pMsg->str));
 	pMsg->str[sizeof(pMsg->str) - 1] = '\0';
 	return result;
@@ -43,7 +43,7 @@ size_t __cdecl EventPlrMsg(const char *pszFmt, ...)
 	pMsg = &plr_msgs[plr_msg_slot];
 	plr_msg_slot = (plr_msg_slot + 1) & (PMSG_COUNT - 1);
 	pMsg->player = MAX_PLRS;
-	pMsg->time = GetTickCount();
+	pMsg->time = _GetTickCount();
 	vsprintf(pMsg->str, pszFmt, va);
 	va_end(va);
 	return strlen(pMsg->str);
@@ -54,7 +54,7 @@ void SendPlrMsg(int pnum, const char *pszStr)
 	_plrmsg *pMsg = &plr_msgs[plr_msg_slot];
 	plr_msg_slot = (plr_msg_slot + 1) & (PMSG_COUNT - 1);
 	pMsg->player = pnum;
-	pMsg->time = GetTickCount();
+	pMsg->time = _GetTickCount();
 	strlen(plr[pnum]._pName); /* these are used in debug */
 	strlen(pszStr);
 	sprintf(pMsg->str, "%s (lvl %d): %s", plr[pnum]._pName, plr[pnum]._pLevel, pszStr);
@@ -64,7 +64,7 @@ void ClearPlrMsg()
 {
 	int i;
 	_plrmsg *pMsg = plr_msgs;
-	DWORD tick = GetTickCount();
+	DWORD tick = _GetTickCount();
 
 	for (i = 0; i < PMSG_COUNT; i++, pMsg++) {
 		if ((int)(tick - pMsg->time) > 10000)

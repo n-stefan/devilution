@@ -1,6 +1,7 @@
 #include <new>      // for placement new
 #include <stddef.h> // for offsetof
 #include <typeinfo> // for typeid
+#include "storm/storm.h"
 
 #include "diablo.h"
 #include "list.h"
@@ -31,7 +32,7 @@ void *EXTERNMESSAGE::Delete(DWORD flags)
 	// BUGFIX: this is already called by m_Link's destructor
 	m_Link.Unlink();
 	this->~EXTERNMESSAGE();
-	if ((flags & 0x1) && this) {
+	if ((flags & 0x1)) {
 		SMemFree(this, "delete", SLOG_FUNCTION, 0);
 	}
 	return this;
@@ -51,10 +52,10 @@ void msgcmd_send_chat()
 
 	if (msg) {
 		static DWORD sgdwMsgCmdTimer;
-		tick = GetTickCount();
+		tick = _GetTickCount();
 		if (tick - sgdwMsgCmdTimer >= 2000) {
 			sgdwMsgCmdTimer = tick;
-			SNetSendServerChatCommand(msg->command);
+			_SNetSendServerChatCommand(msg->command);
 			sgChat_Cmd.Remove(msg);
 		}
 	}

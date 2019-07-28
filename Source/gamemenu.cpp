@@ -32,9 +32,9 @@ TMenuItem sgOptionMenu[6] = {
 	{ GMENU_ENABLED               , NULL,            NULL                    }
 	// clang-format on
 };
-char *music_toggle_names[] = { "Music", "Music Disabled" };
-char *sound_toggle_names[] = { "Sound", "Sound Disabled" };
-char *color_cycling_toggle_names[] = { "Color Cycling Off", "Color Cycling On" };
+const char *music_toggle_names[] = { "Music", "Music Disabled" };
+const char *sound_toggle_names[] = { "Sound", "Sound Disabled" };
+const char *color_cycling_toggle_names[] = { "Color Cycling Off", "Color Cycling On" };
 
 void gamemenu_previous()
 {
@@ -112,7 +112,7 @@ void gamemenu_quit_game(BOOL bActivate)
 
 void gamemenu_load_game(BOOL bActivate)
 {
-	WNDPROC saveProc = SetWindowProc(DisableInputWndProc);
+	//WNDPROC saveProc = SetWindowProc(DisableInputWndProc);
 	gamemenu_off();
 	SetCursor_(CURSOR_NONE);
 	InitDiabloMsg(EMSG_LOADING);
@@ -126,8 +126,8 @@ void gamemenu_load_game(BOOL bActivate)
 	DrawAndBlit();
 	PaletteFadeIn(8);
 	SetCursor_(CURSOR_HAND);
-	interface_msg_pump();
-	SetWindowProc(saveProc);
+  drawpanflag = 255;
+	//SetWindowProc(saveProc);
 }
 
 void gamemenu_save_game(BOOL bActivate)
@@ -141,7 +141,6 @@ void gamemenu_save_game(BOOL bActivate)
 		return;
 	}
 
-	WNDPROC saveProc = SetWindowProc(DisableInputWndProc);
 	SetCursor_(CURSOR_NONE);
 	gamemenu_off();
 	InitDiabloMsg(EMSG_SAVING);
@@ -151,8 +150,6 @@ void gamemenu_save_game(BOOL bActivate)
 	ClrDiabloMsg();
 	drawpanflag = 255;
 	SetCursor_(CURSOR_HAND);
-	interface_msg_pump();
-	SetWindowProc(saveProc);
 }
 
 void gamemenu_restart_town(BOOL bActivate)
@@ -174,7 +171,7 @@ void gamemenu_get_music()
 	gamemenu_sound_music_toggle(music_toggle_names, sgOptionMenu, sound_get_or_set_music_volume(1));
 }
 
-void gamemenu_sound_music_toggle(char **names, TMenuItem *menu_item, int volume)
+void gamemenu_sound_music_toggle(const char **names, TMenuItem *menu_item, int volume)
 {
 	if (gbSndInited) {
 		menu_item->dwFlags |= GMENU_ENABLED | GMENU_SLIDER;

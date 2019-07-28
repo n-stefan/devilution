@@ -1,4 +1,5 @@
 #include "diablo.h"
+#include "ui/event.h"
 
 BYTE *optbar_cel;
 BOOLEAN mouseNavigation;
@@ -47,7 +48,7 @@ void gmenu_draw_pause()
 	}
 }
 
-void gmenu_print_text(int x, int y, char *pszStr)
+void gmenu_print_text(int x, int y, const char *pszStr)
 {
 	BYTE c;
 
@@ -161,7 +162,7 @@ void gmenu_draw()
 			}
 		}
 
-		ticks = GetTickCount();
+		ticks = _GetTickCount();
 		if ((int)(ticks - PentSpin_tick) > 25) {
 			PentSpin_frame++;
 			if (PentSpin_frame == 9)
@@ -208,7 +209,7 @@ void gmenu_clear_buffer(int x, int y, int width, int height)
 
 int gmenu_get_lfont(TMenuItem *pItem)
 {
-	char *text;
+	const char *text;
 	int i;
 	BYTE c;
 
@@ -228,28 +229,28 @@ BOOL gmenu_presskeys(int vkey)
 	if (!sgpCurrentMenu)
 		return 0;
 	switch (vkey) {
-	case VK_RETURN:
+	case KeyCode::RETURN:
 		if ((sgpCurrItem->dwFlags & GMENU_ENABLED) != 0) {
 			PlaySFX(IS_TITLEMOV);
 			sgpCurrItem->fnMenu(TRUE);
 		}
 		break;
-	case VK_ESCAPE:
+	case KeyCode::ESCAPE:
 		PlaySFX(IS_TITLEMOV);
 		gmenu_call_proc(0, 0);
 		break;
-	case VK_SPACE:
+	case KeyCode::SPACE:
 		return FALSE;
-	case VK_LEFT:
+	case KeyCode::LEFT:
 		gmenu_left_right(FALSE);
 		break;
-	case VK_RIGHT:
+	case KeyCode::RIGHT:
 		gmenu_left_right(TRUE);
 		break;
-	case VK_UP:
+	case KeyCode::UP:
 		gmenu_up_down(FALSE);
 		break;
-	case VK_DOWN:
+	case KeyCode::DOWN:
 		gmenu_up_down(TRUE);
 		break;
 	}

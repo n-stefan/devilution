@@ -80,7 +80,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>.\Source/WinRel\Diablo.exe</OutputFile>
-      <AdditionalDependencies>3rdParty/Storm/Source/WinRel/Storm.lib;3rdParty/PKWare/WinRel/PKWare.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DataExecutionPrevention>false</DataExecutionPrevention>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -94,7 +94,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SPAWN;NO_SYSTEM;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Source/WinDebug\</AssemblerListingLocation>
       <ObjectFileName>.\Source/WinDebug\</ObjectFileName>
       <ProgramDataBaseFileName>.\Source/WinDebug\</ProgramDataBaseFileName>
@@ -120,15 +120,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OutputFile>.\Source/WinDebug\Diablo.exe</OutputFile>
-      <AdditionalDependencies>3rdParty/Storm/Source/WinDebug/Storm.lib;3rdParty/PKWare/WinDebug/PKWare.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DataExecutionPrevention>false</DataExecutionPrevention>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source\appfat.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="Source\appfat_glue.cpp" />
     <ClCompile Include="Source\automap.cpp" />
     <ClCompile Include="Source\capture.cpp" />
@@ -143,28 +140,31 @@
     <ClCompile Include="Source\drlg_l2.cpp" />
     <ClCompile Include="Source\drlg_l3.cpp" />
     <ClCompile Include="Source\drlg_l4.cpp" />
-    <ClCompile Include="Source\dthread.cpp" />
     <ClCompile Include="Source\dx.cpp" />
     <ClCompile Include="Source\effects.cpp" />
     <ClCompile Include="Source\encrypt.cpp" />
     <ClCompile Include="Source\engine.cpp" />
     <ClCompile Include="Source\error.cpp" />
-    <ClCompile Include="Source\fault.cpp" />
     <ClCompile Include="Source\gamemenu.cpp" />
     <ClCompile Include="Source\gendung.cpp" />
     <ClCompile Include="Source\gmenu.cpp" />
     <ClCompile Include="Source\help.cpp" />
-    <ClCompile Include="Source\init.cpp" />
+    <ClCompile Include="Source\init.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Source\init_glue.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Source\interfac.cpp" />
     <ClCompile Include="Source\inv.cpp" />
     <ClCompile Include="Source\itemdat.cpp" />
     <ClCompile Include="Source\items.cpp" />
+    <ClCompile Include="Source\jsfs.cpp" />
     <ClCompile Include="Source\libsmacker\smacker.c" />
     <ClCompile Include="Source\libsmacker\smk_bitstream.c" />
     <ClCompile Include="Source\libsmacker\smk_hufftree.c" />
     <ClCompile Include="Source\lighting.cpp" />
     <ClCompile Include="Source\loadsave.cpp" />
-    <ClCompile Include="Source\logging.cpp" />
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\mainmenu.cpp" />
     <ClCompile Include="Source\minitext.cpp" />
@@ -177,7 +177,6 @@
     <ClCompile Include="Source\msg.cpp" />
     <ClCompile Include="Source\msgcmd.cpp" />
     <ClCompile Include="Source\multi.cpp" />
-    <ClCompile Include="Source\nthread.cpp" />
     <ClCompile Include="Source\objdat.cpp" />
     <ClCompile Include="Source\objects.cpp" />
     <ClCompile Include="Source\pack.cpp" />
@@ -188,20 +187,41 @@
     <ClCompile Include="Source\plrmsg.cpp" />
     <ClCompile Include="Source\portal.cpp" />
     <ClCompile Include="Source\quests.cpp" />
-    <ClCompile Include="Source\restrict.cpp" />
+    <ClCompile Include="Source\rmpq\adpcm\adpcm.cpp" />
+    <ClCompile Include="Source\rmpq\archive.cpp" />
+    <ClCompile Include="Source\rmpq\arccommon.cpp" />
+    <ClCompile Include="Source\rmpq\checksum.cpp" />
+    <ClCompile Include="Source\rmpq\compress.cpp" />
+    <ClCompile Include="Source\rmpq\file.cpp" />
+    <ClCompile Include="Source\rmpq\huffman\huff.cpp" />
+    <ClCompile Include="Source\rmpq\locale.cpp" />
+    <ClCompile Include="Source\rmpq\pklib\crc32.c" />
+    <ClCompile Include="Source\rmpq\pklib\explode.c" />
+    <ClCompile Include="Source\rmpq\pklib\implode.c" />
     <ClCompile Include="Source\scrollrt.cpp" />
     <ClCompile Include="Source\setmaps.cpp" />
     <ClCompile Include="Source\sha.cpp" />
-    <ClCompile Include="Source\sound.cpp" />
+    <ClCompile Include="Source\sound.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Source\sound_common.cpp" />
+    <ClCompile Include="Source\sound_glue.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Source\spelldat.cpp" />
     <ClCompile Include="Source\spells.cpp" />
     <ClCompile Include="Source\stores.cpp" />
+    <ClCompile Include="Source\storm\sbmp.cpp" />
+    <ClCompile Include="Source\storm\smpq.cpp" />
+    <ClCompile Include="Source\storm\sreg.cpp" />
+    <ClCompile Include="Source\storm\storm.cpp" />
     <ClCompile Include="Source\sync.cpp" />
     <ClCompile Include="Source\textdat.cpp" />
     <ClCompile Include="Source\themes.cpp" />
     <ClCompile Include="Source\tmsg.cpp" />
     <ClCompile Include="Source\town.cpp" />
     <ClCompile Include="Source\towners.cpp" />
+    <ClCompile Include="Source\trace.cpp" />
     <ClCompile Include="Source\track.cpp" />
     <ClCompile Include="Source\trigs.cpp" />
     <ClCompile Include="Source\ui\common.cpp" />
@@ -209,7 +229,9 @@
     <ClCompile Include="Source\ui\diabloui.cpp" />
     <ClCompile Include="Source\ui\dialog.cpp" />
     <ClCompile Include="Source\ui\main_menu.cpp" />
-    <ClCompile Include="Source\ui\selyesno.cpp" />
+    <ClCompile Include="Source\ui\play.cpp" />
+    <ClCompile Include="Source\ui\selhero.cpp" />
+    <ClCompile Include="Source\ui\yesno.cpp" />
     <ClCompile Include="Source\ui\titlescreen.cpp" />
     <ClCompile Include="Source\ui\video.cpp" />
     <ClCompile Include="Source\wave.cpp" />
@@ -261,7 +283,6 @@
     <ClInclude Include="Source\libsmacker\smk_malloc.h" />
     <ClInclude Include="Source\lighting.h" />
     <ClInclude Include="Source\loadsave.h" />
-    <ClInclude Include="Source\logging.h" />
     <ClInclude Include="Source\mainmenu.h" />
     <ClInclude Include="Source\minitext.h" />
     <ClInclude Include="Source\misdat.h" />
@@ -284,7 +305,14 @@
     <ClInclude Include="Source\plrmsg.h" />
     <ClInclude Include="Source\portal.h" />
     <ClInclude Include="Source\quests.h" />
-    <ClInclude Include="Source\restrict.h" />
+    <ClInclude Include="Source\rmpq\adpcm\adpcm.h" />
+    <ClInclude Include="Source\rmpq\archive.h" />
+    <ClInclude Include="Source\rmpq\checksum.h" />
+    <ClInclude Include="Source\rmpq\common.h" />
+    <ClInclude Include="Source\rmpq\file.h" />
+    <ClInclude Include="Source\rmpq\huffman\huff.h" />
+    <ClInclude Include="Source\rmpq\locale.h" />
+    <ClInclude Include="Source\rmpq\pklib\pklib.h" />
     <ClInclude Include="Source\scrollrt.h" />
     <ClInclude Include="Source\setmaps.h" />
     <ClInclude Include="Source\sha.h" />
@@ -292,12 +320,14 @@
     <ClInclude Include="Source\spelldat.h" />
     <ClInclude Include="Source\spells.h" />
     <ClInclude Include="Source\stores.h" />
+    <ClInclude Include="Source\storm\storm.h" />
     <ClInclude Include="Source\sync.h" />
     <ClInclude Include="Source\textdat.h" />
     <ClInclude Include="Source\themes.h" />
     <ClInclude Include="Source\tmsg.h" />
     <ClInclude Include="Source\town.h" />
     <ClInclude Include="Source\towners.h" />
+    <ClInclude Include="Source\trace.h" />
     <ClInclude Include="Source\track.h" />
     <ClInclude Include="Source\trigs.h" />
     <ClInclude Include="Source\ui\common.h" />
@@ -308,12 +338,6 @@
     <ClInclude Include="Source\render.h" />
     <ClInclude Include="structs.h" />
     <ClInclude Include="types.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="3rdParty\Storm\Source\Storm.vcxproj">
-      <Project>{b28f69ce-15a1-424d-bbb5-2727258d675b}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

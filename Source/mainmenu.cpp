@@ -1,5 +1,5 @@
 #include "diablo.h"
-#include "../3rdParty/Storm/Source/storm.h"
+#include "storm/storm.h"
 
 #include "ui/common.h"
 #include "ui/diabloui.h"
@@ -8,25 +8,25 @@ char gszHero[16];
 
 /* data */
 
-int menu_music_track_id = 5;
+int menu_music_track_id = TMUSIC_INTRO;
 
 void mainmenu_refresh_music()
 {
 	music_start(menu_music_track_id);
 	do {
 		menu_music_track_id++;
-		if (menu_music_track_id == 6)
+		if (menu_music_track_id == NUM_MUSIC)
 			menu_music_track_id = 0;
 	} while (!menu_music_track_id || menu_music_track_id == 1);
 }
 
-void __stdcall mainmenu_change_name(int arg1, int arg2, int arg3, int arg4, char *name_1, char *name_2)
+void  mainmenu_change_name(int arg1, int arg2, int arg3, int arg4, char *name_1, char *name_2)
 {
 	if (UiValidPlayerName(name_2))
 		pfile_rename_hero(name_1, name_2);
 }
 
-int __stdcall mainmenu_select_hero_dialog(
+int  mainmenu_select_hero_dialog(
     const _SNETPROGRAMDATA *client_info,
     const _SNETPLAYERDATA *user_info,
     const _SNETUIDATA *ui_info,
@@ -80,79 +80,6 @@ int __stdcall mainmenu_select_hero_dialog(
 		SStrCopy(cname, gszHero, clen);
 
 	return 1;
-}
-
-void mainmenu_loop()
-{
-	BOOL done;
-	int menu;
-  MSG msg;
-
-	done = FALSE;
-	mainmenu_refresh_music();
-
-  GameState::activate(get_title_dialog());
-
-  while (GameState::current()) {
-    unsigned int time = GetTickCount();
-    if (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE)) {
-      SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
-      while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
-        if (msg.message == WM_QUIT) {
-          gbRunGameResult = FALSE;
-          gbRunGame = FALSE;
-          GameState::activate(nullptr);
-          break;
-        }
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-      }
-      bool bLoop = gbRunGame && nthread_has_500ms_passed(FALSE);
-      SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL);
-      if (!bLoop) {
-        continue;
-      }
-    } else if (!nthread_has_500ms_passed(FALSE)) {
-#ifdef SLEEPFIX
-      Sleep(1);
-#endif
-      continue;
-    }
-    GameState::render(time);
-  }
-
-  StartGame(TRUE, TRUE);
-  return;
-
-	do {
-		menu = 0;
-		if (!UiMainMenuDialog(gszProductName, &menu, effects_play_sound, 30))
-			app_fatal("Unable to display mainmenu");
-
-		switch (menu) {
-		case MAINMENU_SINGLE_PLAYER:
-			if (!mainmenu_single_player())
-				done = TRUE;
-			break;
-		case MAINMENU_MULTIPLAYER:
-			if (!mainmenu_multi_player())
-				done = TRUE;
-			break;
-		case MAINMENU_REPLAY_INTRO:
-		case MAINMENU_ATTRACT_MODE:
-			if (gbActive)
-				mainmenu_play_intro();
-			break;
-		case MAINMENU_SHOW_CREDITS:
-			UiCreditsDialog(16);
-			break;
-		case MAINMENU_EXIT_DIABLO:
-			done = TRUE;
-			break;
-		}
-	} while (done == FALSE);
-
-	music_stop();
 }
 
 BOOL mainmenu_single_player()

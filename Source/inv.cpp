@@ -97,10 +97,12 @@ void InitInv()
 {
 	if (plr[myplr]._pClass == PC_WARRIOR) {
 		pInvCels = LoadFileInMem("Data\\Inv\\Inv.CEL", NULL);
+#ifndef SPAWN
 	} else if (plr[myplr]._pClass == PC_ROGUE) {
 		pInvCels = LoadFileInMem("Data\\Inv\\Inv_rog.CEL", NULL);
 	} else if (plr[myplr]._pClass == PC_SORCERER) {
 		pInvCels = LoadFileInMem("Data\\Inv\\Inv_Sor.CEL", NULL);
+#endif
 	}
 
 	invflag = 0;
@@ -1076,7 +1078,7 @@ void CheckInvPaste(int pnum, int mx, int my)
 	CalcPlrInv(pnum, TRUE);
 	if (pnum == myplr) {
 		if (cn == 1)
-			SetCursorPos(MouseX + (cursW >> 1), MouseY + (cursH >> 1));
+			_SetCursorPos(MouseX + (cursW >> 1), MouseY + (cursH >> 1));
 		SetCursor_(cn);
 	}
 }
@@ -1258,7 +1260,7 @@ void CheckInvCut(int pnum, int mx, int my)
 		if (pnum == myplr) {
 			PlaySFX(IS_IGRAB);
 			SetCursor_(plr[pnum].HoldItem._iCurs + CURSOR_FIRSTITEM);
-			SetCursorPos(mx - (cursW >> 1), MouseY - (cursH >> 1));
+			_SetCursorPos(mx - (cursW >> 1), MouseY - (cursH >> 1));
 		}
 	}
 }
@@ -1312,7 +1314,7 @@ void RemoveInvItem(int pnum, int iv)
 			// this causes the last 4 skills to not reset correctly after use
 			if (!(
 			        plr[pnum]._pScrlSpells
-			        & (1 << (plr[pnum]._pRSpell - 1)))) {
+			        & (1LL << (plr[pnum]._pRSpell - 1)))) {
 				plr[pnum]._pRSpell = SPL_INVALID;
 			}
 
@@ -1333,7 +1335,7 @@ void RemoveSpdBarItem(int pnum, int iv)
 			// this causes the last 4 skills to not reset correctly after use
 			if (!(
 			        plr[pnum]._pScrlSpells
-			        & (1 << (plr[pnum]._pRSpell - 1)))) {
+			        & (1LL << (plr[pnum]._pRSpell - 1)))) {
 				plr[pnum]._pRSpell = SPL_INVALID;
 			}
 		}
@@ -1737,11 +1739,11 @@ BOOL TryInvPut()
 	return CanPut(plr[myplr].WorldX, plr[myplr].WorldY);
 }
 
-void DrawInvMsg(char *msg)
+void DrawInvMsg(const char *msg)
 {
 	DWORD dwTicks;
 
-	dwTicks = GetTickCount();
+	dwTicks = _GetTickCount();
 	if (dwTicks - sgdwLastTime >= 5000) {
 		sgdwLastTime = dwTicks;
 		ErrorPlrMsg(msg);

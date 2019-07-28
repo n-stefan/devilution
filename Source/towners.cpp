@@ -376,8 +376,10 @@ void InitTowners()
 	boyloadflag = FALSE;
 	InitSmith();
 	InitHealer();
+#ifndef SPAWN
 	if (quests[QTYPE_BUTCH]._qactive && quests[QTYPE_BUTCH]._qactive != 3)
 		InitTownDead();
+#endif
 	InitBarOwner();
 	InitTeller();
 	InitDrunk();

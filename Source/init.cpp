@@ -1,20 +1,22 @@
+#include <windows.h>
+#include <windowsx.h>
 #include "diablo.h"
-#include "../3rdParty/Storm/Source/storm.h"
+#include "storm/storm.h"
 #include "ui/diabloui.h"
 #include "ui/common.h"
-#include <windowsx.h>
 
 _SNETVERSIONDATA fileinfo;
 int gbActive;
 char diablo_exe_path[MAX_PATH];
 HANDLE unused_mpq;
 char patch_rt_mpq_path[MAX_PATH];
-WNDPROC CurrentProc;
 HANDLE diabdat_mpq;
 char diabdat_mpq_path[MAX_PATH];
 HANDLE patch_rt_mpq;
 BOOL killed_mom_parent;
 BOOLEAN screensaver_enabled_prev;
+
+LRESULT __stdcall MainWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
 /* data */
 
@@ -46,7 +48,6 @@ void init_cleanup(BOOL show_cursor)
 	NetClose();
 	dx_cleanup();
 	engine_debug_trap(show_cursor);
-	StormDestroy();
 
 	if (show_cursor)
 		ShowCursor(TRUE);
@@ -146,7 +147,7 @@ void init_create_window(int nCmdShow)
 	memset(&wcex, 0, sizeof(wcex));
 	wcex.cbSize = sizeof(wcex);
 	wcex.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-	wcex.lpfnWndProc = WindowProc;
+	wcex.lpfnWndProc = MainWndProc;
 	wcex.hInstance = ghInst;
 	wcex.hIcon = LoadIcon(ghInst, MAKEINTRESOURCE(IDI_ICON1));
 	wcex.hCursor = LoadCursor(0, IDC_ARROW);
@@ -233,7 +234,11 @@ void init_archives()
 #ifdef COPYPROT
 	while (1) {
 #endif
+#ifndef SPAWN
 		diabdat_mpq = init_test_access(diabdat_mpq_path, "\\diabdat.mpq", "DiabloCD", 1000, FS_CD);
+#else
+    diabdat_mpq = init_test_access(diabdat_mpq_path, "\\spawn.mpq", "DiabloCD", 1000, FS_CD);
+#endif
 #ifdef COPYPROT
 		if (diabdat_mpq)
 			break;
@@ -243,9 +248,17 @@ void init_archives()
 	}
 #endif
 	if (!WOpenFile("ui_art\\title.pcx", &fh, TRUE))
+#ifndef SPAWN
 		FileErrDlg("Main program archive: diabdat.mpq");
+#else
+    FileErrDlg("Main program archive: spawn.mpq");
+#endif
 	WCloseFile(fh);
+#ifndef SPAWN
 	patch_rt_mpq = init_test_access(patch_rt_mpq_path, "\\patch_rt.mpq", "DiabloInstall", 2000, FS_PC);
+#else
+  patch_rt_mpq = init_test_access(patch_rt_mpq_path, "\\patch_sh.mpq", "DiabloSpawn", 2000, FS_PC);
+#endif
 }
 
 HANDLE init_test_access(char *mpq_path, char *mpq_name, char *reg_loc, int flags, int fs)
@@ -454,13 +467,6 @@ LRESULT __stdcall MainWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
   case WM_ACTIVATEAPP:
 		init_activate_window(hWnd, wParam);
 		break;
-	case WM_QUERYNEWPALETTE:
-		SDrawRealizePalette();
-		return 1;
-	case WM_PALETTECHANGED:
-		if ((HWND)wParam != hWnd)
-			SDrawRealizePalette();
-		break;
 	}
 
 	return DefWindowProc(hWnd, Msg, wParam, lParam);
@@ -485,21 +491,4 @@ void init_activate_window(HWND hWnd, BOOL bActive)
 		drawpanflag = 255;
 		ResetPal();
 	}
-}
-
-LRESULT __stdcall WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
-{
-	if (CurrentProc)
-		return CurrentProc(hWnd, Msg, wParam, lParam);
-
-	return MainWndProc(hWnd, Msg, wParam, lParam);
-}
-
-WNDPROC SetWindowProc(WNDPROC NewProc)
-{
-	WNDPROC OldProc;
-
-	OldProc = CurrentProc;
-	CurrentProc = NewProc;
-	return OldProc;
 }

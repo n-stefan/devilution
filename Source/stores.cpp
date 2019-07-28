@@ -60,7 +60,7 @@ int SStringY[24] = {
 	264,
 	276
 };
-char *talkname[9] = {
+const char *talkname[9] = {
 	"Griswold",
 	"Pepin",
 	"",
@@ -98,7 +98,7 @@ void SetupTownStores()
 {
 	int i, l;
 
-	SetRndSeed(glSeedTbl[currlevel] * GetTickCount());
+	SetRndSeed(glSeedTbl[currlevel] * _GetTickCount());
 	if (gbMaxPlayers == 1) {
 		l = 0;
 		for (i = 0; i < NUMLEVELS; i++) {
@@ -139,7 +139,7 @@ void DrawSTextBack()
 #include "asm_trans_rect.inc"
 }
 
-void PrintSString(int x, int y, BOOL cjustflag, char *str, char col, int val)
+void PrintSString(int x, int y, BOOL cjustflag, const char *str, char col, int val)
 {
 	int xx, yy;
 	int len, width, off, i, k, s;
@@ -309,7 +309,7 @@ void OffsetSTextY(int y, int yo)
 	stext[y]._syoff = yo;
 }
 
-void AddSText(int x, int y, int j, char *str, char clr, int sel)
+void AddSText(int x, int y, int j, const char *str, char clr, int sel)
 {
 	stext[y]._sx = x;
 	stext[y]._syoff = 0;
@@ -1363,7 +1363,8 @@ void S_StartTalk()
 	sprintf(tempstr, "Talk to %s", talkname[talker]);
 	AddSText(0, 2, 1, tempstr, COL_GOLD, 0);
 	AddSLine(5);
-	sn = 0;
+#ifndef SPAWN
+  sn = 0;
 	for (i = 0; i < 16; i++) {
 		if (quests[i]._qlevel == 2 && ((DWORD *)&Qtalklist[talker])[i] != -1 && quests[i]._qlog)
 			sn++;
@@ -1386,7 +1387,14 @@ void S_StartTalk()
 		}
 	}
 	AddSText(0, sn2, 1, "Gossip", COL_BLUE, 1);
-	AddSText(0, 22, 1, "Back", COL_WHITE, 1);
+#else
+  sprintf(tempstr, "Talking to %s", talkname[talker]);
+  AddSText(0, 10, 1, tempstr, COL_WHITE, 0);
+  AddSText(0, 12, 1, "is not available", COL_WHITE, 0);
+  AddSText(0, 14, 1, "in the shareware", COL_WHITE, 0);
+  AddSText(0, 16, 1, "version", COL_WHITE, 0);
+#endif
+  AddSText(0, 22, 1, "Back", COL_WHITE, 1);
 }
 
 void S_StartTavern()

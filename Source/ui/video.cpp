@@ -2,7 +2,7 @@
 #include "dialog.h"
 #include <algorithm>
 
-#include "../../3rdParty/Storm/Source/storm.h"
+#include "../storm/storm.h"
 
 #include "../libsmacker/smacker.h"
 
@@ -50,6 +50,7 @@ public:
     }
 
     smk_first( video_ );
+    repaint_ = true;
 
     loaded_ = true;
   }
@@ -61,7 +62,7 @@ public:
   bool render(unsigned int time) {
     double dtime = (double)time * 1000.0;
     if (frameEnd_ < 0) {
-      frameEnd_ = dtime;
+      frameEnd_ = dtime + frameLength_;
     }
 
     if (smk_palette_updated(video_)) {
@@ -76,12 +77,12 @@ public:
       set_palette(pal);
     }
 
-    if ( sound_ && !snd_playing( sound_ ) )
-    {
+    if (sound_ && !snd_playing(sound_)) {
       snd_play_snd( sound_, 0, 0 );
     }
 
-    if (dtime >= frameEnd_) {
+    if (repaint_) {
+      repaint_ = false;
       auto frame = smk_get_video(video_);
       int uwidth = width_, uheight = height_, scale = 1;
       if (uwidth * 2 <= SCREEN_WIDTH && uheight * 2 <= SCREEN_HEIGHT) {
@@ -93,7 +94,7 @@ public:
       int screenX = (SCREEN_WIDTH - uwidth) / 2;
       lock_buf(1);
       for (int i = 0; i < SCREEN_HEIGHT; ++i) {
-        BYTE *dst = (BYTE *)gpBuffer + (SCREEN_Y + i) * BUFFER_WIDTH + SCREEN_X;
+        BYTE *dst = (BYTE *) gpBuffer + (SCREEN_Y + i) * BUFFER_WIDTH + SCREEN_X;
         if (i < screenY || i >= screenY + uheight) {
           memset(dst, 0, SCREEN_WIDTH);
         } else {
@@ -131,16 +132,20 @@ public:
         draw_unlock();
         draw_flush();
       }
+    }
 
-      while ( dtime >= frameEnd_ )
-      {
-        if ( !nextFrame_() )
-        {
-          return false;
-        }
+    while (dtime >= frameEnd_) {
+      if (!nextFrame_()) {
+        return false;
       }
     }
     return true;
+  }
+
+  void stop() {
+    if (sound_) {
+      snd_stop_snd(sound_);
+    }
   }
 
   ~SmkVideo() {
@@ -150,8 +155,7 @@ public:
     if (file_) {
       SFileCloseFile(file_);
     }
-    if (sound_)
-    {
+    if (sound_) {
       sound_file_cleanup( sound_ );
     }
   }
@@ -165,6 +169,7 @@ private:
   unsigned long width_, height_;
   std::vector<BYTE> buffer_;
   TSnd* sound_ = nullptr;
+  bool repaint_ = false;
 
   bool loaded_ = false;
 
@@ -176,34 +181,28 @@ private:
       }
       smk_first(video_);
     }
+    repaint_ = true;
     return true;
   }
 };
 
 class VideoState : public GameState {
 public:
-  VideoState(const char *path, bool canClose, bool loop, GameState *next)
-      : video_(path, loop)
+  VideoState(const char *path, bool canClose, bool loop, GameStatePtr next)
+    : video_(path, loop),
+    nextState_(next)
   {
-    nextState_ = next;
-    if (next) {
-      next->retain();
-    }
     canClose_ = canClose;
-  }
-  ~VideoState() {
-    if (nextState_) {
-      nextState_->release();
-    }
   }
 
   void onActivate() override {
     get_palette(prevPalette_);
     sound_disable_music(TRUE);
     sfx_stop();
-    effects_play_sound("Sfx\\Misc\\blank.wav");
+    //effects_play_sound("Sfx\\Misc\\blank.wav");
   }
   void onDeactivate() override {
+    video_.stop();
     sound_disable_music(FALSE);
     set_palette(prevPalette_);
   }
@@ -229,12 +228,12 @@ public:
 private:
   SmkVideo video_;
   bool canClose_;
-  GameState *nextState_;
+  GameStatePtr nextState_;
   unsigned int firstFrame_ = 0;
   PALETTEENTRY prevPalette_[256];
 };
 
-GameState *get_video_state(const char *path, bool allowSkip, bool loop,
-                           GameState *next) {
+GameStatePtr get_video_state(const char *path, bool allowSkip, bool loop,
+                             GameStatePtr next) {
   return new VideoState(path, allowSkip, loop, next);
 }

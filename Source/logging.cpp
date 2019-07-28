@@ -1,5 +1,5 @@
 #include "diablo.h"
-#include "../3rdParty/Storm/Source/storm.h"
+#include "storm/storm.h"
 
 #ifdef __cplusplus
 static CCritSect sgMemCrit;

@@ -5,7 +5,6 @@
 extern BYTE *gpBuffer;
 extern char gbBackBuf;
 extern char gbEmulate;
-extern HMODULE ghDiabMod;
 
 void dx_init(HWND hWnd);
 void lock_buf(BYTE idx);
@@ -17,7 +16,10 @@ void draw_unlock();
 void draw_flush();
 void draw_blit(DWORD dwX, DWORD dwY, DWORD dwWdt, DWORD dwHgt);
 
-void draw_text( int x, int y, const char* text, int color );
+void draw_clip_text(int x0, int y0, int x1, int y1);
+void draw_text(int x, int y, const char* text, int color);
+
+void _SetCursorPos(DWORD x, DWORD y);
 
 /* data */
 

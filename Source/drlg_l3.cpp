@@ -1,3 +1,4 @@
+#ifndef SPAWN
 #include "diablo.h"
 
 BOOLEAN lavapool;
@@ -1727,7 +1728,7 @@ void DRLG_L3Pass3()
 	}
 }
 
-void LoadL3Dungeon(char *sFileName, int vx, int vy)
+void LoadL3Dungeon(const char *sFileName, int vx, int vy)
 {
 	int i, j, rw, rh;
 	BYTE *pLevelMap, *lm;
@@ -1789,7 +1790,7 @@ void LoadL3Dungeon(char *sFileName, int vx, int vy)
 	mem_free_dbg(pLevelMap);
 }
 
-void LoadPreL3Dungeon(char *sFileName, int vx, int vy)
+void LoadPreL3Dungeon(const char *sFileName, int vx, int vy)
 {
 	int i, j, rw, rh;
 	BYTE *pLevelMap, *lm;
@@ -1825,3 +1826,4 @@ void LoadPreL3Dungeon(char *sFileName, int vx, int vy)
 	memcpy(pdungeon, dungeon, sizeof(pdungeon));
 	mem_free_dbg(pLevelMap);
 }
+#endif

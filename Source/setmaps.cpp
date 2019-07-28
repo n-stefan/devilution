@@ -54,7 +54,7 @@ BYTE SkelChamTrans3[36] = {
 	50, 43, 59, 51
 };
 
-char *quest_level_names[] = {
+const char *quest_level_names[] = {
 	"",
 	"Skeleton King's Lair",
 	"Bone Chamber",
@@ -77,6 +77,7 @@ int ObjIndex(int x, int y)
 	return -1;
 }
 
+#ifndef SPAWN
 void AddSKingObjs()
 {
 	SetObjMapRange(ObjIndex(64, 34), 20, 7, 23, 10, 1);
@@ -100,7 +101,7 @@ void AddVileObjs()
 	SetObjMapRange(ObjIndex(35, 36), 7, 11, 13, 18, 3);
 }
 
-void DRLG_SetMapTrans(char *sFileName)
+void DRLG_SetMapTrans(const char *sFileName)
 {
 	int x, y;
 	int i, j;
@@ -188,3 +189,4 @@ void LoadSetMap()
 		break;
 	}
 }
+#endif

@@ -5,7 +5,7 @@ void UiDestroy() {
 BOOL UiTitleDialog(int a1) {
   return TRUE;
 }
-void UiInitialize(void(__stdcall *fnSound)(char *file)) {
+void UiInitialize(void( *fnSound)(const char *file)) {
   gfnSoundFunction = fnSound;
 
   FontTables[AFT_SMALL] = LoadFileInMem("ui_art\\font16.bin", 0);
@@ -18,6 +18,7 @@ void UiInitialize(void(__stdcall *fnSound)(char *file)) {
   LoadArtFont("ui_art\\font24g.pcx", AFT_MED, AFC_GOLD);
   LoadArtFont("ui_art\\font30s.pcx", AFT_BIG, AFC_SILVER);
   LoadArtFont("ui_art\\font30g.pcx", AFT_BIG, AFC_GOLD);
+  LoadArtFont("ui_art\\font42y.pcx", AFT_HUGE, AFC_SILVER);
   LoadArtFont("ui_art\\font42g.pcx", AFT_HUGE, AFC_GOLD);
 
   LoadMaskedArtFont("ui_art\\logo.pcx", &ArtLogos[LOGO_BIG], 15);
@@ -33,22 +34,22 @@ BOOL UiCopyProtError(int *pdwResult) {
 }
 void UiAppActivate(BOOL bActive) {
 }
-BOOL __fastcall UiValidPlayerName(char *name) {
+BOOL UiValidPlayerName(char *name) {
   return TRUE;
 }
-BOOL UiSelHeroMultDialog(BOOL(__stdcall *fninfo)(BOOL(__stdcall *fninfofunc)(_uiheroinfo *)), BOOL(__stdcall *fncreate)(_uiheroinfo *), BOOL(__stdcall *fnremove)(_uiheroinfo *), BOOL(__stdcall *fnstats)(unsigned int, _uidefaultstats *), int *dlgresult, int *a6, char *name) {
+BOOL UiSelHeroMultDialog(BOOL( *fninfo)(BOOL( *fninfofunc)(_uiheroinfo *)), BOOL( *fncreate)(_uiheroinfo *), BOOL( *fnremove)(_uiheroinfo *), BOOL( *fnstats)(unsigned int, _uidefaultstats *), int *dlgresult, int *a6, char *name) {
   return TRUE;
 }
-BOOL UiSelHeroSingDialog(BOOL(__stdcall *fninfo)(BOOL(__stdcall *fninfofunc)(_uiheroinfo *)), BOOL(__stdcall *fncreate)(_uiheroinfo *), BOOL(__stdcall *fnremove)(_uiheroinfo *), BOOL(__stdcall *fnstats)(unsigned int, _uidefaultstats *), int *dlgresult, char *name, int *difficulty) {
+BOOL UiSelHeroSingDialog(BOOL( *fninfo)(BOOL( *fninfofunc)(_uiheroinfo *)), BOOL( *fncreate)(_uiheroinfo *), BOOL( *fnremove)(_uiheroinfo *), BOOL( *fnstats)(unsigned int, _uidefaultstats *), int *dlgresult, char *name, int *difficulty) {
   return TRUE;
 }
 BOOL UiCreditsDialog(int a1) {
   return TRUE;
 }
-BOOL UiMainMenuDialog(char *name, int *pdwResult, void(__stdcall *fnSound)(char *file), int a4) {
+BOOL UiMainMenuDialog(char *name, int *pdwResult, void( *fnSound)(char *file), int a4) {
   return TRUE;
 }
-BOOL UiProgressDialog(HWND window, char *msg, int enable, int(*fnfunc)(), int rate) {
+BOOL UiProgressDialog(HWND window, const char *msg, int enable, int(*fnfunc)(), int rate) {
   return TRUE;
 }
 int UiProfileGetString() {
@@ -64,15 +65,15 @@ BOOL UiCategoryCallback(int a1, int a2, int a3, int a4, int a5, DWORD *a6, DWORD
 BOOL UiGetDataCallback(int game_type, int data_code, void *a3, int a4, int a5) {
   return TRUE;
 }
-BOOL UiAuthCallback(int a1, char *a2, char *a3, char a4, char *a5, LPSTR lpBuffer, int cchBufferMax) {
+BOOL UiAuthCallback(int a1, char *a2, char *a3, char a4, char *a5, CHAR* lpBuffer, int cchBufferMax) {
   return TRUE;
 }
 BOOL UiSoundCallback(int a1, int type, int a3) {
   return TRUE;
 }
-void UiMessageBoxCallback(HWND hWnd, char *lpText, LPCSTR lpCaption, UINT uType) {
+void UiMessageBoxCallback(HWND hWnd, char *lpText, const CHAR* lpCaption, UINT uType) {
 }
-BOOL UiDrawDescCallback(int arg0, COLORREF color, LPCSTR lpString, char *a4, int a5, UINT align, time_t a7, HDC *a8) {
+BOOL UiDrawDescCallback(int arg0, DWORD color, const CHAR* lpString, char *a4, int a5, UINT align, time_t a7, HDC *a8) {
   return TRUE;
 }
 BOOL UiCreateGameCallback(int a1, int a2, int a3, int a4, int a5, int a6) {

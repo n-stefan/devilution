@@ -4,7 +4,6 @@
 
 extern int progress_id;
 
-void interface_msg_pump();
 BOOL IncProgress();
 void DrawCutscene();
 void DrawProgress(int screen_x, int screen_y, int progress_id);

@@ -15,6 +15,10 @@
 devilution-comparer
 comparer-config.toml
 
+*.wasm
+*.jscc
+*.bc
+
 # ELF object file.
 *.o
 

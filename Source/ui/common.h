@@ -3,6 +3,10 @@
 #include "../../types.h"
 #include "../diablo.h"
 #include "event.h"
+#include <functional>
+#include <string>
+
+std::string fmtstring(char const* fmt, ...);
 
 typedef enum _artFocus {
   FOCUS_SMALL,
@@ -45,12 +49,12 @@ extern Art ArtBackground;
 extern Art ArtCursor;
 extern Art ArtHero;
 
-void LoadArt(char *pszFile, Art *art, int frames,
+void LoadArt(const char *pszFile, Art *art, int frames,
              PALETTEENTRY *pPalette = nullptr);
 void DrawArt(int screenX, int screenY, Art *art, int nFrame = 0, int drawW = 0);
-void LoadBackgroundArt(char *pszFile);
-void LoadMaskedArtFont(char *pszFile, Art *art, int frames, int mask = 250);
-void LoadArtFont(char *pszFile, int size, int color);
+void LoadBackgroundArt(const char *pszFile);
+void LoadMaskedArtFont(const char *pszFile, Art *art, int frames, int mask = 250);
+void LoadArtFont(const char *pszFile, int size, int color);
 void UiFadeReset();
 void UiFadeIn(unsigned int time);
 
@@ -65,13 +69,16 @@ typedef enum TXT_JUST {
 
 template <class T, size_t N> constexpr size_t size(T (&)[N]) { return N; }
 
-extern void(__stdcall *gfnSoundFunction)(char *file);
+extern void( *gfnSoundFunction)(const char *file);
+
+class GameStatePtr;
 
 class GameState {
+  friend class GameStatePtr;
 public:
   virtual ~GameState(){};
 
-  static void activate(GameState* state);
+  static void activate(const GameStatePtr& state);
   static GameState *current();
 
   static void render(unsigned int time);
@@ -79,8 +86,8 @@ public:
   static void processKey(const KeyEvent &e);
   static void processChar(char chr);
 
-  void retain();
-  void release();
+  static int mouseX();
+  static int mouseY();
 
 protected:
   virtual void onActivate(){};
@@ -92,6 +99,9 @@ protected:
   virtual void onChar(char chr){};
 
 private:
+  friend class GameStatePtr;
+  void retain();
+  void release();
   int counter_ = 0;
 };
 
@@ -117,6 +127,13 @@ public:
     }
   }
 
+  bool operator==(const GameStatePtr& ptr) const {
+    return ptr_ == ptr.ptr_;
+  }
+  bool operator!=(const GameStatePtr& ptr) const {
+    return ptr_ != ptr.ptr_;
+  }
+
   GameStatePtr &operator=(const GameStatePtr &ptr) {
     if (ptr.ptr_) {
       ptr.ptr_->retain();
@@ -128,6 +145,9 @@ public:
     return *this;
   }
   GameStatePtr &operator=(GameStatePtr &&ptr) {
+    if (ptr_) {
+      ptr_->release();
+    }
     ptr_ = ptr.ptr_;
     ptr.ptr_ = nullptr;
     return *this;
@@ -157,3 +177,6 @@ GameStatePtr get_title_dialog();
 GameStatePtr get_main_menu_dialog();
 GameStatePtr get_credits_dialog();
 GameStatePtr get_video_state(const char *path, bool allowSkip, bool loop, GameStatePtr next);
+GameStatePtr get_yesno_dialog(const char* title, const char* text, std::function<void(bool)>&& select);
+GameStatePtr get_single_player_dialog();
+GameStatePtr get_play_state(const char* name, int mode);

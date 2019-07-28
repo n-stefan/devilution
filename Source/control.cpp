@@ -1,4 +1,6 @@
 #include "diablo.h"
+#include "ui/event.h"
+#include "trace.h"
 
 BYTE sgbNextTalkSave;
 BYTE sgbTalkSavePos;
@@ -141,8 +143,8 @@ int PanBtnPos[8][5] = {
 	{ 87, 443, 33, 32, 1 },
 	{ 527, 443, 33, 32, 1 }
 };
-char *PanBtnHotKey[8] = { "'c'", "'q'", "Tab", "Esc", "'i'", "'b'", "Enter", NULL };
-char *PanBtnStr[8] = {
+const char *PanBtnHotKey[8] = { "'c'", "'q'", "Tab", "Esc", "'i'", "'b'", "Enter", NULL };
+const char *PanBtnStr[8] = {
 	"Character Information",
 	"Quests log",
 	"Automap",
@@ -377,7 +379,7 @@ void DrawSpell()
 void DrawSpellList()
 {
 	int i, j, x, y, c, s, t, v, lx, ly, trans;
-	unsigned __int64 mask, spl;
+	uint64_t mask, spl;
 
 	pSpell = -1;
 	infostr[0] = '\0';
@@ -405,6 +407,8 @@ void DrawSpellList()
 			c = 45;
 			mask = plr[myplr]._pISpells;
 			break;
+    default:
+      break;
 		}
 		for (spl = 1, j = 1; j < MAX_SPELLS; spl <<= 1, j++) {
 			if (!(mask & spl))
@@ -526,7 +530,7 @@ void SetSpeedSpell(int slot)
 
 void ToggleSpell(int slot)
 {
-	unsigned __int64 spells;
+	uint64_t spells;
 
 	if (plr[myplr]._pSplHotKey[slot] == -1) {
 		return;
@@ -547,7 +551,7 @@ void ToggleSpell(int slot)
 		break;
 	}
 
-	if (spells & (__int64)1 << (plr[myplr]._pSplHotKey[slot] - 1)) {
+	if (spells & 1LL << (plr[myplr]._pSplHotKey[slot] - 1)) {
 		plr[myplr]._pRSpell = plr[myplr]._pSplHotKey[slot];
 		plr[myplr]._pRSplType = plr[myplr]._pSplTHotKey[slot];
 		drawpanflag = 255;
@@ -846,7 +850,7 @@ void CPrintString(int nOffset, int nCel, char col)
 #endif
 }
 
-void AddPanelString(char *str, BOOL just)
+void AddPanelString(const char *str, BOOL just)
 {
 	strcpy(&panelstr[64 * pnumlines], str);
 	pstrjust[pnumlines] = just;
@@ -1063,10 +1067,10 @@ void DrawManaFlask()
 
 void control_update_life_mana()
 {
-	int manaPer;
+  int manaPer;
 	int maxMana = plr[myplr]._pMaxMana;
 	int mana = plr[myplr]._pMana;
-	if (maxMana < 0)
+  if (maxMana < 0)
 		maxMana = 0;
 	if (mana < 0)
 		mana = 0;
@@ -1173,10 +1177,12 @@ void InitControlPan()
 	sbookflag = FALSE;
 	if (plr[myplr]._pClass == PC_WARRIOR) {
 		SpellPages[0][0] = SPL_REPAIR;
+#ifndef SPAWN
 	} else if (plr[myplr]._pClass == PC_ROGUE) {
 		SpellPages[0][0] = SPL_DISARM;
 	} else if (plr[myplr]._pClass == PC_SORCERER) {
 		SpellPages[0][0] = SPL_RECHARGE;
+#endif
 	}
 	pQLogCel = LoadFileInMem("Data\\Quest.CEL", NULL);
 	pGBoxBuff = LoadFileInMem("CtrlPan\\Golddrop.cel", NULL);
@@ -1214,7 +1220,7 @@ void DrawCtrlPan()
 
 void DoSpeedBook()
 {
-	unsigned __int64 spells, spell;
+	uint64_t spells, spell;
 	int xo, yo, X, Y, i, j;
 
 	spselflag = 1;
@@ -1238,7 +1244,7 @@ void DoSpeedBook()
 				spells = plr[myplr]._pISpells;
 				break;
 			}
-			spell = (__int64)1;
+			spell = 1LL;
 			for (j = 1; j < MAX_SPELLS; j++) {
 				if (spell & spells) {
 					if (j == plr[myplr]._pRSpell && i == plr[myplr]._pRSplType) {
@@ -1251,7 +1257,7 @@ void DoSpeedBook()
 						yo -= 56;
 					}
 				}
-				spell <<= (__int64)1;
+				spell <<= 1LL;
 			}
 			if (spells && xo != 636)
 				xo -= 56;
@@ -1262,7 +1268,7 @@ void DoSpeedBook()
 		}
 	}
 
-	SetCursorPos(X, Y);
+	_SetCursorPos(X, Y);
 }
 
 void DoPanBtn()
@@ -1608,10 +1614,10 @@ void control_draw_info_str()
 	}
 }
 
-void control_print_info_str(int y, char *str, BOOL center, int lines)
+void control_print_info_str(int y, const char *str, BOOL center, int lines)
 {
 	BYTE c;
-	char *tmp;
+	const char *tmp;
 	int screen_x, line, nOffset;
 
 	line = 0;
@@ -1640,7 +1646,7 @@ void control_print_info_str(int y, char *str, BOOL center, int lines)
 	}
 }
 
-void PrintGameStr(int x, int y, char *str, int color)
+void PrintGameStr(int x, int y, const char *str, int color)
 {
 	BYTE c;
 	int off;
@@ -1674,14 +1680,14 @@ void DrawChr()
 	sprintf(chrstr, "%i", plr[myplr]._pLevel);
 	ADD_PlrStringXY(66, 69, 109, chrstr, COL_WHITE);
 
-	sprintf(chrstr, "%li", plr[myplr]._pExperience);
+	sprintf(chrstr, "%i", plr[myplr]._pExperience);
 	ADD_PlrStringXY(216, 69, 300, chrstr, COL_WHITE);
 
 	if (plr[myplr]._pLevel == MAXCHARLEVEL - 1) {
 		strcpy(chrstr, "None");
 		col = COL_GOLD;
 	} else {
-		sprintf(chrstr, "%li", plr[myplr]._pNextExper);
+		sprintf(chrstr, "%i", plr[myplr]._pNextExper);
 		col = COL_WHITE;
 	}
 	ADD_PlrStringXY(216, 97, 300, chrstr, col);
@@ -1860,10 +1866,10 @@ void DrawChr()
 /**
  * @brief Identical to MY_PlrStringXY(x, y, width, pszStr, col, 1)
  */
-void ADD_PlrStringXY(int x, int y, int width, char *pszStr, char col)
+void ADD_PlrStringXY(int x, int y, int width, const char *pszStr, char col)
 {
 	BYTE c;
-	char *tmp;
+	const char *tmp;
 	int nOffset, screen_x, line, widthOffset;
 
 	nOffset = x + PitchTbl[y + SCREEN_Y] + 64;
@@ -1890,10 +1896,10 @@ void ADD_PlrStringXY(int x, int y, int width, char *pszStr, char col)
 	}
 }
 
-void MY_PlrStringXY(int x, int y, int width, char *pszStr, char col, int base)
+void MY_PlrStringXY(int x, int y, int width, const char *pszStr, char col, int base)
 {
 	BYTE c;
-	char *tmp;
+	const char *tmp;
 	int nOffset, screen_x, line, widthOffset;
 
 	nOffset = x + PitchTbl[y + SCREEN_Y] + 64;
@@ -2150,10 +2156,10 @@ char GetSBookTrans(int ii, BOOL townok)
 	char st;
 
 	st = RSPLTYPE_SPELL;
-	if (plr[myplr]._pISpells & (__int64)1 << (ii - 1)) {
+	if (plr[myplr]._pISpells & 1LL << (ii - 1)) {
 		st = RSPLTYPE_CHARGES;
 	}
-	if (plr[myplr]._pAblSpells & 1 << (ii - 1)) { /// BUGFIX: missing (__int64)
+	if (plr[myplr]._pAblSpells & 1LL << (ii - 1)) { /// BUGFIX: missing (__int64)
 		st = RSPLTYPE_SKILL;
 	}
 	if (st == RSPLTYPE_SPELL) {
@@ -2175,7 +2181,7 @@ void DrawSpellBook()
 {
 	int i, sn, mana, lvl, yp, min, max;
 	char st;
-	unsigned __int64 spl;
+	uint64_t spl;
 
 	CelDecodeOnly(384, 511, pSpellBkCel, 1, 320);
 	CelDecodeOnly(76 * sbooktab + 391, 508, pSBkBtnCel, sbooktab + 1, 76);
@@ -2185,7 +2191,7 @@ void DrawSpellBook()
 	yp = 215;
 	for (i = 1; i < 8; i++) {
 		sn = SpellPages[sbooktab][i - 1];
-		if (sn != -1 && spl & (__int64)1 << (sn - 1)) {
+		if (sn != -1 && spl & 1LL << (sn - 1)) {
 			st = GetSBookTrans(sn, TRUE);
 			SetSpellTrans(st);
 			DrawSpellCel(395, yp, pSBkIconCels, SpellITbl[sn], 37);
@@ -2230,10 +2236,10 @@ void DrawSpellBook()
 	}
 }
 
-void PrintSBookStr(int x, int y, BOOL cjustflag, char *pszStr, char col)
+void PrintSBookStr(int x, int y, BOOL cjustflag, const char *pszStr, char col)
 {
 	BYTE c;
-	char *tmp;
+	const char *tmp;
 	int screen_x, line, width;
 
 	width = PitchTbl[y] + x + 440;
@@ -2265,17 +2271,17 @@ void CheckSBook()
 {
 	int sn;
 	char st;
-	unsigned __int64 spl;
+  uint64_t spl;
 
 	if (MouseX >= 331 && MouseX < 368 && MouseY >= 18 && MouseY < 314) {
 		spl = plr[myplr]._pMemSpells | plr[myplr]._pISpells | plr[myplr]._pAblSpells;
 		sn = SpellPages[sbooktab][(MouseY - 18) / 43];
-		if (sn != -1 && spl & (__int64)1 << (sn - 1)) {
+		if (sn != -1 && spl & 1LL << (sn - 1)) {
 			st = RSPLTYPE_SPELL;
-			if (plr[myplr]._pISpells & (__int64)1 << (sn - 1)) {
+			if (plr[myplr]._pISpells & 1LL << (sn - 1)) {
 				st = RSPLTYPE_CHARGES;
 			}
-			if (plr[myplr]._pAblSpells & (__int64)1 << (sn - 1)) {
+			if (plr[myplr]._pAblSpells & 1LL << (sn - 1)) {
 				st = RSPLTYPE_SKILL;
 			}
 			plr[myplr]._pRSpell = sn;
@@ -2288,9 +2294,9 @@ void CheckSBook()
 	}
 }
 
-char *get_pieces_str(int nGold)
+const char *get_pieces_str(int nGold)
 {
-	char *result;
+	const char *result;
 
 	result = "piece";
 	if (nGold != 1)
@@ -2334,15 +2340,15 @@ void control_drop_gold(char vkey)
 	}
 
 	memset(input, 0, sizeof(input));
-	_itoa(dropGoldValue, input, 10);
-	if (vkey == VK_RETURN) {
+  sprintf(input, "%d", dropGoldValue);
+	if (vkey == KeyCode::RETURN) {
 		if (dropGoldValue > 0)
 			control_remove_gold(myplr, initialDropGoldIndex);
 		dropGoldFlag = 0;
-	} else if (vkey == VK_ESCAPE) {
+	} else if (vkey == KeyCode::ESCAPE) {
 		dropGoldFlag = 0;
 		dropGoldValue = 0;
-	} else if (vkey == VK_BACK) {
+	} else if (vkey == KeyCode::BACK) {
 		input[strlen(input) - 1] = '\0';
 		dropGoldValue = atoi(input);
 	} else if (vkey - '0' >= 0 && vkey - '0' <= 9) {
@@ -2577,7 +2583,7 @@ BOOL control_talk_last_key(int vkey)
 	if (!talkflag)
 		return FALSE;
 
-	if ((DWORD)vkey < VK_SPACE)
+	if ((DWORD)vkey < KeyCode::SPACE)
 		return FALSE;
 
 	result = strlen(sgszTalkMsg);
@@ -2597,18 +2603,18 @@ BOOL control_presskeys(int vkey)
 		if (!talkflag) {
 			ret = FALSE;
 		} else {
-			if (vkey == VK_SPACE) {
-			} else if (vkey == VK_ESCAPE) {
+			if (vkey == KeyCode::SPACE) {
+			} else if (vkey == KeyCode::ESCAPE) {
 				control_reset_talk();
-			} else if (vkey == VK_RETURN) {
+			} else if (vkey == KeyCode::RETURN) {
 				control_press_enter();
-			} else if (vkey == VK_BACK) {
+			} else if (vkey == KeyCode::BACK) {
 				len = strlen(sgszTalkMsg);
 				if (len > 0)
 					sgszTalkMsg[len - 1] = '\0';
-			} else if (vkey == VK_DOWN) {
+			} else if (vkey == KeyCode::DOWN) {
 				control_up_down(1);
-			} else if (vkey == VK_UP) {
+			} else if (vkey == KeyCode::UP) {
 				control_up_down(-1);
 			} else {
 				return FALSE;

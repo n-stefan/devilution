@@ -1,6 +1,6 @@
 #include "diablo.h"
-#include "../3rdParty/Storm/Source/storm.h"
 #include "ui/diabloui.h"
+#include "storm/storm.h"
 
 static DWORD sgdwOwnerWait;
 static DWORD sgdwRecvOffset;
@@ -75,7 +75,7 @@ BOOL msg_wait_resync()
 	sgnCurrMegaPlayer = -1;
 	sgbRecvCmd = CMD_DLEVEL_END;
 	gbBufferMsgs = 1;
-	sgdwOwnerWait = GetTickCount();
+	sgdwOwnerWait = _GetTickCount();
 	success = UiProgressDialog(ghMainWnd, "Waiting for game data...", 1, msg_wait_for_turns, 20);
 	gbBufferMsgs = 0;
 	if (!success) {
@@ -109,21 +109,20 @@ void msg_free_packets()
 
 int msg_wait_for_turns()
 {
-	int received;
 	DWORD turns;
 
 	if (!sgbDeltaChunks) {
-		nthread_send_and_recv_turn(0, 0);
-		if (!SNetGetOwnerTurnsWaiting(&turns) && SErrGetLastError() == STORM_ERROR_NOT_IN_GAME)
+		//nthread_send_and_recv_turn(0, 0);
+		if (!_SNetGetOwnerTurnsWaiting(&turns) && SErrGetLastError() == STORM_ERROR_NOT_IN_GAME)
 			return 100;
-		if (GetTickCount() - sgdwOwnerWait <= 2000 && turns < gdwTurnsInTransit)
+		if (_GetTickCount() - sgdwOwnerWait <= 2000)
 			return 0;
 		sgbDeltaChunks++;
 	}
 	multi_process_network_packets();
-	nthread_send_and_recv_turn(0, 0);
-	if (nthread_has_500ms_passed(0))
-		nthread_recv_turns(&received);
+	//nthread_send_and_recv_turn(0, 0);
+	//if (nthread_has_500ms_passed(0))
+	//	nthread_recv_turns(&received);
 
 	if (gbGameDestroyed)
 		return 100;
@@ -131,7 +130,7 @@ int msg_wait_for_turns()
 		sgbDeltaChunks = 0;
 		sgbRecvCmd = CMD_DLEVEL_END;
 		gbDeltaSender = myplr;
-		nthread_set_turn_upper_bit();
+		//nthread_set_turn_upper_bit();
 	}
 	if (sgbDeltaChunks == 20) {
 		sgbDeltaChunks = 21;
@@ -196,16 +195,16 @@ void DeltaExportData(int pnum)
 			dstEnd = DeltaExportObject(dstEnd, sgLevels[i].object);
 			dstEnd = DeltaExportMonster(dstEnd, sgLevels[i].monster);
 			size = msg_comp_level(dst, dstEnd);
-			dthread_send_delta(pnum, i + CMD_DLEVEL_0, dst, size);
+			//dthread_send_delta(pnum, i + CMD_DLEVEL_0, dst, size);
 		}
 		dstEnd = dst + 1;
 		dstEnd = DeltaExportJunk(dstEnd);
 		size = msg_comp_level(dst, dstEnd);
-		dthread_send_delta(pnum, CMD_DLEVEL_JUNK, dst, size);
+		//dthread_send_delta(pnum, CMD_DLEVEL_JUNK, dst, size);
 		mem_free_dbg(dst);
 	}
 	src = 0;
-	dthread_send_delta(pnum, CMD_DLEVEL_END, &src, 1);
+	//dthread_send_delta(pnum, CMD_DLEVEL_END, &src, 1);
 }
 
 BYTE *DeltaExportItem(BYTE *dst, TCmdPItem *src)
@@ -801,7 +800,7 @@ void NetSendCmdGItem2(BOOL usonly, BYTE bCmd, BYTE mast, BYTE pnum, TCmdGItem *p
 		return;
 	}
 
-	ticks = GetTickCount();
+	ticks = _GetTickCount();
 	if (!cmd.dwTime) {
 		cmd.dwTime = ticks;
 	} else if (ticks - cmd.dwTime > 5000) {
@@ -821,7 +820,7 @@ BOOL NetSendCmdReq2(BYTE bCmd, BYTE mast, BYTE pnum, TCmdGItem *p)
 	cmd.bPnum = pnum;
 	cmd.bMaster = mast;
 
-	ticks = GetTickCount();
+	ticks = _GetTickCount();
 	if (!cmd.dwTime) {
 		cmd.dwTime = ticks;
 	} else if (ticks - cmd.dwTime > 5000) {
@@ -1132,7 +1131,7 @@ DWORD ParseCmd(int pnum, TCmd *pCmd)
 	}
 
 	if (pCmd->bCmd < CMD_DLEVEL_0 || pCmd->bCmd > CMD_DLEVEL_END) {
-		SNetDropPlayer(pnum, 0x40000006);
+		_SNetDropPlayer(pnum, 0x40000006);
 		return 0;
 	}
 
@@ -1375,7 +1374,7 @@ void __cdecl msg_errorf(const char *pszFmt, ...)
 	va_list va;
 
 	va_start(va, pszFmt);
-	ticks = GetTickCount();
+	ticks = _GetTickCount();
 	if (ticks - msg_err_timer >= 5000) {
 		msg_err_timer = ticks;
 		vsprintf(msg, pszFmt, va);

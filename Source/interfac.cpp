@@ -1,5 +1,6 @@
 #include "diablo.h"
-#include "../3rdParty/Storm/Source/storm.h"
+#include "storm/storm.h"
+#include "trace.h"
 
 void *sgpBackCel;
 int sgdwProgress;
@@ -8,21 +9,8 @@ int progress_id;
 const BYTE progress_bar_colours[3] = { 138, 43, 254 };
 const int progress_bar_screen_pos[3][2] = { { 53, 37 }, { 53, 421 }, { 53, 37 } };
 
-void interface_msg_pump()
-{
-	MSG Msg;
-
-	while (PeekMessage(&Msg, NULL, 0, 0, PM_REMOVE)) {
-		if (Msg.message != WM_QUIT) {
-			TranslateMessage(&Msg);
-			DispatchMessage(&Msg);
-		}
-	}
-}
-
 BOOL IncProgress()
 {
-	interface_msg_pump();
 	sgdwProgress += 15;
 	if ((DWORD)sgdwProgress > 534)
 		sgdwProgress = 534;
@@ -68,17 +56,15 @@ void ShowProgress(unsigned int uMsg)
 	plrmsg_delay(TRUE);
 
 	/// ASSERT: assert(ghMainWnd);
-	interface_msg_pump();
-	ClearScreenBuffer();
+  ClearScreenBuffer();
 	scrollrt_draw_game_screen(TRUE);
 	InitCutscene(uMsg);
-	BlackPalette();
+  BlackPalette();
 	DrawCutscene();
 	PaletteFadeIn(8);
-	IncProgress();
+  IncProgress();
 	stream_update();
 	IncProgress();
-
 	switch (uMsg) {
 	case WM_DIABLOADGAME:
 		IncProgress();

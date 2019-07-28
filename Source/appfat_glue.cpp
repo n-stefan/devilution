@@ -1,12 +1,13 @@
-#include "diablo.h"
+#include <stdio.h>
 
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
+#include "diablo.h"
 
 EM_JS( void, exit_error, (const char* err), {
   var end = HEAPU8.indexOf( 0, err );
   var text = String.fromCharCode.apply(null, HEAPU8.subarray( err, end ));
-  window.DX_ExitError( text );
+  window.DApi.exit_error( text );
 });
 EM_JS( void, show_alert, ( const char* err ), {
   var end = HEAPU8.indexOf( 0, err );
@@ -14,19 +15,24 @@ EM_JS( void, show_alert, ( const char* err ), {
   window.alert( text );
 });
 #else
+#include <windows.h>
 void exit_error( const char* err )
 {
   if ( err )
   {
+    ShowCursor(TRUE);
     MessageBox( NULL, err, "ERROR", MB_TASKMODAL | MB_ICONHAND );
   }
   exit( 1 );
 }
 void show_alert( const char* err )
 {
+  ShowCursor(TRUE);
   MessageBox( NULL, err, "Diablo", MB_TASKMODAL | MB_ICONEXCLAMATION );
 }
 #endif
+
+#include "appfat.h"
 
 char sz_error_buf[256];
 BOOL terminating;
@@ -35,13 +41,13 @@ int cleanup_thread_id;
 void TriggerBreak()
 {
 #ifdef _DEBUG
-  __debugbreak();
+  //__debugbreak();
 #endif
 }
 
 char *GetErrorStr( DWORD error_code )
 {
-  sprintf( sz_error_buf, "unknown error 0x%08x", error_code );
+  sprintf( sz_error_buf, "unknown error 0x%08x", (int) error_code );
   return sz_error_buf;
 }
 
@@ -72,16 +78,16 @@ void __cdecl app_fatal( const char *pszFmt, ... )
     exit_error( NULL );
   }
 
-  init_cleanup( FALSE );
+  //init_cleanup( FALSE );
 }
 
-void __cdecl DrawDlg( char *pszFmt, ... )
+void __cdecl DrawDlg( const char *pszFmt, ... )
 {
   char text[256];
   va_list arglist;
 
   va_start( arglist, pszFmt );
-  wvsprintf( text, pszFmt, arglist );
+  vsprintf( text, pszFmt, arglist );
   va_end( arglist );
 
   show_alert( text );
@@ -94,9 +100,11 @@ void assert_fail( int nLineNo, const char *pszFile, const char *pszFail )
 }
 #endif
 
-void ErrDlg( int template_id, DWORD error_code, char *log_file_path, int log_line_nr )
-{
-  app_fatal( "%s\nat: %s line %d", GetErrorStr( error_code ), log_file_path, log_line_nr );
+void ErrDlg(int template_id, DWORD error_code, const char *log_file_path, int log_line_nr) {
+  app_fatal("%s\nat: %s line %d", GetErrorStr(error_code), log_file_path, log_line_nr);
+}
+void ErrMsg(const char* text, const char *log_file_path, int log_line_nr) {
+  app_fatal("%s\nat: %s line %d", text, log_file_path, log_line_nr);
 }
 
 void TextDlg( HWND hDlg, char *text )
@@ -104,7 +112,7 @@ void TextDlg( HWND hDlg, char *text )
   show_alert( text );
 }
 
-void ErrOkDlg( int template_id, DWORD error_code, char *log_file_path, int log_line_nr )
+void ErrOkDlg( int template_id, DWORD error_code, const char *log_file_path, int log_line_nr )
 {
   char text[256];
   sprintf( text, "%s\nat: %s line %d", GetErrorStr( error_code ), log_file_path, log_line_nr );
@@ -116,7 +124,7 @@ void FileErrDlg( const char *error )
   app_fatal( "%s", error );
 }
 
-void DiskFreeDlg( char *error )
+void DiskFreeDlg(const char *error )
 {
   app_fatal( "%s", error );
 }

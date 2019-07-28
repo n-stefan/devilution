@@ -22,6 +22,12 @@
     <Filter Include="smacker">
       <UniqueIdentifier>{d7a8c6e6-6083-41d2-83a5-8994589eedc1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="storm">
+      <UniqueIdentifier>{78dfc4df-f35a-4701-988f-47e98681b3b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mpq">
+      <UniqueIdentifier>{a178d78a-caae-4575-96ae-1f3ed36ec42b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\automap.cpp">
@@ -63,9 +69,6 @@
     <ClCompile Include="Source\drlg_l4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\dthread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\effects.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -78,9 +81,6 @@
     <ClCompile Include="Source\error.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\fault.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\gamemenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -91,9 +91,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\help.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\init.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\interfac.cpp">
@@ -112,9 +109,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\loadsave.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\logging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\mainmenu.cpp">
@@ -150,9 +144,6 @@
     <ClCompile Include="Source\multi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\nthread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\objdat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -178,9 +169,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\quests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\restrict.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\scrollrt.cpp">
@@ -237,9 +225,6 @@
     <ClCompile Include="Source\palette.cpp">
       <Filter>glue</Filter>
     </ClCompile>
-    <ClCompile Include="Source\appfat.cpp">
-      <Filter>glue</Filter>
-    </ClCompile>
     <ClCompile Include="Source\sound.cpp">
       <Filter>glue</Filter>
     </ClCompile>
@@ -279,8 +264,77 @@
     <ClCompile Include="Source\libsmacker\smk_hufftree.c">
       <Filter>smacker</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ui\selyesno.cpp">
+    <ClCompile Include="Source\ui\selhero.cpp">
       <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ui\yesno.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ui\play.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\storm\storm.cpp">
+      <Filter>storm</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\storm\sreg.cpp">
+      <Filter>storm</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\archive.cpp">
+      <Filter>mpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\compress.cpp">
+      <Filter>mpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\locale.cpp">
+      <Filter>mpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\pklib\crc32.c">
+      <Filter>mpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\pklib\explode.c">
+      <Filter>mpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\pklib\implode.c">
+      <Filter>mpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\huffman\huff.cpp">
+      <Filter>mpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\adpcm\adpcm.cpp">
+      <Filter>mpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\file.cpp">
+      <Filter>mpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\arccommon.cpp">
+      <Filter>mpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\checksum.cpp">
+      <Filter>mpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\storm\smpq.cpp">
+      <Filter>storm</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\storm\sbmp.cpp">
+      <Filter>storm</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\sound_glue.cpp">
+      <Filter>glue</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\sound_common.cpp">
+      <Filter>glue</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\init.cpp">
+      <Filter>glue</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\init_glue.cpp">
+      <Filter>glue</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\jsfs.cpp">
+      <Filter>glue</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\trace.cpp">
+      <Filter>glue</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -387,9 +441,6 @@
     <ClInclude Include="Source\loadsave.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\logging.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\mainmenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -451,9 +502,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\quests.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\restrict.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\scrollrt.h">
@@ -551,6 +599,36 @@
     </ClInclude>
     <ClInclude Include="Source\libsmacker\smk_malloc.h">
       <Filter>smacker</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\storm\storm.h">
+      <Filter>storm</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\rmpq\archive.h">
+      <Filter>mpq</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\rmpq\common.h">
+      <Filter>mpq</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\rmpq\locale.h">
+      <Filter>mpq</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\rmpq\pklib\pklib.h">
+      <Filter>mpq</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\rmpq\huffman\huff.h">
+      <Filter>mpq</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\rmpq\adpcm\adpcm.h">
+      <Filter>mpq</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\rmpq\file.h">
+      <Filter>mpq</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\rmpq\checksum.h">
+      <Filter>mpq</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\trace.h">
+      <Filter>glue</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

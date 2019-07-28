@@ -1,5 +1,5 @@
 #include "diablo.h"
-#include "../3rdParty/Storm/Source/storm.h"
+#include "storm/storm.h"
 
 PALETTEENTRY system_palette[256];
 PALETTEENTRY orig_palette[256];
@@ -50,7 +50,7 @@ void LoadSysPal()
 		system_palette[i].peFlags = PC_NOCOLLAPSE | PC_RESERVED;
 }
 
-void LoadPalette(char *pszFileName)
+void LoadPalette(const char *pszFileName)
 {
 	int i;
 	void *pBuf;
@@ -181,6 +181,7 @@ void PaletteFadeOut(int fr)
 	}
 }
 
+#ifndef SPAWN
 void palette_update_caves()
 {
 	int i;
@@ -198,6 +199,7 @@ void palette_update_caves()
 
 	palette_update();
 }
+#endif
 
 void palette_update_quest_palette(int n)
 {

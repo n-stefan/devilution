@@ -1,5 +1,6 @@
 #include "diablo.h"
-#include "../3rdParty/Storm/Source/storm.h"
+#include "storm/storm.h"
+#include "trace.h"
 
 void PackPlayer(PkPlayerStruct *pPack, int pnum, BOOL manashield)
 {
@@ -131,9 +132,10 @@ void UnPackPlayer(PkPlayerStruct *pPack, int pnum, BOOL killok)
 	ItemStruct *pi;
 	PkItemStruct *pki;
 
+
 	pPlayer = &plr[pnum];
-	ClearPlrRVars(pPlayer);
-	pPlayer->WorldX = pPack->px;
+  ClearPlrRVars(pPlayer);
+  pPlayer->WorldX = pPack->px;
 	pPlayer->WorldY = pPack->py;
 	pPlayer->_px = pPack->px;
 	pPlayer->_py = pPack->py;
@@ -144,8 +146,8 @@ void UnPackPlayer(PkPlayerStruct *pPack, int pnum, BOOL killok)
 	pPlayer->destAction = ACTION_NONE;
 	strcpy(pPlayer->_pName, pPack->pName);
 	pPlayer->_pClass = pPack->pClass;
-	InitPlayer(pnum, TRUE);
-	pPlayer->_pBaseStr = pPack->pBaseStr;
+  InitPlayer(pnum, TRUE);
+  pPlayer->_pBaseStr = pPack->pBaseStr;
 	pPlayer->_pStrength = pPack->pBaseStr;
 	pPlayer->_pBaseMag = pPack->pBaseMag;
 	pPlayer->_pMagic = pPack->pBaseMag;
@@ -208,8 +210,8 @@ void UnPackPlayer(PkPlayerStruct *pPack, int pnum, BOOL killok)
 			witchitem[i]._itype = -1;
 	}
 
-	CalcPlrInv(pnum, FALSE);
-	pPlayer->pTownWarps = 0;
+  CalcPlrInv(pnum, FALSE);
+  pPlayer->pTownWarps = 0;
 	pPlayer->pDungMsgs = 0;
 	pPlayer->pLvlLoad = 0;
 	pPlayer->pDiabloKillLevel = pPack->pDiabloKillLevel;

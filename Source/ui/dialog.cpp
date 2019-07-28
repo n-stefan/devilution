@@ -1,5 +1,3 @@
-#pragma once
-
 #include "dialog.h"
 
 namespace {
@@ -57,7 +55,7 @@ std::string wordWrap( const std::string &text, _artFontTables size, int width ) 
       while (next < text.size() && !isspace((BYTE)text[next])) {
         ++next;
       }
-      if (x + GetStrWidth(text.c_str() + i, next - i, size) > width) {
+      if (x + GetStrWidth(text.c_str() + i, next - i, size) >= width) {
         chr = '\n';
       }
     }
@@ -132,7 +130,7 @@ void DrawEditBox(const DialogState::Item& item, unsigned int time) {
   temp.rect.left += 43;
   temp.rect.top += 1;
   temp.rect.right -= 43;
-  DrawArtStr(item, time);
+  DrawArtStr(temp, time);
 }
 
 }
@@ -173,7 +171,7 @@ void DialogState::onRender(unsigned int time) {
   }
   renderExtra(time);
   if (cursor) {
-    DrawArt(mouseX_, mouseY_, &ArtCursor);
+    DrawArt(mouseX(), mouseY(), &ArtCursor);
   }
   UiFadeIn(time);
   unlock_buf(1);
@@ -215,8 +213,6 @@ void DialogState::setFocus_(int index, bool wrap) {
 }
 
 void DialogState::onMouse(const MouseEvent& event) {
-  mouseX_ = event.x;
-  mouseY_ = event.y;
   for (const auto& item : items) {
     if (item.type != ControlType::List && item.type != ControlType::Button) {
       continue;
@@ -224,11 +220,14 @@ void DialogState::onMouse(const MouseEvent& event) {
     if (event.x >= item.rect.left && event.y >= item.rect.top && event.x < item.rect.right && event.y < item.rect.bottom) {
       if (item.type == ControlType::List) {
         if (!item.text.empty()) {
-          if (event.action == MouseEvent::Move) {
-            setFocus_(item.value, wraps);
-          } else {
-            selected = item.value;
-            onInput(item.value);
+          if (event.action == MouseEvent::Press) {
+            if (!doubleclick || (item.value == selected && _GetTickCount() - prevClick_ < 1000)) {
+              selected = item.value;
+              onInput(item.value);
+            } else {
+              prevClick_ = _GetTickCount();
+              setFocus_(item.value, false);
+            }
           }
         }
       } else {
@@ -283,7 +282,9 @@ void DialogState::onKey(const KeyEvent& e) {
 void DialogState::onChar(char chr) {
   for (auto &item : items) {
     if (item.type == ControlType::Edit) {
-      item.text.push_back(chr);
+      if (item.text.size() < 15) {
+        item.text.push_back(chr);
+      }
       break;
     }
   }

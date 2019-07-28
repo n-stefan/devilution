@@ -1,5 +1,6 @@
 #include "diablo.h"
-#include "../3rdParty/PKWare/pkware.h"
+#include "storm/storm.h"
+#include "rmpq/pklib/pklib.h"
 
 DWORD hashtable[1280];
 

@@ -8,7 +8,7 @@ void SaveGamma();
 void palette_init();
 void LoadGamma();
 void LoadSysPal();
-void LoadPalette(char *pszFileName);
+void LoadPalette(const char *pszFileName);
 void LoadRndLvlPal(int l);
 void ResetPal();
 void IncreaseGamma();

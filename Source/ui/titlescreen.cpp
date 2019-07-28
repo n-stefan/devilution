@@ -1,5 +1,6 @@
 #include "common.h"
 #include "dialog.h"
+#include <stdio.h>
 
 class TitleDialog : public DialogState {
 public:
@@ -11,8 +12,7 @@ public:
   }
 
   void onActivate() override {
-    mainmenu_refresh_music();
-
+    printf("Hello World!");
     UiFadeReset();
     LoadBackgroundArt("ui_art\\title.pcx");
   }
@@ -43,6 +43,6 @@ private:
   unsigned int firstFrame_ = 0;
 };
 
-GameState* get_title_dialog() {
+GameStatePtr get_title_dialog() {
   return new TitleDialog();
 }

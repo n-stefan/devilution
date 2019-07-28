@@ -4,9 +4,6 @@
 
 #include "../types.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 #include "appfat.h"
 #include "automap.h"
 #include "capture.h"
@@ -17,16 +14,16 @@ extern "C" {
 #include "debug.h"
 #include "doom.h"
 #include "drlg_l1.h"
+#ifndef SPAWN
 #include "drlg_l2.h"
 #include "drlg_l3.h"
 #include "drlg_l4.h"
-#include "dthread.h"
+#endif
 #include "dx.h"
 #include "effects.h"
 #include "encrypt.h"
 #include "engine.h"
 #include "error.h"
-#include "fault.h"
 #include "gamemenu.h"
 #include "gendung.h"
 #include "gmenu.h"
@@ -38,7 +35,6 @@ extern "C" {
 #include "items.h"
 #include "lighting.h"
 #include "loadsave.h"
-#include "logging.h"
 #include "mainmenu.h"
 #include "minitext.h"
 #include "misdat.h"
@@ -50,7 +46,6 @@ extern "C" {
 #include "msg.h"
 #include "msgcmd.h"
 #include "multi.h"
-#include "nthread.h"
 #include "objdat.h"
 #include "objects.h"
 #include "pack.h"
@@ -61,7 +56,7 @@ extern "C" {
 #include "plrmsg.h"
 #include "portal.h"
 #include "quests.h"
-#include "restrict.h"
+//#include "restrict.h"
 #include "scrollrt.h"
 #include "setmaps.h"
 #include "sha.h"
@@ -79,9 +74,6 @@ extern "C" {
 #include "trigs.h"
 #include "wave.h"
 #include "render.h" // linked last, likely .s/.asm
-#ifdef __cplusplus
-}
-#endif
 
 extern HWND ghMainWnd;
 extern int glMid1Seed[NUMLEVELS];
@@ -114,6 +106,8 @@ extern int PauseMode;
 extern char sgbMouseDown;
 extern int color_cycle_timer;
 
+DWORD _GetTickCount();
+
 void post_event(int code);
 
 void FreeGameMem();
@@ -121,21 +115,15 @@ BOOL StartGame(BOOL bNewGame, BOOL bSinglePlayer);
 void run_game_loop(unsigned int uMsg);
 void start_game(unsigned int uMsg);
 void free_game();
-BOOL diablo_get_not_running();
-int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
 void diablo_parse_flags(char *args);
 void diablo_init_screen();
-BOOL diablo_find_window(LPCSTR lpClassName);
-void diablo_reload_process(HINSTANCE hInstance);
+BOOL diablo_find_window(const CHAR* lpClassName);
 BOOL PressEscKey();
-LRESULT CALLBACK DisableInputWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-LRESULT CALLBACK GM_Game(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 BOOL LeftMouseDown(BOOL bShift);
 BOOL LeftMouseCmd(BOOL bShift);
 BOOL TryIconCurs();
 void LeftMouseUp();
 void RightMouseDown();
-void j_gmenu_on_mouse_move(LPARAM lParam);
 BOOL PressSysKey(int wParam);
 void diablo_hotkey_msg(DWORD dwMsg);
 void ReleaseKey(int vkey);
@@ -175,7 +163,7 @@ extern int framerate;
 extern int framestart;
 #endif
 extern BOOL FriendlyMode;
-extern char *spszMsgTbl[4];
-extern char *spszMsgKeyTbl[4];
+extern const char *spszMsgTbl[4];
+extern const char *spszMsgKeyTbl[4];
 
 #endif /* __DIABLO_H__ */

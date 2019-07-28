@@ -482,14 +482,16 @@ public:
       draw_unlock();
     }
 
+    draw_clip_text(0, 114, 640, 365);
+
     int numLines = 0;
     for (int i = 0; the_long_credits[i]; ++i) {
-      int y = i * 22 + y0 + 114;
-      if (y < -22) {
+      int y = i * 22 + y0 + 114 + 251;
+      if (y < 114 - 22) {
         continue;
       }
       ++numLines;
-      if (y > SCREEN_HEIGHT) {
+      if (y > 114 + 251) {
         continue;
       }
 
@@ -503,6 +505,8 @@ public:
       draw_text(x + 2, y + 2, text, 0);
       draw_text(x, y, text, 224);
     }
+
+    draw_clip_text(0, 0, 640, 480);
 
     draw_flush();
 
@@ -528,6 +532,6 @@ private:
   int prevOffset_ = 0;
 };
 
-GameState *get_credits_dialog() {
+GameStatePtr get_credits_dialog() {
   return new CreditsState();
 }

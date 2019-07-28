@@ -7,7 +7,6 @@ extern int gbActive;
 extern char diablo_exe_path[MAX_PATH];
 extern HANDLE unused_mpq;
 extern char patch_rt_mpq_path[MAX_PATH];
-extern WNDPROC CurrentProc;
 extern HANDLE diabdat_mpq;
 extern char diabdat_mpq_path[MAX_PATH];
 extern HANDLE patch_rt_mpq;
@@ -27,10 +26,7 @@ HANDLE init_test_access(char *mpq_path, char *mpq_name, char *reg_loc, int flags
 char *init_strip_trailing_slash(char *path);
 BOOL init_read_test_file(char *pszPath, char *pszArchive, int flags, HANDLE *phArchive);
 void init_get_file_info();
-LRESULT __stdcall MainWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 void init_activate_window(HWND hWnd, BOOL bActive);
-LRESULT __stdcall WindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-WNDPROC SetWindowProc(WNDPROC NewProc);
 
 /* rdata */
 

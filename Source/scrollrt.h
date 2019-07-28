@@ -54,7 +54,7 @@ void DrawAndBlit();
 /* data */
 
 /* used in 1.00 debug */
-extern char *szMonModeAssert[18];
-extern char *szPlrModeAssert[12];
+extern const char *szMonModeAssert[18];
+extern const char *szPlrModeAssert[12];
 
 #endif /* __SCROLLRT_H__ */

@@ -1,10 +1,11 @@
+//#include <dsound.h>
 #include "diablo.h"
-#include "../3rdParty/Storm/Source/storm.h"
+#include "storm/storm.h"
+#include "trace.h"
 
 int sfxdelay;
 int sfxdnum;
-HANDLE sfx_stream;
-TSFX *sfx_data_cur;
+TSFX *sfx_data_cur = NULL;
 
 const char monster_action_sounds[] = { 'a', 'h', 'd', 's' };
 
@@ -880,20 +881,15 @@ BOOL effect_is_playing(int nSFX)
 	if (sfx->pSnd)
 		return snd_playing(sfx->pSnd);
 
-	if (sfx->bFlags & SFX_STREAM)
-		return sfx == sfx_data_cur;
-
 	return FALSE;
 }
 
 void sfx_stop()
 {
-	if (sfx_stream) {
-		SFileDdaEnd(sfx_stream);
-		SFileCloseFile(sfx_stream);
-		sfx_stream = NULL;
-		sfx_data_cur = NULL;
-	}
+  if (sfx_data_cur && sfx_data_cur->pSnd) {
+    snd_stop_snd(sfx_data_cur->pSnd);
+    sfx_data_cur = NULL;
+  }
 }
 
 void InitMonsterSND(int monst)
@@ -926,7 +922,7 @@ void InitMonsterSND(int monst)
 void FreeEffects()
 {
 	int mtype, i, j, k;
-	char *file;
+	//char *file;
 	TSnd *pSnd;
 
 	for (i = 0; i < nummtypes; i++) {
@@ -936,10 +932,10 @@ void FreeEffects()
 				pSnd = Monsters[i].Snds[j][k];
 				if (pSnd) {
 					Monsters[i].Snds[j][k] = NULL;
-					file = pSnd->sound_path;
-					pSnd->sound_path = NULL;
+					//file = pSnd->sound_path;
+					//pSnd->sound_path = NULL;
 					sound_file_cleanup(pSnd);
-					mem_free_dbg(file);
+					//mem_free_dbg(file);
 				}
 			}
 		}
@@ -1014,7 +1010,7 @@ void PlaySFX_priv(TSFX *pSFX, BOOL loc, int x, int y)
 		return;
 	}
 
-	if (!(pSFX->bFlags & (SFX_STREAM | SFX_MISC)) && pSFX->pSnd != 0 && snd_playing(pSFX->pSnd)) {
+	if (!(pSFX->bFlags & (SFX_MISC)) && pSFX->pSnd != 0 && snd_playing(pSFX->pSnd)) {
 		return;
 	}
 
@@ -1024,45 +1020,17 @@ void PlaySFX_priv(TSFX *pSFX, BOOL loc, int x, int y)
 		return;
 	}
 
-	if (pSFX->bFlags & SFX_STREAM) {
-		stream_play(pSFX, lVolume, lPan);
-		return;
-	}
+  if (pSFX->bFlags & SFX_STREAM) {
+    sfx_stop();
+    sfx_data_cur = pSFX;
+  }
 
 	if (!pSFX->pSnd)
 		pSFX->pSnd = sound_file_load(pSFX->pszName);
 
 	if (pSFX->pSnd)
 		snd_play_snd(pSFX->pSnd, lVolume, lPan);
-}
 
-void stream_play(TSFX *pSFX, int lVolume, int lPan)
-{
-	BOOL success;
-
-	/// ASSERT: assert(pSFX);
-	/// ASSERT: assert(pSFX->bFlags & sfx_STREAM);
-	sfx_stop();
-	lVolume += sound_get_or_set_sound_volume(1);
-	if (lVolume >= VOLUME_MIN) {
-		if (lVolume > VOLUME_MAX)
-			lVolume = VOLUME_MAX;
-#ifdef _DEBUG
-		SFileEnableDirectAccess(FALSE);
-#endif
-		success = SFileOpenFile(pSFX->pszName, &sfx_stream);
-#ifdef _DEBUG
-		SFileEnableDirectAccess(TRUE);
-#endif
-		if (!success) {
-			sfx_stream = 0;
-		} else {
-			if (!SFileDdaBeginEx(sfx_stream, 0x40000, 0, 0, lVolume, lPan, 0))
-				sfx_stop();
-			else
-				sfx_data_cur = pSFX;
-		}
-	}
 }
 
 int RndSFX(int psfx)
@@ -1106,8 +1074,9 @@ void PlaySfxLoc(int psfx, int x, int y)
 
 	if (psfx >= 0 && psfx <= 3) {
 		pSnd = sgSFX[psfx].pSnd;
-		if (pSnd)
-			pSnd->start_tc = 0;
+    if (pSnd) {
+      sound_reset(pSnd);
+    }
 	}
 
 	PlaySFX_priv(&sgSFX[psfx], 1, x, y);
@@ -1155,10 +1124,8 @@ void sound_update()
 
 void effects_update()
 {
-	DWORD current, end;
-
-	if (sfx_stream != NULL && SFileDdaGetPos(sfx_stream, &current, &end) && current >= end) {
-		sfx_stop();
+	if (sfx_data_cur != NULL && sfx_data_cur->pSnd && !snd_playing(sfx_data_cur->pSnd)) {
+    sfx_data_cur = NULL;
 	}
 }
 
@@ -1207,14 +1174,20 @@ void priv_sound_init(BYTE bLoadMask)
 	bLoadMask ^= pc;
 
 	for (i = 0; i < NUM_SFX; i++) {
-		if (sgSFX[i].pSnd) {
+    if (sgSFX[i].pSnd) {
 			continue;
 		}
 
-		bFlags = sgSFX[i].bFlags;
+    bFlags = sgSFX[i].bFlags;
 		if (bFlags & SFX_STREAM) {
 			continue;
 		}
+
+#ifdef SPAWN
+    if (bFlags & (SFX_ROGUE | SFX_SORCEROR)) {
+      continue;
+    }
+#endif
 
 		if (bLoadMask && !(bFlags & bLoadMask)) {
 			continue;
@@ -1224,8 +1197,8 @@ void priv_sound_init(BYTE bLoadMask)
 			continue;
 		}
 
-		sgSFX[i].pSnd = sound_file_load(sgSFX[i].pszName);
-	}
+    sgSFX[i].pSnd = sound_file_load(sgSFX[i].pszName);
+  }
 }
 
 void sound_init()
@@ -1233,7 +1206,18 @@ void sound_init()
 	priv_sound_init(SFX_UI);
 }
 
-void __stdcall effects_play_sound(char *snd_file)
+static int my_stricmp(const char* a, const char* b) {
+  for (size_t i = 0; a[i] || b[i]; ++i) {
+    char pa = tolower((unsigned char) a[i]);
+    char pb = tolower((unsigned char) b[i]);
+    if (pa != pb) {
+      return pa < pb ? -1 : 1;
+    }
+  }
+  return 0;
+}
+
+void  effects_play_sound(const char *snd_file)
 {
 	DWORD i;
 
@@ -1242,7 +1226,7 @@ void __stdcall effects_play_sound(char *snd_file)
 	}
 
 	for (i = 0; i < NUM_SFX; i++) {
-		if (!_strcmpi(sgSFX[i].pszName, snd_file) && sgSFX[i].pSnd) {
+		if (!my_stricmp(sgSFX[i].pszName, snd_file) && sgSFX[i].pSnd) {
 			if (!snd_playing(sgSFX[i].pSnd))
 				snd_play_snd(sgSFX[i].pSnd, 0, 0);
 

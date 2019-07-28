@@ -3,7 +3,9 @@
 #ifndef _TYPES_H
 #define _TYPES_H
 
-//#define NO_WINDOWS
+#ifndef _WINDOWS_
+#define NO_WINDOWS
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,50 +15,155 @@
 
 #ifdef NO_WINDOWS
 
-typedef unsigned long DWORD;
-typedef int BOOL;
-typedef unsigned char BYTE;
-typedef unsigned short WORD;
-typedef float FLOAT;
-typedef FLOAT *PFLOAT;
-typedef BOOL *PBOOL;
-typedef BOOL *LPBOOL;
-typedef BYTE *PBYTE;
-typedef BYTE *LPBYTE;
-typedef int *PINT;
-typedef int *LPINT;
-typedef WORD *PWORD;
-typedef WORD *LPWORD;
-typedef long *LPLONG;
-typedef DWORD *PDWORD;
-typedef DWORD *LPDWORD;
-typedef void *LPVOID;
-typedef const void *LPCVOID;
+#include <memory.h>
+#include <string.h>
+#include <ctype.h>
+#include <stdarg.h>
 
-typedef char CHAR;
-typedef short SHORT;
-typedef long LONG;
-typedef int INT;
-typedef unsigned int UINT;
-typedef unsigned int *PUINT;
-typedef BYTE BOOLEAN;
-typedef BOOLEAN *PBOOLEAN;
+#pragma pack(push, 1)
 
-typedef unsigned long ULONG;
-typedef ULONG *PULONG;
-typedef unsigned short USHORT;
-typedef USHORT *PUSHORT;
-typedef unsigned char UCHAR;
-typedef UCHAR *PUCHAR;
-typedef char *PSZ;
+  typedef unsigned long DWORD;
+  typedef int BOOL;
+  typedef unsigned char BYTE;
+  typedef unsigned short WORD;
+  typedef float FLOAT;
+  typedef FLOAT *PFLOAT;
+  typedef BOOL *PBOOL;
+  typedef BOOL *LPBOOL;
+  typedef BYTE *PBYTE;
+  typedef BYTE *LPBYTE;
+  typedef int *PINT;
+  typedef int *LPINT;
+  typedef WORD *PWORD;
+  typedef WORD *LPWORD;
+  typedef long *LPLONG;
+  typedef DWORD *PDWORD;
+  typedef DWORD *LPDWORD;
+  typedef void *LPVOID;
+  typedef const void *LPCVOID;
 
-typedef int HWND;
+  typedef char CHAR;
+  typedef short SHORT;
+  typedef long LONG;
+  typedef int INT;
+  typedef unsigned int UINT;
+  typedef unsigned int *PUINT;
+  typedef BYTE BOOLEAN;
+  typedef BOOLEAN *PBOOLEAN;
 
-typedef struct _FILETIME
-{
-  DWORD dwLowDateTime;
-  DWORD dwHighDateTime;
-} FILETIME, *PFILETIME, *LPFILETIME;
+  typedef unsigned long ULONG;
+  typedef ULONG *PULONG;
+  typedef unsigned short USHORT;
+  typedef USHORT *PUSHORT;
+  typedef unsigned char UCHAR;
+  typedef UCHAR *PUCHAR;
+  typedef char *PSZ;
+
+  typedef int INT_PTR, *PINT_PTR;
+  typedef unsigned int UINT_PTR, *PUINT_PTR;
+  typedef long LONG_PTR, *PLONG_PTR;
+  typedef unsigned long ULONG_PTR, *PULONG_PTR;
+
+  typedef UINT_PTR            WPARAM;
+  typedef LONG_PTR            LPARAM;
+  typedef LONG_PTR            LRESULT;
+
+  typedef void* HANDLE;
+  typedef LONG HRESULT;
+
+  struct HWND__;
+  typedef HWND__ *HWND;
+  struct HINSTANCE__;
+  typedef HINSTANCE__ *HINSTANCE;
+  struct HDC__;
+  typedef HDC__ *HDC;
+#define INVALID_HANDLE_VALUE ((HANDLE)(LONG_PTR)-1)
+
+  const LONG MAX_PATH = 260;
+
+  typedef struct _FILETIME {
+    DWORD dwLowDateTime;
+    DWORD dwHighDateTime;
+  } FILETIME, *PFILETIME, *LPFILETIME;
+
+  typedef struct tWAVEFORMATEX {
+    WORD        wFormatTag;         /* format type */
+    WORD        nChannels;          /* number of channels (i.e. mono, stereo...) */
+    DWORD       nSamplesPerSec;     /* sample rate */
+    DWORD       nAvgBytesPerSec;    /* for buffer estimation */
+    WORD        nBlockAlign;        /* block size of data */
+    WORD        wBitsPerSample;     /* number of bits per sample of mono data */
+    WORD        cbSize;             /* the count in bytes of the size of */
+                                    /* extra information (after cbSize) */
+  } WAVEFORMATEX, *PWAVEFORMATEX, *NPWAVEFORMATEX, *LPWAVEFORMATEX;
+
+#define FALSE 0
+#define TRUE 1
+
+  typedef struct tagPALETTEENTRY {
+    BYTE        peRed;
+    BYTE        peGreen;
+    BYTE        peBlue;
+    BYTE        peFlags;
+  } PALETTEENTRY, *PPALETTEENTRY, *LPPALETTEENTRY;
+
+#define PC_RESERVED     0x01    /* palette index used for animation */
+#define PC_EXPLICIT     0x02    /* palette index is explicit to device */
+#define PC_NOCOLLAPSE   0x04    /* do not match color to system palette */
+
+  typedef struct tagRECT {
+    LONG    left;
+    LONG    top;
+    LONG    right;
+    LONG    bottom;
+  } RECT, *PRECT, *NPRECT, *LPRECT;
+
+#define ERROR_FILE_NOT_FOUND             2L
+#define ERROR_FILE_CORRUPT               1392L
+
+  typedef struct IDirectSoundBuffer           *LPDIRECTSOUNDBUFFER;
+
+  typedef DWORD           FOURCC;         /* a four character code */
+
+  typedef struct _MMCKINFO {
+    FOURCC          ckid;           /* chunk ID */
+    DWORD           cksize;         /* chunk size */
+    FOURCC          fccType;        /* form type or list type */
+    DWORD           dwDataOffset;   /* offset of data portion of chunk */
+    DWORD           dwFlags;        /* flags used by MMIO functions */
+  } MMCKINFO, *PMMCKINFO, *NPMMCKINFO, *LPMMCKINFO;
+  typedef const MMCKINFO *LPCMMCKINFO;
+
+  typedef struct waveformat_tag {
+    WORD    wFormatTag;        /* format type */
+    WORD    nChannels;         /* number of channels (i.e. mono, stereo, etc.) */
+    DWORD   nSamplesPerSec;    /* sample rate */
+    DWORD   nAvgBytesPerSec;   /* for buffer estimation */
+    WORD    nBlockAlign;       /* block size of data */
+  } WAVEFORMAT, *PWAVEFORMAT, *NPWAVEFORMAT, *LPWAVEFORMAT;
+  typedef struct pcmwaveformat_tag {
+    WAVEFORMAT  wf;
+    WORD        wBitsPerSample;
+  } PCMWAVEFORMAT, *PPCMWAVEFORMAT, *NPPCMWAVEFORMAT, *LPPCMWAVEFORMAT;
+
+#define MAKEFOURCC(ch0, ch1, ch2, ch3)                              \
+                ((DWORD)(BYTE)(ch0) | ((DWORD)(BYTE)(ch1) << 8) |   \
+                ((DWORD)(BYTE)(ch2) << 16) | ((DWORD)(BYTE)(ch3) << 24 ))
+#define mmioFOURCC(ch0, ch1, ch2, ch3)  MAKEFOURCC(ch0, ch1, ch2, ch3)
+#define FOURCC_RIFF     mmioFOURCC('R', 'I', 'F', 'F')
+
+#pragma pack(pop)
+
+struct CCritSect {
+  CCritSect() {
+  }
+  ~CCritSect() {
+  }
+  void Enter() {
+  }
+  void Leave() {
+  }
+};
 
 #else
 
@@ -72,6 +179,23 @@ typedef struct _FILETIME
 #include <process.h>
 #include <shlobj.h>
 #include <shellapi.h>
+
+struct CCritSect {
+  CRITICAL_SECTION m_critsect;
+
+  CCritSect() {
+    InitializeCriticalSection(&m_critsect);
+  }
+  ~CCritSect() {
+    DeleteCriticalSection(&m_critsect);
+  }
+  void Enter() {
+    EnterCriticalSection(&m_critsect);
+  }
+  void Leave() {
+    LeaveCriticalSection(&m_critsect);
+  }
+};
 
 #endif
 

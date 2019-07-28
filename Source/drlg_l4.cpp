@@ -1,3 +1,4 @@
+#ifndef SPAWN
 #include "diablo.h"
 
 int diabquad1x;
@@ -1608,8 +1609,8 @@ void L4roomGen(int x, int y, int w, int h, int dir)
 
 	int dirProb = random(0, 4);
 
-	switch (dir == 1 ? dirProb != 0 : dirProb == 0) {
-	case FALSE:
+	switch ((dir == 1 ? dirProb != 0 : dirProb == 0) ? 1 : 0) {
+	case 0:
 		num = 0;
 		do {
 			cw = (random(0, 5) + 2) & ~1;
@@ -1631,7 +1632,7 @@ void L4roomGen(int x, int y, int w, int h, int dir)
 		if (ran2 == TRUE)
 			L4roomGen(cx2, cy1, cw, ch, 1);
 		break;
-	case TRUE:
+	case 1:
 		num = 0;
 		do {
 			width = (random(0, 5) + 2) & ~1;
@@ -1988,3 +1989,4 @@ void DRLG_L4Pass3()
 		yy += 2;
 	}
 }
+#endif

@@ -1,5 +1,5 @@
 #include "diablo.h"
-#include "../3rdParty/Storm/Source/storm.h"
+#include "storm/storm.h"
 
 static BYTE sgbIsScrolling;
 static DWORD sgdwLastWalk;
@@ -17,7 +17,7 @@ void track_process()
 		return;
 
 	if (cursmx != plr[myplr]._ptargx || cursmy != plr[myplr]._ptargy) {
-		DWORD tick = GetTickCount();
+		DWORD tick = _GetTickCount();
 		if ((int)(tick - sgdwLastWalk) >= 300) {
 			sgdwLastWalk = tick;
 			NetSendCmdLoc(TRUE, CMD_WALKXY, cursmx, cursmy);
@@ -35,7 +35,7 @@ void track_repeat_walk(BOOL rep)
 	sgbIsWalking = rep;
 	if (rep) {
 		sgbIsScrolling = 0;
-		sgdwLastWalk = GetTickCount() - 50;
+		sgdwLastWalk = _GetTickCount() - 50;
 		NetSendCmdLoc(TRUE, CMD_WALKXY, cursmx, cursmy);
 	} else if (sgbIsScrolling) {
 		sgbIsScrolling = 0;

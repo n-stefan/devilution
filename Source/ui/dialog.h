@@ -43,17 +43,19 @@ public:
   };
 
 protected:
-  void addItem(Item&& item) {
+  int addItem(Item&& item) {
     items.emplace_back(std::move(item));
     if (item.type == ControlType::List && selected < 0) {
       selected = item.value;
     }
+    return (int)items.size() - 1;
   }
 
   std::vector<Item> items;
   int selected = -1;
   bool wraps = true;
   bool cursor = true;
+  bool doubleclick = false;
 
   virtual void onInput(int id) {};
   virtual void onFocus(int value) {};
@@ -66,6 +68,6 @@ protected:
   virtual void renderExtra(unsigned int time) {};
 
 private:
-  int mouseX_ = 0, mouseY_ = 0;
+  DWORD prevClick_ = 0;
   void setFocus_(int index, bool wrap);
 };

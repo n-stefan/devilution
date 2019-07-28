@@ -1,5 +1,17 @@
 #include "diablo.h"
 
+namespace {
+
+static unsigned int __seed = 0;
+void _srand(unsigned int seed) {
+  __seed = seed;
+}
+int _rand() {
+  return int((__seed = __seed * 214013L + 2531011L) >> 16) & 0x7FFF;
+}
+
+}
+
 struct CodecSignature {
 	DWORD checksum;
 	BYTE error;
@@ -38,7 +50,7 @@ int codec_decode(BYTE *pbSrcDst, DWORD size, char *pszPassword)
 		SHA1Clear();
 	} else {
 		SHA1Result(0, dst);
-		if (sig->checksum != *(DWORD *)dst) {
+    if (sig->checksum != *(DWORD *)dst) {
 			memset(dst, 0, sizeof(dst));
 			size = 0;
 			SHA1Clear();
@@ -58,11 +70,11 @@ void codec_init_key(int unused, char *pszPassword)
 	char digest[SHA1HashSize];
 	char *keyInit;
 
-	srand(0x7058);
+	_srand(0x7058);
 
 	keyInit = key;
 	for (i = 0; i < 136; i++) {
-		*keyInit = rand();
+		*keyInit = _rand();
 		keyInit++;
 	}
 	ch = 0;

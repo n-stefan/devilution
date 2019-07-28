@@ -1,5 +1,5 @@
 #include "diablo.h"
-#include "../3rdParty/Storm/Source/storm.h"
+#include "storm/storm.h"
 
 char sz_error_buf[256];
 BOOL terminating;
@@ -490,11 +490,11 @@ void FreeDlg()
 	dx_cleanup();
 
 	if (gbMaxPlayers > 1) {
-		if (SNetLeaveGame(3))
+		if (_SNetLeaveGame(3))
 			Sleep(2000);
 	}
 
-	SNetDestroy();
+	_SNetDestroy();
 	ShowCursor(TRUE);
 }
 

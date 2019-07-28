@@ -1,5 +1,5 @@
 #include "common.h"
-#include "../../3rdParty/Storm/Source/storm.h"
+#include "../storm/storm.h"
 
 BYTE *FontTables[4];
 Art ArtFonts[4][2];
@@ -10,6 +10,25 @@ Art ArtCursor;
 Art ArtHero;
 
 unsigned int fadeStart = 0;
+
+std::string varfmtstring(char const* fmt, va_list list) {
+  va_list va;
+  va_copy(va, list);
+  size_t len = vsnprintf(nullptr, 0, fmt, va);
+  va_end(va);
+  std::string dst;
+  dst.resize(len + 1);
+  vsnprintf(&dst[0], len + 1, fmt, list);
+  dst.resize(len);
+  return dst;
+}
+std::string fmtstring(char const* fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  std::string res = varfmtstring(fmt, ap);
+  va_end(ap);
+  return res;
+}
 
 void UiFadeReset() {
   fadeStart = 0;
@@ -27,12 +46,14 @@ void UiFadeIn(unsigned int time) {
   SetFadeLevel(fadeValue);
 }
 
-void(__stdcall *gfnSoundFunction)(char *file);
+void( *gfnSoundFunction)(const char *file);
 
 
 static GameStatePtr game_state;
+static int mouseX_ = 0;
+static int mouseY_ = 0;
 
-void GameState::activate(GameState* state) {
+void GameState::activate(const GameStatePtr& state) {
   if (state == game_state) {
     return;
   }
@@ -50,33 +71,34 @@ GameState* GameState::current() {
 
 void GameState::render(unsigned int time) {
   if (auto state = game_state) {
-    state->retain();
     state->onRender(time);
-    state->release();
   }
 }
 void GameState::processMouse(const MouseEvent& e) {
+  mouseX_ = e.x;
+  mouseY_ = e.y;
   if (auto state = game_state) {
-    state->retain();
     state->onMouse(e);
-    state->release();
   }
 }
 
 void GameState::processKey(const KeyEvent &e) {
   if (auto state = game_state) {
-    state->retain();
     state->onKey(e);
-    state->release();
   }
 }
 
 void GameState::processChar(char chr) {
   if (auto state = game_state) {
-    state->retain();
     state->onChar(chr);
-    state->release();
   }
+}
+
+int GameState::mouseX() {
+  return mouseX_;
+}
+int GameState::mouseY() {
+  return mouseY_;
 }
 
 void DrawArt(int screenX, int screenY, Art *art, int nFrame, int drawW) {
@@ -94,7 +116,7 @@ void DrawArt(int screenX, int screenY, Art *art, int nFrame, int drawW) {
   }
 }
 
-void LoadArt(char *pszFile, Art *art, int frames, PALETTEENTRY *pPalette) {
+void LoadArt(const char *pszFile, Art *art, int frames, PALETTEENTRY *pPalette) {
   if (art == NULL || art->data != NULL)
     return;
 
@@ -112,7 +134,7 @@ void LoadArt(char *pszFile, Art *art, int frames, PALETTEENTRY *pPalette) {
   art->frames = frames;
 }
 
-void LoadBackgroundArt(char *pszFile) {
+void LoadBackgroundArt(const char *pszFile) {
   PALETTEENTRY pPal[256];
 
   free(ArtBackground.data);
@@ -122,13 +144,13 @@ void LoadBackgroundArt(char *pszFile) {
   set_palette(pPal);
 }
 
-void LoadMaskedArtFont(char *pszFile, Art *art, int frames, int mask) {
+void LoadMaskedArtFont(const char *pszFile, Art *art, int frames, int mask) {
   LoadArt(pszFile, art, frames);
   art->masked = true;
   art->mask = mask;
 }
 
-void LoadArtFont(char *pszFile, int size, int color) {
+void LoadArtFont(const char *pszFile, int size, int color) {
   LoadMaskedArtFont(pszFile, &ArtFonts[size][color], 256, 32);
 }
 

@@ -1,5 +1,5 @@
 #include "diablo.h"
-#include "../3rdParty/Storm/Source/storm.h"
+#include "storm/storm.h"
 
 BOOL WCloseFile(HANDLE file)
 {
@@ -19,16 +19,16 @@ LONG WGetFileSize(HANDLE hsFile, DWORD *lpFileSizeHigh)
 
 void WGetFileArchive(HANDLE hsFile, DWORD *retries, const char *FileName)
 {
-	HANDLE archive;
+	//HANDLE archive;
 
-	if (*retries >= 5)
-		FileErrDlg(FileName);
+	//if (*retries >= 5)
+	//	FileErrDlg(FileName);
 
-	if (hsFile && SFileGetFileArchive(hsFile, &archive) && archive != diabdat_mpq) {
-		Sleep(20);
-		(*retries)++;
-	} else if (!InsertCDDlg())
-		FileErrDlg(FileName);
+	//if (hsFile && SFileGetFileArchive(hsFile, &archive) && archive != diabdat_mpq) {
+	//	Sleep(20);
+	//	(*retries)++;
+	//} else if (!InsertCDDlg())
+	//	FileErrDlg(FileName);
 }
 
 BOOL WOpenFile(const char *FileName, HANDLE *phsFile, BOOL mayNotExist)
@@ -40,6 +40,7 @@ BOOL WOpenFile(const char *FileName, HANDLE *phsFile, BOOL mayNotExist)
 			return TRUE;
 		if (mayNotExist && SErrGetLastError() == ERROR_FILE_NOT_FOUND)
 			break;
+    break;
 		WGetFileArchive(NULL, &retry, FileName);
 	}
 	return FALSE;
@@ -49,11 +50,11 @@ void WReadFile(HANDLE hsFile, LPVOID buf, DWORD to_read)
 {
 	DWORD retry = 0;
 	DWORD readed;
-	int initial_pos = WSetFilePointer(hsFile, 0, NULL, FILE_CURRENT);
+	int initial_pos = WSetFilePointer(hsFile, 0, NULL, SEEK_CUR);
 
 	while (!SFileReadFile(hsFile, buf, to_read, &readed, NULL)) {
 		WGetFileArchive(hsFile, &retry, NULL);
-		WSetFilePointer(hsFile, initial_pos, NULL, FILE_BEGIN);
+		WSetFilePointer(hsFile, initial_pos, NULL, SEEK_SET);
 	}
 }
 
@@ -121,7 +122,7 @@ BOOL ReadWaveFile(MEMFILE *pMemFile, WAVEFORMATEX *pwfx, CKINFO *chunk)
 		return FALSE;
 	if (!ReadMemFile(pMemFile, &wf, sizeof(wf)))
 		return FALSE;
-	if (SeekMemFile(pMemFile, fmt.dwSize - sizeof(wf), FILE_CURRENT) == -1)
+	if (SeekMemFile(pMemFile, fmt.dwSize - sizeof(wf), SEEK_CUR) == -1)
 		return FALSE;
 
 	pwfx->cbSize = 0;
@@ -160,7 +161,7 @@ BOOL ReadMemFile(MEMFILE *pMemFile, void *lpBuf, size_t length)
 void FillMemFile(MEMFILE *pMemFile)
 {
 	DWORD to_read;
-	WSetFilePointer(pMemFile->file, pMemFile->offset, NULL, FILE_BEGIN);
+	WSetFilePointer(pMemFile->file, pMemFile->offset, NULL, SEEK_SET);
 	to_read = pMemFile->end - pMemFile->offset;
 	if (pMemFile->buf_len < to_read)
 		to_read = pMemFile->buf_len;
@@ -190,12 +191,12 @@ BOOL ReadWaveSection(MEMFILE *pMemFile, DWORD id, CKINFO *chunk)
 			return FALSE;
 		if (hdr[0] == id)
 			break;
-		if (SeekMemFile(pMemFile, hdr[1], FILE_CURRENT) == -1)
+		if (SeekMemFile(pMemFile, hdr[1], SEEK_CUR) == -1)
 			return FALSE;
 	}
 
 	chunk->dwSize = hdr[1];
-	chunk->dwOffset = SeekMemFile(pMemFile, 0, FILE_CURRENT);
+	chunk->dwOffset = SeekMemFile(pMemFile, 0, SEEK_CUR);
 	return chunk->dwOffset != (DWORD)-1;
 }
 

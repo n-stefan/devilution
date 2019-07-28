@@ -1,3 +1,4 @@
+#ifndef SPAWN
 #include "diablo.h"
 
 int nSx1;
@@ -327,7 +328,7 @@ void L2DoorFix()
 	}
 }
 
-void LoadL2Dungeon(char *sFileName, int vx, int vy)
+void LoadL2Dungeon(const char *sFileName, int vx, int vy)
 {
 	int i, j, rw, rh, pc;
 	BYTE *pLevelMap, *lm;
@@ -502,7 +503,7 @@ void DRLG_L2Pass3()
 	}
 }
 
-void LoadPreL2Dungeon(char *sFileName, int vx, int vy)
+void LoadPreL2Dungeon(const char *sFileName, int vx, int vy)
 {
 	int i, j, rw, rh;
 	BYTE *pLevelMap, *lm;
@@ -2151,3 +2152,4 @@ void DRLG_InitL2Vals()
 		}
 	}
 }
+#endif

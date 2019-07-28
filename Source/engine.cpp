@@ -1,5 +1,5 @@
 #include "diablo.h"
-#include "../3rdParty/Storm/Source/storm.h"
+#include "storm/storm.h"
 
 #ifdef USE_ASM
 #pragma warning(disable : 4731) // frame pointer register 'ebp' modified by inline assembly code
@@ -18,6 +18,10 @@ BOOL gbNotInView; // valid - if x/y are in bounds
 
 const int rand_increment = 1;
 const int rand_multiplier = 0x015A4E35;
+
+static inline BYTE byteptr(const void* ptr) {
+  return (BYTE) ((size_t) ptr);
+}
 
 void CelDrawDatOnly(BYTE *pDecodeTo, BYTE *pRLEBytes, int nDataSize, int nWidth)
 {
@@ -515,14 +519,14 @@ void CelDecDatLightTrans(BYTE *pDecodeTo, BYTE *pRLEBytes, int nDataSize, int nW
 	dst = pDecodeTo;
 	tbl = &pLightTbl[light_table_index * 256];
 	w = nWidth;
-	shift = (BYTE)dst & 1;
+	shift = byteptr(dst) & 1;
 
 	for (; src != &pRLEBytes[nDataSize]; dst -= BUFFER_WIDTH + w, shift = (shift + 1) & 1) {
 		for (i = w; i;) {
 			width = *src++;
 			if (!(width & 0x80)) {
 				i -= width;
-				if (((BYTE)dst & 1) == shift) {
+				if ((byteptr(dst) & 1) == shift) {
 					if (!(width & 1)) {
 						goto L_ODD;
 					} else {
@@ -1299,7 +1303,7 @@ void Cel2DecDatLightTrans(BYTE *pDecodeTo, BYTE *pRLEBytes, int nDataSize, int n
 	dst = pDecodeTo;
 	tbl = &pLightTbl[light_table_index * 256];
 	w = nWidth;
-	shift = (BYTE)dst & 1;
+	shift = byteptr(dst) & 1;
 
 	for (; src != &pRLEBytes[nDataSize]; dst -= BUFFER_WIDTH + w, shift = (shift + 1) & 1) {
 		for (i = w; i;) {
@@ -1307,7 +1311,7 @@ void Cel2DecDatLightTrans(BYTE *pDecodeTo, BYTE *pRLEBytes, int nDataSize, int n
 			if (!(width & 0x80)) {
 				i -= width;
 				if (dst < gpBufEnd) {
-					if (((BYTE)dst & 1) == shift) {
+					if ((byteptr(dst) & 1) == shift) {
 						if (!(width & 1)) {
 							goto L_ODD;
 						} else {
@@ -1693,7 +1697,7 @@ void CelDecodeRect(BYTE *pBuff, int CelSkip, int hgt, int wdt, BYTE *pCelBuff, i
  * @param CelSkip Skip lower parts of sprite, must be multiple of 2, max 8
  * @param CelCap Amount of sprite to render from lower to upper, must be multiple of 2, max 8
  */
-void CelDecodeClr(char col, int sx, int sy, BYTE *pCelBuff, int nCel, int nWidth, int CelSkip, int CelCap)
+void CelDecodeClr(BYTE col, int sx, int sy, BYTE *pCelBuff, int nCel, int nWidth, int CelSkip, int CelCap)
 {
 	int nDataStart, nDataSize, nDataCap, w;
 	BYTE *pRLEBytes, *dst;
@@ -1834,7 +1838,7 @@ void CelDecodeClr(char col, int sx, int sy, BYTE *pCelBuff, int nCel, int nWidth
  * @param CelSkip Skip lower parts of sprite, must be multiple of 2, max 8
  * @param CelCap Amount of sprite to render from lower to upper, must be multiple of 2, max 8
  */
-void CelDrawHdrClrHL(char col, int sx, int sy, BYTE *pCelBuff, int nCel, int nWidth, int CelSkip, int CelCap)
+void CelDrawHdrClrHL(BYTE col, int sx, int sy, BYTE *pCelBuff, int nCel, int nWidth, int CelSkip, int CelCap)
 {
 	int nDataStart, nDataSize, nDataCap, w;
 	BYTE *pRLEBytes, *dst;
@@ -2370,7 +2374,7 @@ BYTE *DiabloAllocPtr(DWORD dwBytes)
 #endif
 
 	if (buf == NULL) {
-		ErrDlg(IDD_DIALOG2, GetLastError(), "C:\\Src\\Diablo\\Source\\ENGINE.CPP", 2269);
+		//ErrDlg(IDD_DIALOG2, GetLastError(), "C:\\Src\\Diablo\\Source\\ENGINE.CPP", 2269);
 	}
 
 	return buf;
@@ -2389,7 +2393,7 @@ void mem_free_dbg(void *p)
 	}
 }
 
-BYTE *LoadFileInMem(char *pszName, DWORD *pdwFileLen)
+BYTE *LoadFileInMem(const char *pszName, DWORD *pdwFileLen)
 {
 	HANDLE file;
 	BYTE *buf;
@@ -2660,7 +2664,7 @@ void Cl2DecDatFrm1(BYTE *pDecodeTo, BYTE *pRLEBytes, int nDataSize, int nWidth)
  * @param CelSkip Skip lower parts of sprite, must be multiple of 2, max 8
  * @param CelCap Amount of sprite to render from lower to upper, must be multiple of 2, max 8
  */
-void Cl2DecodeFrm2(char col, int sx, int sy, BYTE *pCelBuff, int nCel, int nWidth, int CelSkip, int CelCap)
+void Cl2DecodeFrm2(BYTE col, int sx, int sy, BYTE *pCelBuff, int nCel, int nWidth, int CelSkip, int CelCap)
 {
 	int nDataStart, nDataSize;
 	BYTE *pRLEBytes;
@@ -2698,7 +2702,7 @@ void Cl2DecodeFrm2(char col, int sx, int sy, BYTE *pCelBuff, int nCel, int nWidt
 	    col);
 }
 
-void Cl2DecDatFrm2(BYTE *pDecodeTo, BYTE *pRLEBytes, int nDataSize, int nWidth, char col)
+void Cl2DecDatFrm2(BYTE *pDecodeTo, BYTE *pRLEBytes, int nDataSize, int nWidth, BYTE col)
 {
 #ifdef USE_ASM
 	__asm {
@@ -3305,7 +3309,7 @@ void Cl2DecDatFrm4(BYTE *pDecodeTo, BYTE *pRLEBytes, int nDataSize, int nWidth)
  * @param CelSkip Skip lower parts of sprite, must be multiple of 2, max 8
  * @param CelCap Amount of sprite to render from lower to upper, must be multiple of 2, max 8
  */
-void Cl2DecodeClrHL(char col, int sx, int sy, BYTE *pCelBuff, int nCel, int nWidth, int CelSkip, int CelCap)
+void Cl2DecodeClrHL(BYTE col, int sx, int sy, BYTE *pCelBuff, int nCel, int nWidth, int CelSkip, int CelCap)
 {
 	int nDataStart, nDataSize;
 	BYTE *pRLEBytes;
@@ -3345,7 +3349,7 @@ void Cl2DecodeClrHL(char col, int sx, int sy, BYTE *pCelBuff, int nCel, int nWid
 	gpBufEnd += BUFFER_WIDTH;
 }
 
-void Cl2DecDatClrHL(BYTE *pDecodeTo, BYTE *pRLEBytes, int nDataSize, int nWidth, char col)
+void Cl2DecDatClrHL(BYTE *pDecodeTo, BYTE *pRLEBytes, int nDataSize, int nWidth, BYTE col)
 {
 #ifdef USE_ASM
 	__asm {
@@ -3777,7 +3781,7 @@ void Cl2DecodeFrm6(int sx, int sy, BYTE *pCelBuff, int nCel, int nWidth, int Cel
 		Cl2DecDatFrm4(pDecodeTo, pRLEBytes, nSize, nWidth);
 }
 
-void PlayInGameMovie(char *pszMovie)
+void PlayInGameMovie(const char *pszMovie)
 {
 	PaletteFadeOut(8);
 	play_movie(pszMovie, 0);

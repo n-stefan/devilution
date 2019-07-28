@@ -44,7 +44,7 @@ void multi_process_tmsgs();
 void multi_send_zero_packet(DWORD pnum, char identifier, void *pbSrc, DWORD dwLen);
 void NetClose();
 void multi_event_handler(BOOL add);
-void __stdcall multi_handle_events(_SNETEVENT *pEvt);
+void  multi_handle_events(_SNETEVENT *pEvt);
 BOOL NetInit(BOOL bSinglePlayer, BOOL *pfExitProgram);
 void buffer_init(TBuffer *pBuf);
 void multi_send_pinfo(int pnum, char cmd);

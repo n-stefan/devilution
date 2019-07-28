@@ -1,5 +1,6 @@
 #include "diablo.h"
-#include "../3rdParty/Storm/Source/storm.h"
+#include "storm/storm.h"
+#include "trace.h"
 
 int plr_lframe_size;
 int plr_wframe_size;
@@ -46,7 +47,7 @@ int MagicTbl[3] = { 10, 15, 35 };
 int DexterityTbl[3] = { 20, 30, 15 };
 int VitalityTbl[3] = { 25, 20, 20 };
 int ToBlkTbl[3] = { 30, 20, 10 };
-char *ClassStrTblOld[3] = { "Warrior", "Rogue", "Sorceror" }; // unused
+const char *ClassStrTblOld[3] = { "Warrior", "Rogue", "Sorceror" }; // unused
 int MaxStats[3][4] = {
 	{ 250, 50, 60, 100 },
 	{ 55, 70, 250, 80 },
@@ -105,7 +106,7 @@ int ExpLvlsTbl[MAXCHARLEVEL] = {
 	1310707109,
 	1583495809
 };
-char *ClassStrTbl[3] = { "Warrior", "Rogue", "Sorceror" };
+const char *ClassStrTbl[3] = { "Warrior", "Rogue", "Sorceror" };
 BYTE fix[9] = { 0, 0, 3, 3, 3, 6, 6, 6, 8 }; /* PM_ChangeLightOff local type */
 
 void SetPlayerGPtrs(BYTE *pData, BYTE **pAnim)
@@ -121,9 +122,9 @@ void LoadPlrGFX(int pnum, player_graphic gfxflag)
 {
 	char prefix[16];
 	char pszName[256];
-	char *szCel;
+	const char *szCel;
 	PlayerStruct *p;
-	char *cs;
+	const char *cs;
 	BYTE *pData, *pAnim;
 	DWORD i;
 
@@ -314,11 +315,10 @@ void InitPlrGFXMem(int pnum)
 	plr[pnum]._pGFXLoad = 0;
 }
 
-DWORD GetPlrGFXSize(char *szCel)
+DWORD GetPlrGFXSize(const char *szCel)
 {
 	char prefix[16];
 	char pszName[256];
-	HANDLE file;
 	int c, a, w;
 	DWORD size, result;
 
@@ -332,9 +332,7 @@ DWORD GetPlrGFXSize(char *szCel)
 			for (w = 0; WepChar[w]; w++) { // BUGFIX loads non-existing animagions; DT is only for N, BT is only for U, D & H
 				sprintf(prefix, "%c%c%c", CharChar[c], ArmourChar[a], WepChar[w]);
 				sprintf(pszName, "PlrGFX\\%s\\%s\\%s%s.CL2", ClassStrTbl[c], prefix, prefix, szCel);
-				if (WOpenFile(pszName, &file, TRUE)) {
-					size = WGetFileSize(file, 0);
-					WCloseFile(file);
+        if (SFileGetFileSizeFast(pszName, &size)) {
 					if (result <= size) {
 						result = size;
 					}
@@ -505,7 +503,7 @@ void CreatePlayer(int pnum, char c)
 	int i;
 
 	ClearPlrRVars(&plr[pnum]);
-	SetRndSeed(GetTickCount());
+	SetRndSeed(_GetTickCount());
 
 	if ((DWORD)pnum >= MAX_PLRS) {
 		app_fatal("CreatePlayer: illegal player %d", pnum);
@@ -562,7 +560,7 @@ void CreatePlayer(int pnum, char c)
 		plr[pnum]._pHitPoints += plr[pnum]._pHitPoints >> 1;
 	}
 
-	hp = plr[pnum]._pHitPoints;
+  hp = plr[pnum]._pHitPoints;
 	plr[pnum]._pMaxHP = hp;
 	plr[pnum]._pHPBase = hp;
 	plr[pnum]._pMaxHPBase = hp;
@@ -593,11 +591,11 @@ void CreatePlayer(int pnum, char c)
 	plr[pnum]._pInfraFlag = FALSE;
 
 	if (c == PC_WARRIOR) {
-		plr[pnum]._pAblSpells = (__int64)1 << (SPL_REPAIR - 1);
+		plr[pnum]._pAblSpells = 1LL << (SPL_REPAIR - 1);
 	} else if (c == PC_ROGUE) {
-		plr[pnum]._pAblSpells = (__int64)1 << (SPL_DISARM - 1);
+		plr[pnum]._pAblSpells = 1LL << (SPL_DISARM - 1);
 	} else if (c == PC_SORCERER) {
-		plr[pnum]._pAblSpells = (__int64)1 << (SPL_RECHARGE - 1);
+		plr[pnum]._pAblSpells = 1LL << (SPL_RECHARGE - 1);
 	}
 
 	if (c == PC_SORCERER) {
@@ -2801,7 +2799,7 @@ BOOL PM_DoSpell(int pnum)
 		if (!plr[pnum]._pSplFrom) {
 			if (plr[pnum]._pRSplType == RSPLTYPE_SCROLL) {
 				if (!(plr[pnum]._pScrlSpells
-				        & (unsigned __int64)1 << (plr[pnum]._pRSpell - 1))) {
+				        & 1ULL << (plr[pnum]._pRSpell - 1))) {
 					plr[pnum]._pRSpell = SPL_INVALID;
 					plr[pnum]._pRSplType = RSPLTYPE_INVALID;
 					drawpanflag = 255;
@@ -2810,7 +2808,7 @@ BOOL PM_DoSpell(int pnum)
 
 			if (plr[pnum]._pRSplType == RSPLTYPE_CHARGES) {
 				if (!(plr[pnum]._pISpells
-				        & (unsigned __int64)1 << (plr[pnum]._pRSpell - 1))) {
+				        & 1ULL << (plr[pnum]._pRSpell - 1))) {
 					plr[pnum]._pRSpell = SPL_INVALID;
 					plr[pnum]._pRSplType = RSPLTYPE_INVALID;
 					drawpanflag = 255;
@@ -3294,7 +3292,7 @@ BOOL PlrDeathModeOK(int p)
 
 void ValidatePlayer()
 {
-	__int64 msk;
+	int64_t msk;
 	int gt, pc, i, b;
 
 	msk = 0;
@@ -3335,7 +3333,7 @@ void ValidatePlayer()
 
 	for (b = 1; b < MAX_SPELLS; b++) {
 		if (spelldata[b].sBookLvl != -1) {
-			msk |= (__int64)1 << (b - 1);
+			msk |= 1LL << (b - 1);
 			if (plr[myplr]._pSplLvl[b] > 15)
 				plr[myplr]._pSplLvl[b] = 15;
 		}

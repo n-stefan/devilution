@@ -56,7 +56,7 @@ private:
 	TList(const TList &);
 	TList &operator=(const TList &);
 
-	static __forceinline void SDelete(T *node)
+	static void SDelete(T *node)
 	{
 		SMemFree(node, (char *)OBJECT_NAME(T), SLOG_OBJECT, 0);
 	}
@@ -86,21 +86,23 @@ template <class T>
 void TList<T>::DeleteAll()
 {
 	while (T *node = m_link.Next()) {
-		node->Delete(0x0);
+    if (node) {
+      node->Delete(0x0);
+    }
 		SDelete(node);
 	}
 }
 
 //=============================================================================
 template <class T>
-__forceinline T *TList<T>::Head()
+T *TList<T>::Head()
 {
 	return m_link.Next();
 }
 
 //=============================================================================
 template <class T>
-__forceinline TLink<T> *TList<T>::GetLinkFromNode(T *node) const
+TLink<T> *TList<T>::GetLinkFromNode(T *node) const
 {
 	//    assert(m_offset != (size_t) -1);
 	//    return (TLink<T> *) ((size_t) node + m_offset);
@@ -112,7 +114,9 @@ T *TList<T>::Remove(T *node)
 {
 	TLink<T> *link = node ? &node->m_Link : &m_link;
 	T *next = link->Next();
-	node->Delete(0x0);
+  if (node) {
+    node->Delete(0x0);
+  }
 	SDelete(node);
 	return next;
 }
@@ -143,6 +147,8 @@ void TList<T>::Insert(T *node, InsertPos pos, T *ref)
 	case BEFORE:
 		i->InsertBefore(node, reflink);
 		break;
+  default:
+    break;
 	}
 }
 
@@ -215,7 +221,7 @@ public:
 		nextLink->m_prevLink = this;
 	}
 
-	__forceinline void InsertAfter(T *node, TLink<T> *prevLink, const size_t &offset)
+	void InsertAfter(T *node, TLink<T> *prevLink, const size_t &offset)
 	{
 		m_prevLink = prevLink;
 		m_nextNode = prevLink->m_nextNode;

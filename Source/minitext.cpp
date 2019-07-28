@@ -1,7 +1,7 @@
 #include "diablo.h"
 
 int qtexty;
-char *qtextptr;
+const char *qtextptr;
 int qtextSpd;
 BOOLEAN qtextflag;
 int scrolltexty;
@@ -59,7 +59,7 @@ void InitQTextMsg(int m)
 		qtexty = 500;
 		sgLastScroll = qscroll_spd_tbl[alltext[m].txtspd - 1]; /* double check offset */
 		scrolltexty = sgLastScroll;
-		qtextSpd = GetTickCount();
+		qtextSpd = _GetTickCount();
 	}
 	PlaySFX(alltext[m].sfxnr);
 }
@@ -196,7 +196,7 @@ void DrawQText()
 {
 	int i, l, w, tx, ty;
 	BYTE c;
-	char *p, *pnl, *s;
+	const char *p, *pnl, *s;
 	char tempstr[128];
 	BOOL doneflag;
 	DWORD currTime;
@@ -255,7 +255,7 @@ void DrawQText()
 		}
 	}
 
-	currTime = GetTickCount();
+	currTime = _GetTickCount();
 	while (1) {
 		if (sgLastScroll <= 0) {
 			qtexty--;

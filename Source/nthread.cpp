@@ -1,5 +1,5 @@
 #include "diablo.h"
-#include "../3rdParty/Storm/Source/storm.h"
+#include "storm/storm.h"
 
 BYTE sgbNetUpdateRate;
 DWORD gdwMsgLenTbl[MAX_PLRS];
@@ -46,7 +46,7 @@ DWORD nthread_send_and_recv_turn(DWORD cur_turn, int turn_delta)
 	int curTurnsInTransit;
 
 	new_cur_turn = cur_turn;
-	if (!SNetGetTurnsInTransit(&curTurnsInTransit)) {
+	if (!_SNetGetTurnsInTransit(&curTurnsInTransit)) {
 		nthread_terminate_game("SNetGetTurnsInTransit");
 		return 0;
 	}
@@ -57,7 +57,7 @@ DWORD nthread_send_and_recv_turn(DWORD cur_turn, int turn_delta)
 		turn_upper_bit = 0;
 		turn = turn_tmp;
 
-		if (!SNetSendTurn((char *)&turn, sizeof(turn))) {
+		if (!_SNetSendTurn((char *)&turn, sizeof(turn))) {
 			nthread_terminate_game("SNetSendTurn");
 			return 0;
 		}
@@ -85,7 +85,7 @@ BOOL nthread_recv_turns(BOOL *pfSendAsync)
 		last_tick += 50;
 		return TRUE;
 	}
-	if (!SNetReceiveTurns(0, MAX_PLRS, (char **)glpMsgTbl, gdwMsgLenTbl, (LPDWORD)player_state)) {
+	if (!_SNetReceiveTurns(0, MAX_PLRS, (char **)glpMsgTbl, gdwMsgLenTbl, (LPDWORD)player_state)) {
 		if (SErrGetLastError() != STORM_ERROR_NO_MESSAGES_WAITING)
 			nthread_terminate_game("SNetReceiveTurns");
 		sgbTicsOutOfSync = FALSE;
@@ -125,7 +125,7 @@ void nthread_start(BOOL set_turn_upper_bit)
 	else
 		turn_upper_bit = 0;
 	caps.size = 36;
-	if (!SNetGetProviderCaps(&caps)) {
+	if (!_SNetGetProviderCaps(&caps)) {
 		err = TraceLastError();
 		app_fatal("SNetGetProviderCaps:\n%s", err);
 	}
