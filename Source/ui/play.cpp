@@ -156,6 +156,7 @@ public:
       }
     } else {
       gmenu_on_mouse_move();
+      CheckCursMove();
     }
   }
 

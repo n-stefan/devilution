@@ -2,8 +2,6 @@
  * based on https://github.com/webcoyote/coho/blob/master/Base/List.h
  */
 
-#include "../3rdParty/Storm/Source/storm.h"
-
 #define OBJECT_NAME(obj) (((const char *)&typeid(obj)) + 8)
 
 /******************************************************************************

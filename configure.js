@@ -59,7 +59,7 @@ function BUILD(spawn) {
 
   const res = `${out.join("\n")}
 
-call emcc ${parser.join(" ")} -o ${oname}.js -s EXPORT_NAME="${oname}" ${link_flags(spawn ? 268435456 : 1073741824, true)}
+call emcc ${parser.join(" ")} -o ${oname}.js -s EXPORT_NAME="${oname}" ${link_flags(spawn ? 268435456 : 536870912, true)}
 move ${oname}.js ${oname}.jscc
 `;
 

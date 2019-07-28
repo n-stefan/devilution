@@ -50,6 +50,7 @@ public:
   }
 
   void onActivate() override {
+    DialogState::onActivate();
     LoadBackgroundArt("ui_art\\selhero.pcx");
   }
 };
@@ -107,7 +108,7 @@ public:
   {
     addItem({{264, 211, 584, 244}, ControlType::Text, ControlFlags::Center | ControlFlags::Big, 0, "Enter Name"});
     name_ = addItem({{265, 317, 585, 350}, ControlType::Edit, ControlFlags::List | ControlFlags::Medium | ControlFlags::Gold, 0, ""});
-    addItem({{279, 427, 419, 462}, ControlType::Button, ControlFlags::Center | ControlFlags::VCenter | ControlFlags::Big | ControlFlags::Gold, -1, "OK"});
+    ok_ = addItem({{279, 427, 419, 462}, ControlType::Button, ControlFlags::Center | ControlFlags::VCenter | ControlFlags::Big | ControlFlags::Disabled, -1, "OK"});
     addItem({{429, 427, 569, 462}, ControlType::Button, ControlFlags::Center | ControlFlags::VCenter | ControlFlags::Big | ControlFlags::Gold, -2, "Cancel"});
 
     setStats(&hero_);
@@ -119,13 +120,7 @@ public:
       UiPlaySelectSound();
       activate(prevState_);
     }
-  }
-
-  void onInput(int value) override {
-    if (value == -2) {
-      UiPlaySelectSound();
-      activate(prevState_);
-    } else {
+    if (e.action == KeyEvent::Press && e.key == KeyCode::RETURN && !this->items[name_].text.empty()) {
       UiPlaySelectSound();
       strcpy(hero_.name, this->items[name_].text.c_str());
       pfile_ui_save_create(&hero_);
@@ -133,9 +128,30 @@ public:
     }
   }
 
+  void onInput(int value) override {
+    if (value == -2) {
+      UiPlaySelectSound();
+      activate(prevState_);
+    } else if (value == -1) {
+      if (!this->items[name_].text.empty()) {
+        UiPlaySelectSound();
+        strcpy(hero_.name, this->items[name_].text.c_str());
+        pfile_ui_save_create(&hero_);
+        activate(get_play_state(hero_.name, SELHERO_NEW_DUNGEON));
+      }
+    } else if (value == 0) {
+      int baseFlags = ControlFlags::Center | ControlFlags::Big;
+      if (this->items[name_].text.empty()) {
+        items[ok_].flags = baseFlags | ControlFlags::Disabled;
+      } else {
+        items[ok_].flags = baseFlags | ControlFlags::Gold;
+      }
+    }
+  }
+
 private:
   bool multi_;
-  int name_;
+  int name_, ok_;
   GameStatePtr prevState_;
   _uiheroinfo hero_;
 };

@@ -1,4 +1,35 @@
 #include "dialog.h"
+#include "../trace.h"
+
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+EM_JS(void, api_open_keyboard, (), {
+  window.DApi.open_keyboard();
+});
+EM_JS(void, api_close_keyboard, (), {
+  window.DApi.close_keyboard();
+});
+
+extern "C" {
+  EMSCRIPTEN_KEEPALIVE void DApi_SyncText(int c0, int c1, int c2, int c3, int c4, int c5, int c6, int c7, int c8, int c9, int c10, int c11, int c12, int c13, int c14);
+}
+
+EMSCRIPTEN_KEEPALIVE void DApi_SyncText(int c0, int c1, int c2, int c3, int c4, int c5, int c6, int c7, int c8, int c9, int c10, int c11, int c12, int c13, int c14) {
+  auto ptr = dynamic_cast<DialogState*>(GameState::current());
+  char text[16] = {(char) c0, (char) c1, (char) c2, (char) c3, (char) c4, (char) c5, (char) c6,
+    (char) c7, (char) c8, (char) c9, (char) c10, (char) c11, (char) c12, (char) c13, (char) c14};
+  text[15] = 0;
+  if (ptr) {
+    ptr->syncText(text);
+  }
+}
+
+#else
+void api_open_keyboard() {
+}
+void api_close_keyboard() {
+}
+#endif
 
 namespace {
 
@@ -182,6 +213,39 @@ void DialogState::onRender(unsigned int time) {
   }
 }
 
+void DialogState::onActivate() {
+  bool hasEdit = false;
+  for (auto& item : items) {
+    if (item.type == ControlType::Edit) {
+      hasEdit = true;
+    }
+  }
+  if (hasEdit) {
+    api_open_keyboard();
+  }
+}
+
+void DialogState::onDeactivate() {
+  api_close_keyboard();
+}
+
+void DialogState::syncText(const char* text) {
+  std::string text2;
+  for (size_t i = 0; text[i]; ++i) {
+    unsigned char code = (unsigned char) text[i];
+    if (code >= 32 && code <= 127 && isprint(code)) {
+      text2.push_back(code);
+    }
+  }
+  for (auto& item : items) {
+    if (item.type == ControlType::Edit) {
+      item.text = text2;
+      onInput(item.value);
+      break;
+    }
+  }
+}
+
 void DialogState::setFocus_(int index, bool wrap) {
   int minVal = 1000, maxVal = -1000;
   for (auto& item : items) {
@@ -214,11 +278,15 @@ void DialogState::setFocus_(int index, bool wrap) {
 
 void DialogState::onMouse(const MouseEvent& event) {
   for (const auto& item : items) {
-    if (item.type != ControlType::List && item.type != ControlType::Button) {
+    if (item.type != ControlType::List && item.type != ControlType::Button && item.type != ControlType::Edit) {
       continue;
     }
     if (event.x >= item.rect.left && event.y >= item.rect.top && event.x < item.rect.right && event.y < item.rect.bottom) {
-      if (item.type == ControlType::List) {
+      if (item.type == ControlType::Edit) {
+        if (event.action == MouseEvent::Press) {
+          api_open_keyboard();
+        }
+      } else if (item.type == ControlType::List) {
         if (!item.text.empty()) {
           if (event.action == MouseEvent::Press) {
             if (!doubleclick || (item.value == selected && _GetTickCount() - prevClick_ < 1000)) {
@@ -270,6 +338,7 @@ void DialogState::onKey(const KeyEvent& e) {
         if (item.type == ControlType::Edit) {
           if (!item.text.empty()) {
             item.text.pop_back();
+            onInput(item.value);
           }
           break;
         }
@@ -284,6 +353,7 @@ void DialogState::onChar(char chr) {
     if (item.type == ControlType::Edit) {
       if (item.text.size() < 15) {
         item.text.push_back(chr);
+        onInput(item.value);
       }
       break;
     }

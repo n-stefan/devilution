@@ -2,6 +2,9 @@
 #include <stdint.h>
 #include <vector>
 #include "trace.h"
+#include "rmpq/file.h"
+#include "rmpq/common.h"
+#include "storm/storm.h"
 
 #ifdef EMSCRIPTEN
 
@@ -16,7 +19,7 @@ EM_JS(int, api_duplicate_sound, (int id), {
 });
 
 EM_JS(void, api_play_sound, (int id, int volume, int pan, int loop), {
-  return window.DApi.play_sound(id, volume, pan);
+  return window.DApi.play_sound(id, volume, pan, loop);
 });
 
 EM_JS(void, api_set_volume, (int id, int volume), {
@@ -62,17 +65,19 @@ public:
   }
 
   bool playing() {
-    return started_ && _GetTickCount() < started_ + duration_;
+    return started_ && (looping_ || _GetTickCount() < started_ + duration_);
   }
   bool recently_started() {
     return started_ && _GetTickCount() - started_ < 80;
   }
   void play(int volume, int pan, bool loop = false) {
     started_ = _GetTickCount();
+    looping_ = loop;
     api_play_sound(id_, volume, pan, loop ? 1 : 0);
   }
   void stop() {
     started_ = 0;
+    looping_ = false;
     api_stop_sound(id_);
   }
   void set_volume(int volume) {
@@ -94,6 +99,7 @@ public:
 private:
   int id_;
   DWORD started_ = 0;
+  bool looping_ = false;
   DWORD duration_;
 };
 
@@ -198,10 +204,21 @@ void snd_play_snd(TSnd *pSnd, int lVolume, int lPan) {
 }
 
 TSnd *sound_file_load(const char *path) {
+  //S
+  //File ff(path, "rb");
+  //File ff2("C:/Projects/")
   HANDLE file;
   if (!WOpenFile(path, &file, FALSE)) {
     return NULL;
   }
+  //{
+  //  auto size = SFileGetFileSize(file, NULL);
+  //  std::vector<BYTE> data(size);
+  //  SFileReadFile(file, data.data(), data.size(), NULL, NULL);
+  //  SFileSetFilePointer(file, 0, NULL, SEEK_SET);
+  //  File ff(std::string("audio/") + mpq::path_name(path), "wb");
+  //  ff.write(data.data(), size);
+  //}
   WAVEFORMATEX fmt;
   CKINFO chunk;
   BYTE* wave_file = LoadWaveFile(file, &fmt, &chunk);
@@ -271,7 +288,7 @@ TSnd *sound_from_buffer(const unsigned char* buffer, unsigned long size, int cha
   if (!func) {
     return nullptr;
   }
-  size_t sampleSize = channels * depth / 8;
+  size_t sampleSize = depth / 8;
   size_t numSamples = size / sampleSize;
   size_t numBlocks = numSamples / channels;
   std::vector<float> samples(numSamples);

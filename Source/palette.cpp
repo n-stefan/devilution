@@ -99,6 +99,7 @@ void IncreaseGamma()
 
 void palette_update()
 {
+  drawpanflag = 255;
 }
 
 void ApplyGamma(PALETTEENTRY *dst, PALETTEENTRY *src, int n)
