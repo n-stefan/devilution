@@ -39,13 +39,8 @@ BOOL  SFileCloseArchive(HANDLE hArchive) {
   return TRUE;
 }
 
-struct MpqFile {
-  File file;
-  mpq::Archive* archive = nullptr;
-};
-
 BOOL  SFileCloseFile(HANDLE hFile) {
-  delete ((MpqFile*) hFile);
+  delete ((File*) hFile);
   return TRUE;
 }
 
@@ -56,8 +51,8 @@ BOOL  SFileGetFileArchive(HANDLE hFile, HANDLE *archive) {
 }
 
 LONG  SFileGetFileSize(HANDLE hFile, LPDWORD lpFileSizeHigh) {
-  MpqFile* file = (MpqFile*) hFile;
-  uint64_t size = file->file.size();
+  File* file = (File*) hFile;
+  uint64_t size = file->size();
   if (lpFileSizeHigh) {
     *lpFileSizeHigh = (DWORD) (size >> 32);
   }
@@ -84,9 +79,7 @@ BOOL  SFileOpenFileEx(HANDLE hMpq, const char *szFileName, DWORD dwSearchScope, 
   }
   auto file = archive->load_(pos, mpq::hashString(mpq::path_name(szFileName), mpq::HASH_KEY), true);
   if (file) {
-    MpqFile* mpqf = new MpqFile;
-    mpqf->archive = archive;
-    mpqf->file = file;
+    File* mpqf = new File(file);
     *phFile = (HANDLE) mpqf;
     return TRUE;
   }
@@ -95,8 +88,8 @@ BOOL  SFileOpenFileEx(HANDLE hMpq, const char *szFileName, DWORD dwSearchScope, 
 }
 
 BOOL  SFileReadFile(HANDLE hFile, void *buffer, DWORD nNumberOfBytesToRead, DWORD *read, LONG *lpDistanceToMoveHigh) {
-  MpqFile* file = (MpqFile*) hFile;
-  auto res = file->file.read(buffer, nNumberOfBytesToRead);
+  File* file = (File*) hFile;
+  auto res = file->read(buffer, nNumberOfBytesToRead);
   if (read) {
     *read = (DWORD) res;
   }
@@ -108,8 +101,8 @@ BOOL  SFileSetBasePath(char *) {
 }
 
 int  SFileSetFilePointer(HANDLE hFile, int pos, HANDLE, int origin) {
-  MpqFile* file = (MpqFile*) hFile;
-  file->file.seek(pos, origin);
+  File* file = (File*) hFile;
+  file->seek(pos, origin);
   return 0;
 }
 

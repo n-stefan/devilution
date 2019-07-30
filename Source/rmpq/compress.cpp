@@ -31,7 +31,7 @@ struct BUFFERINFO {
 };
 
 bool pkzip_compress(void* in, size_t in_size, void* out, size_t* out_size) {
-  std::vector<char> buf(CMP_BUFFER_SIZE);
+  char buf[CMP_BUFFER_SIZE];
 
   BUFFERINFO bi;
   bi.in = in;
@@ -51,7 +51,7 @@ bool pkzip_compress(void* in, size_t in_size, void* out, size_t* out_size) {
     dictSize = 0x800;
   }
 
-  implode(BUFFERINFO::input, BUFFERINFO::output, buf.data(), &bi, &compType, &dictSize);
+  implode(BUFFERINFO::input, BUFFERINFO::output, buf, &bi, &compType, &dictSize);
   *out_size = bi.outPos;
 
   return true;
@@ -62,7 +62,7 @@ bool pkzip_decompress(void* in, size_t in_size, void* out, size_t* out_size) {
     memcpy(out, in, in_size);
     return true;
   }
-  std::vector<char> buf(CMP_BUFFER_SIZE);
+  char buf[EXP_BUFFER_SIZE];
 
   BUFFERINFO bi;
   bi.in = in;
@@ -82,7 +82,7 @@ bool pkzip_decompress(void* in, size_t in_size, void* out, size_t* out_size) {
     dictSize = 0x800;
   }
 
-  explode(BUFFERINFO::input, BUFFERINFO::output, buf.data(), &bi);
+  explode(BUFFERINFO::input, BUFFERINFO::output, buf, &bi);
   *out_size = bi.outPos;
 
   return true;

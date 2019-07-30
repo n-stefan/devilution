@@ -23,6 +23,7 @@ void exit_error( const char* err )
     ShowCursor(TRUE);
     MessageBox( NULL, err, "ERROR", MB_TASKMODAL | MB_ICONHAND );
   }
+  __debugbreak();
   exit( 1 );
 }
 void show_alert( const char* err )

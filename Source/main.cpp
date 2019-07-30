@@ -15,6 +15,14 @@ DWORD _GetTickCount() {
   return TickCount;
 }
 
+//static std::vector<_uiheroinfo> _heroes;
+//static BOOL  SelHero_GetHeroInfo( _uiheroinfo *pInfo )
+//{
+//  _heroes.push_back( *pInfo );
+//  return TRUE;
+//}
+
+
 #ifdef EMSCRIPTEN
 
 extern "C" {
@@ -58,6 +66,27 @@ void DApi_Init(unsigned int time) {
   UiInitialize(effects_play_sound);
 
   GameState::activate(initial_state());
+  //gbMaxPlayers = 1;
+  //pfile_ui_set_hero_infos( SelHero_GetHeroInfo );
+  //if ( _heroes.empty() )
+  //{
+  //  _uidefaultstats defaults;
+  //  _uiheroinfo hero;
+  //  pfile_ui_set_class_stats( UI_WARRIOR, &defaults );
+  //  hero.level = 1;
+  //  hero.heroclass = UI_WARRIOR;
+  //  hero.strength = defaults.strength;
+  //  hero.magic = defaults.magic;
+  //  hero.dexterity = defaults.dexterity;
+  //  hero.vitality = defaults.vitality;
+  //  strcpy( hero.name, "Riv" );
+  //  pfile_ui_save_create( &hero );
+  //  GameState::activate( get_play_state( hero.name, SELHERO_NEW_DUNGEON ) );
+  //}
+  //else
+  //{
+  //  GameState::activate( get_play_state( _heroes[0].name, SELHERO_CONTINUE ) );
+  //}
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -103,7 +132,7 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
   hInst = hInstance;
   ghInst = hInst;
 
-  ShowCursor( FALSE );
+  //ShowCursor( FALSE );
   srand( GetTickCount() );
   InitHash();
 
@@ -112,6 +141,8 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
   init_create_window( nCmdShow );
   sound_init();
   UiInitialize( effects_play_sound );
+
+#if 1
 
   GameStatePtr nextState = get_title_dialog();
 
@@ -134,6 +165,29 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
   nextState = get_video_state("gendata\\logo.smk", true, false, nextState);
   GameState::activate(nextState);
   nextState = nullptr;
+#else
+  gbMaxPlayers = 1;
+  pfile_ui_set_hero_infos( SelHero_GetHeroInfo );
+  if ( _heroes.empty() )
+  {
+    _uidefaultstats defaults;
+    _uiheroinfo hero;
+    pfile_ui_set_class_stats( UI_WARRIOR, &defaults );
+    hero.level = 1;
+    hero.heroclass = UI_WARRIOR;
+    hero.strength = defaults.strength;
+    hero.magic = defaults.magic;
+    hero.dexterity = defaults.dexterity;
+    hero.vitality = defaults.vitality;
+    strcpy( hero.name, "Riv" );
+    pfile_ui_save_create( &hero );
+    GameState::activate( get_play_state( hero.name, SELHERO_NEW_DUNGEON ) );
+  }
+  else
+  {
+    GameState::activate( get_play_state( _heroes[0].name, SELHERO_CONTINUE ) );
+  }
+#endif
 
   MSG msg;
   while (GameState::current()) {

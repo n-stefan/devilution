@@ -62,20 +62,20 @@ void File::remove(const char* path) {
 
 #endif
 
-class MemoryBuffer : public FileBuffer {
+class JsMemoryBuffer : public FileBuffer {
   size_t pos_ = 0;
   std::vector<uint8_t> data_;
   bool modified = false;
 public:
   std::string name;
 
-  MemoryBuffer() {
+  JsMemoryBuffer() {
   }
-  MemoryBuffer(std::vector<uint8_t>&& data)
+  JsMemoryBuffer(std::vector<uint8_t>&& data)
     : data_(std::move(data)) {
   }
 
-  ~MemoryBuffer() {
+  ~JsMemoryBuffer() {
     if (modified && !name.empty()) {
       put_file_contents(name.c_str(), data_.data(), data_.size());
     }
@@ -236,7 +236,7 @@ File::File(const char* name, const char* mode) {
     }
     std::vector<uint8_t> data(size);
     get_file_contents(name, data.data(), 0, size);
-    auto buffer = std::make_shared<MemoryBuffer>(std::move(data));
+    auto buffer = std::make_shared<JsMemoryBuffer>(std::move(data));
     file_ = buffer;
     if (strchr(mode, '+')) {
       buffer->name = name;
@@ -250,7 +250,7 @@ File::File(const char* name, const char* mode) {
         get_file_contents(name, data.data(), 0, size);
       }
     }
-    auto buffer = std::make_shared<MemoryBuffer>(std::move(data));
+    auto buffer = std::make_shared<JsMemoryBuffer>(std::move(data));
     file_ = buffer;
     buffer->name = name;
   }

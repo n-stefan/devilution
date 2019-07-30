@@ -3,6 +3,8 @@
 *.asm
 *.idb
 
+run/
+
 # macOS
 .DS_Store
 

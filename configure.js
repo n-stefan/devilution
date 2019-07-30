@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const optimize = '-O1';
-const flags = '-O1';
+const optimize = '-O3';
+const flags = '-O3';
 
 function BUILD(spawn) {
 
@@ -59,7 +59,7 @@ function BUILD(spawn) {
 
   const res = `${out.join("\n")}
 
-call emcc ${parser.join(" ")} -o ${oname}.js -s EXPORT_NAME="${oname}" ${link_flags(spawn ? 268435456 : 536870912, true)}
+call emcc ${parser.join(" ")} -o ${oname}.js -s EXPORT_NAME="${oname}" ${link_flags(spawn ? 134217728 : 134217728, true)}
 move ${oname}.js ${oname}.jscc
 `;
 
