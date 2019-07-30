@@ -8,25 +8,25 @@
 EM_JS( int, get_file_size, (const char* path), {
   var end = HEAPU8.indexOf( 0, path);
   var text = String.fromCharCode.apply(null, HEAPU8.subarray(path, end ));
-  return window.DApi.get_file_size(text);
+  return self.DApi.get_file_size(text);
 });
 
 EM_JS( void, get_file_contents, (const char* path, void* ptr, size_t offset, size_t size), {
   var end = HEAPU8.indexOf( 0, path);
   var text = String.fromCharCode.apply(null, HEAPU8.subarray(path, end ));
-  window.DApi.get_file_contents(text, HEAPU8.subarray(ptr, ptr + size), offset);
+  self.DApi.get_file_contents(text, HEAPU8.subarray(ptr, ptr + size), offset);
 });
 
 EM_JS( void, put_file_contents, (const char* path, void* ptr, size_t size), {
   var end = HEAPU8.indexOf( 0, path);
-  var text = String.fromCharCode.apply(null, HEAPU8.subarray(path, end ));
-  window.DApi.put_file_contents(text, HEAPU8.slice(ptr, ptr + size));
+  var text = String.fromCharCode.apply(null, HEAPU8.subarray(path, end));
+  self.DApi.put_file_contents(text, HEAPU8.slice(ptr, ptr + size));
 });
 
 EM_JS( void, remove_file, (const char* path), {
   var end = HEAPU8.indexOf( 0, path);
   var text = String.fromCharCode.apply(null, HEAPU8.subarray(path, end ));
-  window.DApi.remove_file( text );
+  self.DApi.remove_file( text );
 });
 
 void File::remove(const char* path) {

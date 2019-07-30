@@ -107,14 +107,13 @@ public:
     }
     messages.clear();
 
-    if (gbRunGame && time > lastLoop_ + 50) {
+    if (gbRunGame) {
       diablo_color_cyc_logic();
       multi_process_network_packets();
       game_loop(gbGameLoopStartup);
       msgcmd_send_chat();
       gbGameLoopStartup = FALSE;
       DrawAndBlit();
-      lastLoop_ = time;
     }
 
     if (!gbRunGame) {
@@ -177,7 +176,6 @@ public:
 private:
   BOOL newGame_;
   BOOL singlePlayer_;
-  unsigned int lastLoop_ = 0;
   bool started_ = false;
 };
 

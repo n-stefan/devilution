@@ -1,6 +1,7 @@
 #define NOMINMAX
 #include "storm.h"
 #include "../rmpq/archive.h"
+#include "../trace.h"
 
 //BOOL SFileOpenFile(const char *filename, HANDLE *phFile) {
 //  //eprintf("%s: %s\n", __FUNCTION__, filename);

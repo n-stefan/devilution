@@ -3,6 +3,7 @@
 #include "ui/diabloui.h"
 #include "ui/event.h"
 #include "storm/storm.h"
+#include "trace.h"
 
 HWND ghMainWnd;
 int glMid1Seed[NUMLEVELS];
@@ -96,15 +97,15 @@ void start_game(unsigned int uMsg)
 {
 	zoomflag = 1;
 	cineflag = FALSE;
-	InitCursor();
+  InitCursor();
 	InitLightTable();
-	LoadDebugGFX();
+  LoadDebugGFX();
 	/// ASSERT: assert(ghMainWnd);
-	music_stop();
-	ShowProgress(uMsg);
-	gmenu_init_menu();
-	InitLevelCursor();
-	sgnTimeoutCurs = 0;
+  music_stop();
+  ShowProgress(uMsg);
+  gmenu_init_menu();
+  InitLevelCursor();
+  sgnTimeoutCurs = 0;
 	sgbMouseDown = 0;
 	track_repeat_walk(0);
 }
@@ -932,13 +933,13 @@ void LoadLvlGFX()
 void LoadAllGFX()
 {
 	/// ASSERT: assert(! pSpeedCels);
-	pSpeedCels = DiabloAllocPtr(0x100000);
-	IncProgress();
-	IncProgress();
+  pSpeedCels = DiabloAllocPtr(0x100000);
+  IncProgress();
+  IncProgress();
 	InitObjectGFX();
-	IncProgress();
-	InitMissileGFX();
-	IncProgress();
+  IncProgress();
+  InitMissileGFX();
+  IncProgress();
 }
 
 void CreateLevel(int lvldir)
@@ -986,13 +987,14 @@ void LoadGameLevel(BOOL firstflag, int lvldir)
 	int i, j;
 	BOOL visited;
 
-	if (setseed)
+
+  if (setseed)
 		glSeedTbl[currlevel] = setseed;
 
-	music_stop();
+  music_stop();
 	SetCursor_(CURSOR_HAND);
 	SetRndSeed(glSeedTbl[currlevel]);
-	IncProgress();
+  IncProgress();
 	MakeLightTable();
 	LoadLvlGFX();
 	IncProgress();
@@ -1027,15 +1029,15 @@ void LoadGameLevel(BOOL firstflag, int lvldir)
 	IncProgress();
 
 	if (!setlevel) {
-		CreateLevel(lvldir);
-		IncProgress();
-		FillSolidBlockTbls();
-		SetRndSeed(glSeedTbl[currlevel]);
+    CreateLevel(lvldir);
+    IncProgress();
+    FillSolidBlockTbls();
+    SetRndSeed(glSeedTbl[currlevel]);
 
 		if (leveltype != DTYPE_TOWN) {
-			GetLevelMTypes();
-			InitThemes();
-			LoadAllGFX();
+      GetLevelMTypes();
+      InitThemes();
+      LoadAllGFX();
 		} else {
 			InitMissileGFX();
 		}
@@ -1103,18 +1105,18 @@ void LoadGameLevel(BOOL firstflag, int lvldir)
 			}
 
 			InitTowners();
-			InitItems();
-			InitMissiles();
-			IncProgress();
+      InitItems();
+      InitMissiles();
+      IncProgress();
 
 			if (!firstflag && lvldir != 4 && plr[myplr]._pLvlVisited[currlevel] && gbMaxPlayers == 1)
 				LoadLevel();
-			if (gbMaxPlayers != 1)
+      if (gbMaxPlayers != 1)
 				DeltaLoadLevel();
 
 			IncProgress();
 		}
-		if (gbMaxPlayers == 1)
+    if (gbMaxPlayers == 1)
 			ResyncQuests();
 		else
 			ResyncMPQuests();
@@ -1126,11 +1128,11 @@ void LoadGameLevel(BOOL firstflag, int lvldir)
 #endif
 		IncProgress();
 		GetLevelMTypes();
-		InitMonsters();
-		InitMissileGFX();
-		InitDead();
-		FillSolidBlockTbls();
-		IncProgress();
+    InitMonsters();
+    InitMissileGFX();
+    InitDead();
+    FillSolidBlockTbls();
+    IncProgress();
 
 		if (lvldir == 5)
 			GetPortalLvlPos();

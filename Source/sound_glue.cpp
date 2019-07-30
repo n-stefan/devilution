@@ -10,37 +10,35 @@
 
 #include <emscripten.h>
 
-EM_JS(int, api_create_sound, (const float* ptr, int samples, int channels, int rate), {
-  return window.DApi.create_sound(HEAPF32.subarray(ptr / 4, ptr / 4 + samples * channels), samples, channels, rate);
+EM_JS(void, api_create_sound, (int id, const float* ptr, int samples, int channels, int rate), {
+  self.DApi.create_sound(id, HEAPF32.slice(ptr / 4, ptr / 4 + samples * channels), samples, channels, rate);
 });
 
-EM_JS(int, api_duplicate_sound, (int id), {
-  return window.DApi.duplicate_sound(id);
+EM_JS(void, api_duplicate_sound, (int id, int srcId), {
+  self.DApi.duplicate_sound(id, srcId);
 });
 
 EM_JS(void, api_play_sound, (int id, int volume, int pan, int loop), {
-  return window.DApi.play_sound(id, volume, pan, loop);
+  self.DApi.play_sound(id, volume, pan, loop);
 });
 
 EM_JS(void, api_set_volume, (int id, int volume), {
-  return window.DApi.set_volume(id, volume);
+  self.DApi.set_volume(id, volume);
 });
 
 EM_JS(void, api_stop_sound, (int id), {
-  return window.DApi.stop_sound(id);
+  self.DApi.stop_sound(id);
 });
 
 EM_JS(void, api_delete_sound, (int id), {
-  return window.DApi.delete_sound(id);
+  self.DApi.delete_sound(id);
 });
 
 #else
 
-int api_create_sound(const float* buffer, int samples, int channels, int rate) {
-  return 0;
+void api_create_sound(int id, const float* buffer, int samples, int channels, int rate) {
 }
-int api_duplicate_sound(int id) {
-  return 0;
+void api_duplicate_sound(int id, int srcId) {
 }
 void api_play_sound(int id, int volume, int pan, int loop) {
 }
@@ -52,6 +50,8 @@ void api_delete_sound(int id) {
 }
 
 #endif
+
+static int nextSoundId = 0;
 
 struct TSnd {
 public:
@@ -89,10 +89,8 @@ public:
   }
 
   TSnd* duplicate() {
-    int id = api_duplicate_sound(id_);
-    if (id < 0) {
-      return nullptr;
-    }
+    int id = nextSoundId++;
+    api_duplicate_sound(id, id_);
     return new TSnd(id, duration_);
   }
 
@@ -298,10 +296,8 @@ TSnd *sound_from_buffer(const unsigned char* buffer, unsigned long size, int cha
       raw[numBlocks * j + i] = (reader.*func)();
     }
   }
-  int id = api_create_sound(raw, (int) numBlocks, channels, rate);
-  if (id < 0) {
-    return nullptr;
-  }
+  int id = nextSoundId++;
+  api_create_sound(id, raw, (int) numBlocks, channels, rate);
   return new TSnd(id, (DWORD) ((int64_t) numBlocks * 1000 / rate));
 }
 

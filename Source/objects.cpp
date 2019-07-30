@@ -1,4 +1,6 @@
 #include "diablo.h"
+#include "trace.h"
+
 
 int trapid;
 int trapdir;
@@ -81,15 +83,15 @@ void InitObjectGFX()
 	char filestr[32];
 	int i, j;
 
-	memset(fileload, FALSE, sizeof(fileload));
+  memset(fileload, FALSE, sizeof(fileload));
 
 	for (i = 0; AllObjects[i].oload != -1; i++) {
-		if (AllObjects[i].oload == 1
+    if (AllObjects[i].oload == 1
 		    && (int)currlevel >= AllObjects[i].ominlvl
 		    && (int)currlevel <= AllObjects[i].omaxlvl) {
 			fileload[AllObjects[i].ofindex] = TRUE;
 		}
-		if (AllObjects[i].otheme != THEME_NONE) {
+    if (AllObjects[i].otheme != THEME_NONE) {
 			for (j = 0; j < numthemes; j++) {
 				if (themes[j].ttype == AllObjects[i].otheme)
 					fileload[AllObjects[i].ofindex] = TRUE;
@@ -102,11 +104,11 @@ void InitObjectGFX()
 		}
 	}
 
-	for (i = 0; i < 56; i++) {
-		if (fileload[i]) {
-			ObjFileList[numobjfiles] = i;
+  for (i = 0; i < 56; i++) {
+    if (fileload[i]) {
+      ObjFileList[numobjfiles] = i;
 			sprintf(filestr, "Objects\\%s.CEL", ObjMasterLoadList[i]);
-			pObjCels[numobjfiles] = LoadFileInMem(filestr, NULL);
+      pObjCels[numobjfiles] = LoadFileInMem(filestr, NULL);
 			numobjfiles++;
 		}
 	}

@@ -1,4 +1,5 @@
 #include "diablo.h"
+#include "trace.h"
 
 BYTE *tbuff;
 
@@ -11,15 +12,15 @@ void LoadGame(BOOL firstflag)
 	int _ViewX, _ViewY, _nummonsters, _numitems, _nummissiles, _nobjects;
 
 	FreeGameMem();
-	pfile_remove_temp_files();
-	pfile_get_game_name(szName);
-	LoadBuff = pfile_read(szName, &dwLen);
+  pfile_remove_temp_files();
+  pfile_get_game_name(szName);
+  LoadBuff = pfile_read(szName, &dwLen);
 	tbuff = LoadBuff;
 
 	if (ILoad() != 'RETL')
 		app_fatal("Invalid save file");
 
-	setlevel = OLoad();
+  setlevel = OLoad();
 	setlvlnum = WLoad();
 	currlevel = WLoad();
 	leveltype = WLoad();
@@ -37,15 +38,15 @@ void LoadGame(BOOL firstflag)
 		gnLevelTypeTbl[i] = WLoad();
 	}
 
-	LoadPlayer(myplr);
+  LoadPlayer(myplr);
 
 	for (i = 0; i < MAXQUESTS; i++)
 		LoadQuest(i);
-	for (i = 0; i < MAXPORTAL; i++)
+  for (i = 0; i < MAXPORTAL; i++)
 		LoadPortal(i);
 
-	LoadGameLevel(firstflag, 4);
-	SyncInitPlr(myplr);
+  LoadGameLevel(firstflag, 4);
+  SyncInitPlr(myplr);
 	SyncPlrAnim(myplr);
 
 	ViewX = _ViewX;
@@ -92,7 +93,7 @@ void LoadGame(BOOL firstflag)
 			LoadVision(i);
 	}
 
-	for (i = 0; i < MAXITEMS; i++)
+  for (i = 0; i < MAXITEMS; i++)
 		itemactive[i] = BLoad();
 	for (i = 0; i < MAXITEMS; i++)
 		itemavail[i] = BLoad();
@@ -118,7 +119,7 @@ void LoadGame(BOOL firstflag)
 			dItem[i][j] = BLoad();
 	}
 
-	if (leveltype != DTYPE_TOWN) {
+  if (leveltype != DTYPE_TOWN) {
 		for (j = 0; j < MAXDUNY; j++) {
 			for (i = 0; i < MAXDUNX; i++)
 				dMonster[i][j] = WLoad();
@@ -149,7 +150,7 @@ void LoadGame(BOOL firstflag)
 		}
 	}
 
-	numpremium = WLoad();
+  numpremium = WLoad();
 	premiumlevel = WLoad();
 
 	for (i = 0; i < 6; i++)
@@ -161,10 +162,10 @@ void LoadGame(BOOL firstflag)
 	AutomapZoomReset();
 	ResyncQuests();
 
-	if (leveltype != DTYPE_TOWN)
+  if (leveltype != DTYPE_TOWN)
 		ProcessLightList();
 
-	RedoPlayerVision();
+  RedoPlayerVision();
 	ProcessVisionList();
 	missiles_process_charge();
 	ResetPal();

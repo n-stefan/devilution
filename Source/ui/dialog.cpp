@@ -4,10 +4,10 @@
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
 EM_JS(void, api_open_keyboard, (), {
-  window.DApi.open_keyboard();
+  self.DApi.open_keyboard();
 });
 EM_JS(void, api_close_keyboard, (), {
-  window.DApi.close_keyboard();
+  self.DApi.close_keyboard();
 });
 
 extern "C" {

@@ -1,5 +1,6 @@
 #include "common.h"
 #include "../storm/storm.h"
+#include "../trace.h"
 
 BYTE *FontTables[4];
 Art ArtFonts[4][2];

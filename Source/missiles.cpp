@@ -1,4 +1,5 @@
 #include "diablo.h"
+#include "trace.h"
 
 int missileactive[MAXMISSILES];
 int missileavail[MAXMISSILES];
@@ -1125,8 +1126,8 @@ void InitMissileGFX()
 {
 	int mi;
 
-	for (mi = 0; misfiledata[mi].mAnimFAmt; mi++) {
-		if (!(misfiledata[mi].mFlags & MFLAG_HIDDEN))
+  for (mi = 0; misfiledata[mi].mAnimFAmt; mi++) {
+    if (!(misfiledata[mi].mFlags & MFLAG_HIDDEN))
 			LoadMissileGFX(mi);
 	}
 }

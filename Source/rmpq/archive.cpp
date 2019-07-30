@@ -2,6 +2,7 @@
 #include "archive.h"
 #include <algorithm>
 #include "../diablo.h"
+#include "../trace.h"
 
 namespace mpq {
 

@@ -105,57 +105,102 @@ void dx_reinit()
 	ClearCursor();
 }
 
-BOOL draw_lock( int* ysize )
-{
-  return TRUE;
-}
-
 #ifdef EMSCRIPTEN
 
 #include <emscripten.h>
 
-EM_JS( void, do_draw_unlock, (void* ptr, size_t size), {
-  window.DApi.draw_unlock(HEAPU8.subarray(ptr, ptr + size));
+EM_JS( void, api_draw_begin, (), {
+  self.DApi.draw_begin();
 });
-EM_JS( void, do_draw_flush, (), {
-  window.DApi.draw_flush();
+EM_JS( void, api_draw_blit, (int x, int y, int w, int h, void* ptr), {
+  self.DApi.draw_blit(x, y, w, h, HEAPU8.subarray(ptr, ptr + w * h * 4));
 });
-EM_JS( void, do_draw_clip_text, (int x0, int y0, int x1, int y1), {
-  window.DApi.draw_clip_text(x0, y0, x1, y1);
+EM_JS( void, api_draw_end, (), {
+  self.DApi.draw_end();
 });
-EM_JS( void, do_draw_text, (int x, int y, const char* ptr, int color), {
+EM_JS( void, api_draw_clip_text, (int x0, int y0, int x1, int y1), {
+  self.DApi.draw_clip_text(x0, y0, x1, y1);
+});
+EM_JS( void, api_draw_text, (int x, int y, const char* ptr, int color), {
   var end = HEAPU8.indexOf(0, ptr);
   var text = String.fromCharCode.apply(null, HEAPU8.subarray(ptr, end));
-  window.DApi.draw_text(x, y, text, color);
+  self.DApi.draw_text(x, y, text, color);
 });
-EM_JS(void, do_SetCursorPos, (DWORD x, DWORD y), {
-  window.DApi.set_cursor(x, y);
+EM_JS(void, api_set_cursor, (DWORD x, DWORD y), {
+  self.DApi.set_cursor(x, y);
 });
 
+BOOL draw_lock(int* ysize) {
+  api_draw_begin();
+  return TRUE;
+}
+
 void draw_unlock() {
-  do_draw_unlock(sgpFrontBuf, SCREEN_WIDTH * SCREEN_HEIGHT * 4);
 }
 
 void draw_flush() {
-  do_draw_flush();
+  api_draw_end();
+}
+
+void draw_blit(DWORD dwX, DWORD dwY, DWORD dwWdt, DWORD dwHgt) {
+  int nSrcOff, nDstOff, nSrcWdt, nDstWdt;
+
+  /// ASSERT: assert(! (dwX & 3));
+  /// ASSERT: assert(! (dwWdt & 3));
+
+  nSrcOff = SCREENXY(dwX, dwY);
+  //nDstOff = dwX * (SCREEN_BPP / 8) + dwY * (SCREEN_WIDTH * SCREEN_BPP / 8);
+  nSrcWdt = BUFFER_WIDTH - dwWdt;
+  //nDstWdt = (SCREEN_WIDTH * SCREEN_BPP / 8) - dwWdt * (SCREEN_BPP / 8);
+
+  lock_buf(6);
+
+  /// ASSERT: assert(gpBuffer);
+
+  int wdt, hgt;
+  BYTE *src, *dst;
+
+  src = &gpBuffer[nSrcOff];
+  dst = (BYTE *) sgpFrontBuf;
+
+  for (hgt = 0; hgt < dwHgt; hgt++, src += nSrcWdt) {
+    for (wdt = 0; wdt < dwWdt; wdt++) {
+      PALETTEENTRY pal = system_palette[*src++];
+      dst[0] = pal.peRed;
+      dst[1] = pal.peGreen;
+      dst[2] = pal.peBlue;
+      dst[3] = 255;
+      dst += 4;
+    }
+  }
+
+  unlock_buf(6);
+
+  api_draw_blit(dwX, dwY, dwWdt, dwHgt, sgpFrontBuf);
 }
 
 void draw_clip_text(int x0, int y0, int x1, int y1) {
-  do_draw_clip_text(x0, y0, x1, y1);
+  if (x0 > 0 || y0 > 0 || x1 < SCREEN_WIDTH || y1 < SCREEN_HEIGHT) {
+    api_draw_clip_text(x0, y0, x1, y1);
+  }
 }
 
 #define RGB(r,g,b)          ((DWORD)(((BYTE)(r)|((WORD)((BYTE)(g))<<8))|(((DWORD)(BYTE)(b))<<16)))
 
 void draw_text(int x, int y, const char *text, int color) {
   PALETTEENTRY pal = system_palette[color];
-  do_draw_text(x, y, text, RGB(pal.peRed, pal.peGreen, pal.peBlue));
+  api_draw_text(x, y, text, RGB(pal.peRed, pal.peGreen, pal.peBlue));
 }
 
 void _SetCursorPos(DWORD x, DWORD y) {
-  do_SetCursorPos(x, y);
+  api_set_cursor(x, y);
 }
 
 #else
+
+BOOL draw_lock(int* ysize) {
+  return TRUE;
+}
 
 void draw_unlock()
 {
@@ -207,22 +252,19 @@ void _SetCursorPos(DWORD x, DWORD y) {
   SetCursorPos(pt.x, pt.y);
 }
 
-#endif
-
-void draw_blit( DWORD dwX, DWORD dwY, DWORD dwWdt, DWORD dwHgt )
-{
+void draw_blit(DWORD dwX, DWORD dwY, DWORD dwWdt, DWORD dwHgt) {
   int nSrcOff, nDstOff, nSrcWdt, nDstWdt;
 
   /// ASSERT: assert(! (dwX & 3));
   /// ASSERT: assert(! (dwWdt & 3));
 
-  nSrcOff = SCREENXY( dwX, dwY );
-  nDstOff = dwX * ( SCREEN_BPP / 8 ) + dwY * ( SCREEN_WIDTH * SCREEN_BPP / 8 );
+  nSrcOff = SCREENXY(dwX, dwY);
+  nDstOff = dwX * (SCREEN_BPP / 8) + dwY * (SCREEN_WIDTH * SCREEN_BPP / 8);
   nSrcWdt = BUFFER_WIDTH - dwWdt;
-  nDstWdt = ( SCREEN_WIDTH * SCREEN_BPP / 8 ) - dwWdt * ( SCREEN_BPP / 8 );
+  nDstWdt = (SCREEN_WIDTH * SCREEN_BPP / 8) - dwWdt * (SCREEN_BPP / 8);
   dwWdt >>= 2;
 
-  lock_buf( 6 );
+  lock_buf(6);
 
   /// ASSERT: assert(gpBuffer);
 
@@ -232,24 +274,17 @@ void draw_blit( DWORD dwX, DWORD dwY, DWORD dwWdt, DWORD dwHgt )
   src = &gpBuffer[nSrcOff];
   dst = (BYTE *) sgpFrontBuf + nDstOff;
 
-  for ( hgt = 0; hgt < dwHgt; hgt++, src += nSrcWdt, dst += nDstWdt )
-  {
-    for ( wdt = 0; wdt < 4 * dwWdt; wdt++ )
-    {
+  for (hgt = 0; hgt < dwHgt; hgt++, src += nSrcWdt, dst += nDstWdt) {
+    for (wdt = 0; wdt < 4 * dwWdt; wdt++) {
       PALETTEENTRY pal = system_palette[*src++];
-#ifndef EMSCRIPTEN
       dst[0] = pal.peBlue;
       dst[1] = pal.peGreen;
       dst[2] = pal.peRed;
-#else
-      dst[0] = pal.peRed;
-      dst[1] = pal.peGreen;
-      dst[2] = pal.peBlue;
-#endif
-      dst[3] = 255;
       dst += 4;
     }
   }
 
-  unlock_buf( 6 );
+  unlock_buf(6);
 }
+
+#endif
