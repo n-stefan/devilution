@@ -18,6 +18,7 @@ void draw_blit(DWORD dwX, DWORD dwY, DWORD dwWdt, DWORD dwHgt);
 
 void draw_clip_text(int x0, int y0, int x1, int y1);
 void draw_text(int x, int y, const char* text, int color);
+void draw_belt(int* items);
 
 void _SetCursorPos(DWORD x, DWORD y);
 

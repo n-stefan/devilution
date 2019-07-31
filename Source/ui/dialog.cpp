@@ -201,7 +201,7 @@ void DialogState::onRender(unsigned int time) {
     }
   }
   renderExtra(time);
-  if (cursor) {
+  if (cursor && !hide_cursor) {
     DrawArt(mouseX(), mouseY(), &ArtCursor);
   }
   UiFadeIn(time);

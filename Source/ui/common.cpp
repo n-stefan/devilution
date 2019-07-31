@@ -76,8 +76,12 @@ void GameState::render(unsigned int time) {
   }
 }
 void GameState::processMouse(const MouseEvent& e) {
+  if ((e.modifiers & 16) && pcurs != CURSOR_HAND) {
+    return;
+  }
   mouseX_ = e.x;
   mouseY_ = e.y;
+  hide_cursor = (e.modifiers & ModifierKey::TOUCH) ? TRUE : FALSE;
   if (auto state = game_state) {
     state->onMouse(e);
   }

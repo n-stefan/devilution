@@ -132,7 +132,7 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
   hInst = hInstance;
   ghInst = hInst;
 
-  //ShowCursor( FALSE );
+  ShowCursor( FALSE );
   srand( GetTickCount() );
   InitHash();
 
@@ -217,6 +217,7 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 //      continue;
     }
     GameState::render(time);
+    Sleep(50);
   }
 
   //StartGame(TRUE, TRUE);

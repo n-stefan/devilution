@@ -165,6 +165,7 @@ enum {
   SHIFT = 0x01,
   CONTROL = 0x02,
   ALT = 0x04,
+  TOUCH = 0x08,
 };
 }
 

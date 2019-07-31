@@ -129,6 +129,10 @@ public:
   void onMouse(const MouseEvent &e) override {
     MouseX = e.x;
     MouseY = e.y;
+    if ((e.modifiers & ModifierKey::TOUCH) && pcurs >= CURSOR_FIRSTITEM){
+      MouseX -= cursW / 2;
+      MouseY -= cursH / 2;
+    }
     if (e.action == MouseEvent::Press) {
       if (e.button == KeyCode::LBUTTON) {
         if (sgbMouseDown == 0) {

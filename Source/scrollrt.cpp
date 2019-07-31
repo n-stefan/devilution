@@ -19,6 +19,7 @@ void (*DrawPlrProc)(int, int, int, int, int, BYTE *, int, int, int, int);
 BYTE sgSaveBack[8192];
 int draw_monster_num;
 DWORD sgdwCursHgtOld;
+BOOL hide_cursor = FALSE;
 
 /* data */
 
@@ -2381,6 +2382,9 @@ void scrollrt_draw_cursor_item() {
   if (pcurs <= 0 || cursW == 0 || cursH == 0) {
     return;
   }
+  if (pcurs == CURSOR_HAND && hide_cursor) {
+    return;
+  }
 
   mx = MouseX - 1;
   if (mx < 0) {
@@ -2548,6 +2552,16 @@ void DrawAndBlit() {
   }
   scrollrt_draw_cursor_item();
   unlock_buf(0);
+
+  int belt[8];
+  for (int i = 0; i < MAXBELTITEMS; ++i) {
+    if (plr[myplr].SpdList[i]._itype != ITYPE_MISC) {
+      belt[i] = -1;
+    } else {
+      belt[i] = plr[myplr].SpdList[i]._iMiscId;
+    }
+  }
+  draw_belt(belt);
 
   DrawMain(hgt, ddsdesc, drawhpflag, drawmanaflag, drawsbarflag, drawbtnflag);
 
