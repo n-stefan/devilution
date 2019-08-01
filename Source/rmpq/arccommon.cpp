@@ -221,4 +221,23 @@ const char* path_name(const char* path) {
   return path + pos;
 }
 
+const char* path_ext(const char* path) {
+  size_t pos = 0;
+  while (path[pos]) {
+    ++pos;
+  }
+  size_t dot = pos;
+  while (pos && path[pos - 1] != '/' && path[pos - 1] != '\\') {
+    --pos;
+    if (path[pos] == '.' && !path[dot]) {
+      dot = pos;
+    }
+  }
+  if (dot == pos) {
+    return "";
+  } else {
+    return path + dot;
+  }
+}
+
 }

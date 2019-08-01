@@ -13,6 +13,7 @@ int locktbl[256];
 #endif
 char gbBackBuf;
 char gbEmulate;
+BOOL use_offscreen = FALSE;
 
 void lock_buf_priv();
 void unlock_buf_priv();
@@ -26,12 +27,10 @@ HFONT hFont;
 HRGN hClip = NULL;
 #endif
 
-void dx_init(HWND hWnd)
+void dx_init()
 {
-  ghMainWnd = hWnd;
-
 #ifndef EMSCRIPTEN
-  hDC = GetDC( hWnd );
+  hDC = GetDC(ghMainWnd);
   int x = GetDeviceCaps(hDC, LOGPIXELSY);
   hPaintDC = CreateCompatibleDC( hDC );
   hBitmap = CreateCompatibleBitmap( hDC, SCREEN_WIDTH, SCREEN_HEIGHT );
@@ -40,8 +39,8 @@ void dx_init(HWND hWnd)
   hFont = CreateFont( -17, 0, 0, 0, 700, 0, 0, 0, 0, 0, 0, 0, 0x12, "Times New Roman" );
   SelectObject( hPaintDC, hFont );
 
-  SetFocus(hWnd);
-	ShowWindow(hWnd, SW_SHOWNORMAL);
+  SetFocus(ghMainWnd);
+	ShowWindow(ghMainWnd, SW_SHOWNORMAL);
 #endif
 
 	palette_init();
@@ -139,6 +138,9 @@ BOOL draw_lock(int* ysize) {
 }
 
 void draw_unlock() {
+  if (use_offscreen) {
+    api_draw_blit(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, sgpFrontBuf);
+  }
 }
 
 void draw_flush() {
@@ -146,15 +148,17 @@ void draw_flush() {
 }
 
 void draw_blit(DWORD dwX, DWORD dwY, DWORD dwWdt, DWORD dwHgt) {
-  int nSrcOff, nDstOff, nSrcWdt, nDstWdt;
+  int nSrcOff, nDstOff = 0, nSrcWdt, nDstWdt = 0;
 
   /// ASSERT: assert(! (dwX & 3));
   /// ASSERT: assert(! (dwWdt & 3));
 
   nSrcOff = SCREENXY(dwX, dwY);
-  //nDstOff = dwX * (SCREEN_BPP / 8) + dwY * (SCREEN_WIDTH * SCREEN_BPP / 8);
   nSrcWdt = BUFFER_WIDTH - dwWdt;
-  //nDstWdt = (SCREEN_WIDTH * SCREEN_BPP / 8) - dwWdt * (SCREEN_BPP / 8);
+  if (use_offscreen) {
+    nDstOff = dwX * (SCREEN_BPP / 8) + dwY * (SCREEN_WIDTH * SCREEN_BPP / 8);
+    nDstWdt = (SCREEN_WIDTH * SCREEN_BPP / 8) - dwWdt * (SCREEN_BPP / 8);
+  }
 
   lock_buf(6);
 
@@ -164,9 +168,9 @@ void draw_blit(DWORD dwX, DWORD dwY, DWORD dwWdt, DWORD dwHgt) {
   BYTE *src, *dst;
 
   src = &gpBuffer[nSrcOff];
-  dst = (BYTE *) sgpFrontBuf;
+  dst = (BYTE *) sgpFrontBuf + nDstOff;
 
-  for (hgt = 0; hgt < dwHgt; hgt++, src += nSrcWdt) {
+  for (hgt = 0; hgt < dwHgt; hgt++, src += nSrcWdt, dst += nDstWdt) {
     for (wdt = 0; wdt < dwWdt; wdt++) {
       PALETTEENTRY pal = system_palette[*src++];
       dst[0] = pal.peRed;
@@ -179,7 +183,9 @@ void draw_blit(DWORD dwX, DWORD dwY, DWORD dwWdt, DWORD dwHgt) {
 
   unlock_buf(6);
 
-  api_draw_blit(dwX, dwY, dwWdt, dwHgt, sgpFrontBuf);
+  if (!use_offscreen) {
+    api_draw_blit(dwX, dwY, dwWdt, dwHgt, sgpFrontBuf);
+  }
 }
 
 void draw_clip_text(int x0, int y0, int x1, int y1) {

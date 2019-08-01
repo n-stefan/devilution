@@ -20,7 +20,7 @@ int zoomflag;
 BOOL gbProcessPlayers;
 int glEndSeed[NUMLEVELS];
 BOOL gbLoadGame;
-HINSTANCE ghInst;
+HINSTANCE ghInst = NULL;
 int DebugMonsters[10];
 BOOLEAN cineflag;
 int drawpanflag;

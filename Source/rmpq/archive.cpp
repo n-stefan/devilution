@@ -248,6 +248,11 @@ size_t Archive::getFileSize(size_t pos) const {
   return blockTable_[block].fSize;
 }
 
+size_t Archive::getFileCSize(size_t pos) const {
+  uint32_t block = hashTable_[pos].blockIndex;
+  return blockTable_[block].cSize;
+}
+
 File Archive::load(char const* name) {
   auto pos = findFile(name);
   if (pos < 0) {

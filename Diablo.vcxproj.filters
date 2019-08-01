@@ -225,12 +225,6 @@
     <ClCompile Include="Source\palette.cpp">
       <Filter>glue</Filter>
     </ClCompile>
-    <ClCompile Include="Source\sound.cpp">
-      <Filter>glue</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\appfat_glue.cpp">
-      <Filter>glue</Filter>
-    </ClCompile>
     <ClCompile Include="Source\ui\common.cpp">
       <Filter>ui</Filter>
     </ClCompile>
@@ -318,22 +312,19 @@
     <ClCompile Include="Source\storm\sbmp.cpp">
       <Filter>storm</Filter>
     </ClCompile>
-    <ClCompile Include="Source\sound_glue.cpp">
-      <Filter>glue</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\sound_common.cpp">
-      <Filter>glue</Filter>
-    </ClCompile>
     <ClCompile Include="Source\init.cpp">
-      <Filter>glue</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\init_glue.cpp">
       <Filter>glue</Filter>
     </ClCompile>
     <ClCompile Include="Source\jsfs.cpp">
       <Filter>glue</Filter>
     </ClCompile>
     <ClCompile Include="Source\trace.cpp">
+      <Filter>glue</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\sound.cpp">
+      <Filter>glue</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\appfat.cpp">
       <Filter>glue</Filter>
     </ClCompile>
   </ItemGroup>

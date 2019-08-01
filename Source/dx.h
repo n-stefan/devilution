@@ -5,8 +5,9 @@
 extern BYTE *gpBuffer;
 extern char gbBackBuf;
 extern char gbEmulate;
+extern BOOL use_offscreen;
 
-void dx_init(HWND hWnd);
+void dx_init();
 void lock_buf(BYTE idx);
 void unlock_buf(BYTE idx);
 void dx_cleanup();

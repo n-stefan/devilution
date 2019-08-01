@@ -51,6 +51,7 @@ public:
   intptr_t findFile(char const* name, uint16_t locale) const;
 
   size_t getFileSize(size_t index) const;
+  size_t getFileCSize(size_t index) const;
 
   char const* getFileName(size_t index) const;
 

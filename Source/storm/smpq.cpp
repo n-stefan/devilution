@@ -3,25 +3,6 @@
 #include "../rmpq/archive.h"
 #include "../trace.h"
 
-//BOOL SFileOpenFile(const char *filename, HANDLE *phFile) {
-//  //eprintf("%s: %s\n", __FUNCTION__, filename);
-//
-//  bool result = false;
-//
-//  if (!result && patch_rt_mpq) {
-//    result = SFileOpenFileEx((HANDLE) patch_rt_mpq, filename, 0, phFile);
-//  }
-//  if (!result) {
-//    result = SFileOpenFileEx((HANDLE) diabdat_mpq, filename, 0, phFile);
-//  }
-//
-//  if (!result || !*phFile) {
-//    eprintf("%s: Not found: %s\n", __FUNCTION__, filename);
-//  }
-//  return result;
-//}
-//
-
 #include <set>
 
 BOOL  SFileOpenArchive(const char *szMpqName, DWORD dwPriority, DWORD dwFlags, HANDLE *phMpq) {
@@ -30,6 +11,18 @@ BOOL  SFileOpenArchive(const char *szMpqName, DWORD dwPriority, DWORD dwFlags, H
     return FALSE;
   }
   mpq::Archive* archive = new mpq::Archive(file);
+#ifndef EMSCRIPTEN
+  //archive->listFiles(File("listfile.txt"));
+  //File fo("sizes.txt", "wb");
+  //for (size_t i = 0; i < archive->getMaxFiles(); ++i) {
+  //  auto name = archive->getFileName(i);
+  //  if (name) {
+  //    std::string sname(name);
+  //    strlwr(&sname[0]);
+  //    fo.printf("%s\t%s\t%u\t%u\r\n", sname.c_str(), mpq::path_ext(sname.c_str()), archive->getFileCSize(i), archive->getFileSize(i));
+  //  }
+  //}
+#endif
   *phMpq = (HANDLE) archive;
   return TRUE;
 }
@@ -60,14 +53,7 @@ LONG  SFileGetFileSize(HANDLE hFile, LPDWORD lpFileSizeHigh) {
 }
 
 BOOL  SFileOpenFile(const char *filename, HANDLE *phFile) {
-  bool result = false;
-  if (!result && patch_rt_mpq) {
-    result = SFileOpenFileEx((HANDLE) patch_rt_mpq, filename, 0, phFile);
-  }
-  if (!result) {
-    result = SFileOpenFileEx((HANDLE) diabdat_mpq, filename, 0, phFile);
-  }
-  return result;
+  return SFileOpenFileEx((HANDLE) diabdat_mpq, filename, 0, phFile);
 }
 
 BOOL  SFileOpenFileEx(HANDLE hMpq, const char *szFileName, DWORD dwSearchScope, HANDLE *phFile) {
@@ -107,21 +93,11 @@ int  SFileSetFilePointer(HANDLE hFile, int pos, HANDLE, int origin) {
 }
 
 BOOL  SFileGetFileSizeFast(const char* filename, LPDWORD size) {
-  if (patch_rt_mpq) {
-    mpq::Archive* arc = (mpq::Archive*) patch_rt_mpq;
-    auto pos = arc->findFile(filename);
-    if (pos >= 0) {
-      *size = arc->getFileSize(pos);
-      return TRUE;
-    }
-  }
-  if (diabdat_mpq) {
-    mpq::Archive* arc = (mpq::Archive*) diabdat_mpq;
-    auto pos = arc->findFile(filename);
-    if (pos >= 0) {
-      *size = arc->getFileSize(pos);
-      return TRUE;
-    }
+  mpq::Archive* arc = (mpq::Archive*) diabdat_mpq;
+  auto pos = arc->findFile(filename);
+  if (pos >= 0) {
+    *size = arc->getFileSize(pos);
+    return TRUE;
   }
   return FALSE;
 }

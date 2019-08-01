@@ -9,14 +9,11 @@ function BUILD(spawn) {
   const exclude = [
     /_asm\.cpp/,
     /_render\.cpp/,
-    /appfat\.cpp/,
     /dthread\.cpp/,
     /fault\.cpp/,
-    /init\.cpp/,
     /logging\.cpp/,
     /nthread\.cpp/,
     /restrict\.cpp/,
-    /sound\.cpp/,
   ];
 
   const out = [];

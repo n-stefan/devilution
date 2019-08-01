@@ -126,7 +126,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source\appfat_glue.cpp" />
+    <ClCompile Include="Source\appfat.cpp" />
     <ClCompile Include="Source\automap.cpp" />
     <ClCompile Include="Source\capture.cpp" />
     <ClCompile Include="Source\codec.cpp" />
@@ -151,10 +151,6 @@
     <ClCompile Include="Source\help.cpp" />
     <ClCompile Include="Source\init.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Source\init_glue.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Source\interfac.cpp" />
     <ClCompile Include="Source\inv.cpp" />
@@ -203,11 +199,6 @@
     <ClCompile Include="Source\setmaps.cpp" />
     <ClCompile Include="Source\sha.cpp" />
     <ClCompile Include="Source\sound.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="Source\sound_common.cpp" />
-    <ClCompile Include="Source\sound_glue.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Source\spelldat.cpp" />

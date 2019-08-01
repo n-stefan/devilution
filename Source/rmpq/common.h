@@ -122,5 +122,6 @@ bool pkzip_decompress(void* in, size_t in_size, void* out, size_t* out_size);
 bool multi_decompress(void* in, size_t in_size, void* out, size_t* out_size, void* temp = nullptr);
 
 const char* path_name(const char* path);
+const char* path_ext(const char* path);
 
 }
