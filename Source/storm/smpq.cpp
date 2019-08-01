@@ -2,8 +2,9 @@
 #include "storm.h"
 #include "../rmpq/archive.h"
 #include "../trace.h"
+#include "../ui/common.h"
 
-#include <set>
+#include <map>
 
 BOOL  SFileOpenArchive(const char *szMpqName, DWORD dwPriority, DWORD dwFlags, HANDLE *phMpq) {
   File file(szMpqName, "rb");
@@ -11,18 +12,6 @@ BOOL  SFileOpenArchive(const char *szMpqName, DWORD dwPriority, DWORD dwFlags, H
     return FALSE;
   }
   mpq::Archive* archive = new mpq::Archive(file);
-#ifndef EMSCRIPTEN
-  //archive->listFiles(File("listfile.txt"));
-  //File fo("sizes.txt", "wb");
-  //for (size_t i = 0; i < archive->getMaxFiles(); ++i) {
-  //  auto name = archive->getFileName(i);
-  //  if (name) {
-  //    std::string sname(name);
-  //    strlwr(&sname[0]);
-  //    fo.printf("%s\t%s\t%u\t%u\r\n", sname.c_str(), mpq::path_ext(sname.c_str()), archive->getFileCSize(i), archive->getFileSize(i));
-  //  }
-  //}
-#endif
   *phMpq = (HANDLE) archive;
   return TRUE;
 }

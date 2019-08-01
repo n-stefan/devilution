@@ -1972,6 +1972,16 @@ void InitLevelChange(int pnum)
 
 void StartNewLvl(int pnum, int fom, int lvl)
 {
+#ifdef SPAWN
+  if (lvl > 2) {
+    InitDiabloMsg(EMSG_NOT_IN_SHAREWARE);
+    PlaySFX(PS_WARR18);
+    int x = plr[myplr].WorldX;
+    int y = plr[myplr].WorldY + 1;
+    NetSendCmdLoc(TRUE, CMD_WALKXY, x, y);
+    return;
+  }
+#endif
 	InitLevelChange(pnum);
 
 	if ((DWORD)pnum >= MAX_PLRS) {

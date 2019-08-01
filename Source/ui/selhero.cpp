@@ -3,6 +3,10 @@
 #include <string>
 #include "../trace.h"
 
+#ifdef SPAWN
+#define NO_CLASS "The Rogue and Sorcerer are only available in the full retail version of Diablo. For ordering information call (800) 953-SNOW."
+#endif
+
 static std::vector<_uiheroinfo> heroInfos;
 
 static BOOL  SelHero_GetHeroInfo(_uiheroinfo *pInfo) {
@@ -211,6 +215,12 @@ public:
   void onSelect(int value) {
     if (value >= 0 && value < NUM_CLASSES) {
       UiPlaySelectSound();
+#ifdef SPAWN
+      if (value > 0) {
+        activate(get_ok_dialog(NO_CLASS, this, false));
+        return;
+      }
+#endif
       activate(new SelectNameDialog(multi_, this, hero_));
     }
   }
@@ -283,11 +293,7 @@ public:
         activate(get_play_state(heroes_[value].name, SELHERO_NEW_DUNGEON));
       }
     } else {
-#ifndef SPAWN
       activate(new SelectCreateDialog(multi_, this));
-#else
-      activate(get_select_name_dialog(false, this, UI_WARRIOR));
-#endif
     }
   }
 
@@ -328,10 +334,6 @@ GameStatePtr get_single_player_dialog() {
   if (!heroInfos.empty()) {
     return new SelectSaveDialog(false, std::move(heroInfos));
   } else {
-#ifndef SPAWN
     return new SelectCreateDialog(false, get_main_menu_dialog());
-#else
-    return get_select_name_dialog(false, get_main_menu_dialog(), UI_WARRIOR);
-#endif
   }
 }

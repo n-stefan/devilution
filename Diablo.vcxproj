@@ -53,7 +53,7 @@
       <Optimization>MaxSpeed</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>SPAWN;NO_SYSTEM;_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NO_SYSTEM;_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Source/WinRel\</AssemblerListingLocation>
       <ObjectFileName>.\Source/WinRel\</ObjectFileName>
       <ProgramDataBaseFileName>.\Source/WinRel\</ProgramDataBaseFileName>
@@ -222,6 +222,7 @@
     <ClCompile Include="Source\ui\diabloui.cpp" />
     <ClCompile Include="Source\ui\dialog.cpp" />
     <ClCompile Include="Source\ui\main_menu.cpp" />
+    <ClCompile Include="Source\ui\okbox.cpp" />
     <ClCompile Include="Source\ui\play.cpp" />
     <ClCompile Include="Source\ui\selhero.cpp" />
     <ClCompile Include="Source\ui\yesno.cpp" />

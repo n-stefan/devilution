@@ -327,6 +327,9 @@
     <ClCompile Include="Source\appfat.cpp">
       <Filter>glue</Filter>
     </ClCompile>
+    <ClCompile Include="Source\ui\okbox.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Diablo.ico">
