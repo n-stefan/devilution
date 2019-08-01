@@ -7,12 +7,12 @@ EM_JS(void, trace_push, (const char* ptr), {
   var end = HEAPU8.indexOf(0, ptr);
   var text = String.fromCharCode.apply(null, HEAPU8.subarray(ptr, end));
   console.log(text);
-  window.WASM_TRACE = window.WASM_TRACE || [];
-  window.WASM_TRACE.push(text);
+  self.WASM_TRACE = self.WASM_TRACE || [];
+  self.WASM_TRACE.push(text);
 })
 EM_JS(void, trace_pop, (), {
-  if (window.WASM_TRACE) {
-    window.WASM_TRACE.pop();
+  if (self.WASM_TRACE) {
+    self.WASM_TRACE.pop();
   }
 })
 

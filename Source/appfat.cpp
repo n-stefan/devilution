@@ -7,12 +7,12 @@
 EM_JS( void, exit_error, (const char* err), {
   var end = HEAPU8.indexOf( 0, err );
   var text = String.fromCharCode.apply(null, HEAPU8.subarray( err, end ));
-  window.DApi.exit_error( text );
+  self.DApi.exit_error( text );
 });
 EM_JS( void, show_alert, ( const char* err ), {
   var end = HEAPU8.indexOf( 0, err );
   var text = String.fromCharCode.apply( null, HEAPU8.subarray( err, end ) );
-  window.alert( text );
+  self.alert( text );
 });
 #else
 #include <windows.h>

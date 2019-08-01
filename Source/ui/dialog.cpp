@@ -331,7 +331,10 @@ void DialogState::onKey(const KeyEvent& e) {
       break;
     case KeyCode::RETURN:
     case KeyCode::SPACE:
-      onInput(selected);
+      if ( selected != SELECT_NONE )
+      {
+        onInput( selected );
+      }
       break;
     case KeyCode::BACK:
       for (auto &item : items) {

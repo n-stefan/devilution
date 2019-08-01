@@ -54,7 +54,8 @@ protected:
   }
 
   std::vector<Item> items;
-  int selected = -1;
+  enum : int { SELECT_NONE = std::numeric_limits<int>::min() };
+  int selected = SELECT_NONE;
   bool wraps = true;
   bool cursor = true;
   bool doubleclick = false;
