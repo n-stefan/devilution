@@ -22,7 +22,7 @@ char gszProductName[MAX_PATH] = "Diablo v1.09";
 void api_current_save_id(int id) {
 #ifdef EMSCRIPTEN
   EM_ASM_({
-    self.DApi.current_save_id(id);
+    self.DApi.current_save_id($0);
   }, id);
 #endif
 }

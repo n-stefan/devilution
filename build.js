@@ -26,88 +26,86 @@ const execute = async_limit((cmd, cb) => new Promise((resolve, reject) => {
   });
 }), 6);
 
-const flags = process.argv.slice(2).join(" ");
+async function run_build(flags) {
+  const is_spawn = flags.match(/-DSPAWN/);
+  const out_dir = is_spawn ? './emcc/spawn' : './emcc/retail';
 
-const is_spawn = flags.match(/-DSPAWN/);
-const out_dir = is_spawn ? './emcc/spawn' : './emcc/retail';
-
-let rebuild = true;
-if (fs.existsSync(`${out_dir}/args.txt`)) {
-  if (fs.readFileSync(`${out_dir}/args.txt`, 'utf8') === flags) {
-    rebuild = false;
-  }
-}
-
-const link_list = [];
-let firstFile = true;
-let maxTime = null;
-
-let fileTime = new Map();
-function file_time(name) {
-  if (fileTime.has(name)) {
-    return fileTime.get(name);
-  }
-  const time = (async () => {
-    const data = await fsp.readFile(name, 'utf8');
-    const reg = /^\s*#include "(.*)"/mg;
-    let m;
-    const includes = [];
-    const dir = path.dirname(name);
-    while (m = reg.exec(data)) {
-      includes.push(path.join(dir, m[1]));
+  let rebuild = true;
+  if (fs.existsSync(`${out_dir}/args.txt`)) {
+    if (fs.readFileSync(`${out_dir}/args.txt`, 'utf8') === flags) {
+      rebuild = false;
     }
-    const incl = includes.map(n => file_time(n));
-    const times = await Promise.all(incl);
-    const time = times.reduce((res, t) => (res > t ? res : t), (await fsp.stat(name)).mtime);
+  }
+
+  const link_list = [];
+  let firstFile = true;
+  let maxTime = null;
+
+  let fileTime = new Map();
+  function file_time(name) {
+    if (fileTime.has(name)) {
+      return fileTime.get(name);
+    }
+    const time = (async () => {
+      const data = await fsp.readFile(name, 'utf8');
+      const reg = /^\s*#include "(.*)"/mg;
+      let m;
+      const includes = [];
+      const dir = path.dirname(name);
+      while (m = reg.exec(data)) {
+        includes.push(path.join(dir, m[1]));
+      }
+      const incl = includes.map(n => file_time(n));
+      const times = await Promise.all(incl);
+      const time = times.reduce((res, t) => (res > t ? res : t), (await fsp.stat(name)).mtime);
+      return time;
+    })();
+    fileTime.set(name, time);
     return time;
-  })();
-  fileTime.set(name, time);
-  return time;
-}
-
-async function handle_file(name) {
-  const statSrc = await fsp.stat(name);
-  if (statSrc.isDirectory()) {
-    const list = await fsp.readdir(name);
-    await Promise.all(list.map(fn => handle_file(`${name}/${fn}`)));
-  } else if (name.match(/\.(?:c|cpp|cc)$/i)) {
-    const out = `${out_dir}/${name}.bc`;
-    const srcTime = await file_time(name);
-    let statDst = null;
-    if (fs.existsSync(out)) {
-      statDst = await fsp.stat(out);
-    } else {
-      fs.createFileSync(out);
-    }
-
-    if (rebuild || !statDst || srcTime > statDst.mtime) {
-      if (firstFile) {
-        console.log('Compiling...');
-        firstFile = false;
-      }
-      const cmd = `emcc ${name} -o ${out} ${name.match(/\.(?:cpp|cc)$/i) ? "--std=c++11 " : ""}-DNO_SYSTEM -DEMSCRIPTEN -Wno-logical-op-parentheses ${flags} -I.`;
-      try {
-        const {stderr} = await execute(cmd, () => console.log(`  ${name}`));
-        if (stderr) {
-          console.error(stderr);
-        }
-      } catch (e) {
-        if (fs.existsSync(out)) {
-          await fsp.unlink(out);
-        }
-        throw e;
-      }
-    }
-
-    if (!maxTime || statSrc.mtime > maxTime) {
-      maxTime = statSrc.mtime;
-    }
-
-    link_list.push(out);
   }
-}
 
-async function build_all() {
+  async function handle_file(name) {
+    const statSrc = await fsp.stat(name);
+    if (statSrc.isDirectory()) {
+      const list = await fsp.readdir(name);
+      await Promise.all(list.map(fn => handle_file(`${name}/${fn}`)));
+    } else if (name.match(/\.(?:c|cpp|cc)$/i)) {
+      const out = `${out_dir}/${name}.bc`;
+      const srcTime = await file_time(name);
+      let statDst = null;
+      if (fs.existsSync(out)) {
+        statDst = await fsp.stat(out);
+      } else {
+        fs.createFileSync(out);
+      }
+
+      if (rebuild || !statDst || srcTime > statDst.mtime) {
+        if (firstFile) {
+          console.log('Compiling...');
+          firstFile = false;
+        }
+        const cmd = `emcc ${name} -o ${out} ${name.match(/\.(?:cpp|cc)$/i) ? "--std=c++11 " : ""}-DNO_SYSTEM -DEMSCRIPTEN -Wno-logical-op-parentheses ${flags} -I.`;
+        try {
+          const {stderr} = await execute(cmd, () => console.log(`  ${name}`));
+          if (stderr) {
+            console.error(stderr);
+          }
+        } catch (e) {
+          if (fs.existsSync(out)) {
+            await fsp.unlink(out);
+          }
+          throw e;
+        }
+      }
+
+      if (!maxTime || statSrc.mtime > maxTime) {
+        maxTime = statSrc.mtime;
+      }
+
+      link_list.push(out);
+    }
+  }
+
   await handle_file('Source');
   fs.createFileSync(`${out_dir}/args.txt`);
   fs.writeFileSync(`${out_dir}/args.txt`, flags);
@@ -129,4 +127,5 @@ async function build_all() {
   fs.renameSync(oname + '.js', oname + '.jscc');
 }
 
-build_all().catch(e => console.error(e.message));
+run_build('-O3').catch(e => console.error(e.message));
+run_build('-O3 -DSPAWN').catch(e => console.error(e.message));
