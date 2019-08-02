@@ -1,4 +1,5 @@
 #include "common.h"
+#include "../diablo.h"
 #include "dialog.h"
 #include <string>
 #include "../trace.h"
@@ -9,7 +10,9 @@
 
 static std::vector<_uiheroinfo> heroInfos;
 
-static BOOL  SelHero_GetHeroInfo(_uiheroinfo *pInfo) {
+GameStatePtr get_single_player_dialog_int();
+
+static BOOL SelHero_GetHeroInfo(_uiheroinfo *pInfo) {
   heroInfos.push_back(*pInfo);
   return TRUE;
 }
@@ -78,7 +81,7 @@ public:
     SelectBaseDialog::onKey(e);
     if (e.action == KeyEvent::Press && e.key == KeyCode::ESCAPE) {
       UiPlaySelectSound();
-      activate(get_single_player_dialog());
+      activate(get_single_player_dialog_int());
     }
   }
 
@@ -88,7 +91,7 @@ public:
       activate(get_play_state(name_.c_str(), selected == 0 ? SELHERO_CONTINUE : SELHERO_NEW_DUNGEON));
       break;
     case -2:
-      activate(get_single_player_dialog());
+      activate(get_single_player_dialog_int());
       break;
     case 0:
       activate(get_play_state(name_.c_str(), SELHERO_CONTINUE));
@@ -311,7 +314,7 @@ public:
             pfile_delete_save(&hero);
           }
           //TODO: multiplayer
-          activate(get_single_player_dialog());
+          activate(get_single_player_dialog_int());
         }));
       }
     } else if (value == -3) {
@@ -328,7 +331,7 @@ private:
   int deleteIdx_;
 };
 
-GameStatePtr get_single_player_dialog() {
+GameStatePtr get_single_player_dialog_int() {
   heroInfos.clear();
   pfile_ui_set_hero_infos(SelHero_GetHeroInfo);
   if (!heroInfos.empty()) {
@@ -336,4 +339,10 @@ GameStatePtr get_single_player_dialog() {
   } else {
     return new SelectCreateDialog(false, get_main_menu_dialog());
   }
+}
+
+GameStatePtr get_single_player_dialog() {
+  SetRndSeed(0);
+  memset(plr, 0, sizeof(plr));
+  return get_single_player_dialog_int();
 }

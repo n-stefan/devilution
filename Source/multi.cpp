@@ -614,16 +614,15 @@ BOOL NetInit(BOOL bSinglePlayer, BOOL *pfExitProgram)
 	int i;
 
 	while (1) {
-		*pfExitProgram = FALSE;
-		SetRndSeed(0);
-		sgGameInitInfo.dwSeed = time(NULL);
-		sgGameInitInfo.bDiff = gnDifficulty;
-		memset(sgbPlayerTurnBitTbl, 0, sizeof(sgbPlayerTurnBitTbl));
-		gbGameDestroyed = FALSE;
-		memset(sgbPlayerLeftGameTbl, 0, sizeof(sgbPlayerLeftGameTbl));
-		memset(sgdwPlayerLeftReasonTbl, 0, sizeof(sgdwPlayerLeftReasonTbl));
-		memset(sgbSendDeltaTbl, 0, sizeof(sgbSendDeltaTbl));
-		memset(sgwPackPlrOffsetTbl, 0, sizeof(sgwPackPlrOffsetTbl));
+    *pfExitProgram = FALSE;
+    sgGameInitInfo.dwSeed = time(NULL);
+    sgGameInitInfo.bDiff = gnDifficulty;
+    gbGameDestroyed = FALSE;
+    memset(sgbPlayerTurnBitTbl, 0, sizeof(sgbPlayerTurnBitTbl));
+    memset(sgbPlayerLeftGameTbl, 0, sizeof(sgbPlayerLeftGameTbl));
+    memset(sgdwPlayerLeftReasonTbl, 0, sizeof(sgdwPlayerLeftReasonTbl));
+    memset(sgbSendDeltaTbl, 0, sizeof(sgbSendDeltaTbl));
+    memset(sgwPackPlrOffsetTbl, 0, sizeof(sgwPackPlrOffsetTbl));
 #ifdef _DEBUG
 		gdwHistTicks = _GetTickCount();
 		dumphist("(%d) new game started", myplr);
