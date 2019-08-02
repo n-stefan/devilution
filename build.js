@@ -3,7 +3,20 @@ const fsp = fs.promises;
 const path = require('path');
 const { exec } = require('child_process');
 
-const execute = cmd => new Promise((resolve, reject) => {
+function async_limit(func, limit) {
+  const executing = [];
+  return async function(...args) {
+    while (executing.length >= limit) {
+      await Promise.race(executing).catch(() => null);
+    }
+    const p = Promise.resolve().then(() => func(...args));
+    const e = p.finally(() => executing.splice(executing.indexOf(e), 1));
+    executing.push(e);
+    return p;
+  };
+}
+const execute = async_limit((cmd, cb) => new Promise((resolve, reject) => {
+  if (cb) cb();
   exec(cmd, function(err, stdout, stderr) {
     if (err) {
       reject(err);
@@ -11,7 +24,7 @@ const execute = cmd => new Promise((resolve, reject) => {
       resolve({stdout, stderr});
     }
   });
-});
+}), 6);
 
 const flags = process.argv.slice(2).join(" ");
 
@@ -29,6 +42,29 @@ const link_list = [];
 let firstFile = true;
 let maxTime = null;
 
+let fileTime = new Map();
+function file_time(name) {
+  if (fileTime.has(name)) {
+    return fileTime.get(name);
+  }
+  const time = (async () => {
+    const data = await fsp.readFile(name, 'utf8');
+    const reg = /^\s*#include "(.*)"/mg;
+    let m;
+    const includes = [];
+    const dir = path.dirname(name);
+    while (m = reg.exec(data)) {
+      includes.push(path.join(dir, m[1]));
+    }
+    const incl = includes.map(n => file_time(n));
+    const times = await Promise.all(incl);
+    const time = times.reduce((res, t) => (res > t ? res : t), (await fsp.stat(name)).mtime);
+    return time;
+  })();
+  fileTime.set(name, time);
+  return time;
+}
+
 async function handle_file(name) {
   const statSrc = await fsp.stat(name);
   if (statSrc.isDirectory()) {
@@ -36,6 +72,7 @@ async function handle_file(name) {
     await Promise.all(list.map(fn => handle_file(`${name}/${fn}`)));
   } else if (name.match(/\.(?:c|cpp|cc)$/i)) {
     const out = `${out_dir}/${name}.bc`;
+    const srcTime = await file_time(name);
     let statDst = null;
     if (fs.existsSync(out)) {
       statDst = await fsp.stat(out);
@@ -43,15 +80,14 @@ async function handle_file(name) {
       fs.createFileSync(out);
     }
 
-    if (rebuild || !statDst || statSrc.mtime > statDst.mtime) {
+    if (rebuild || !statDst || srcTime > statDst.mtime) {
       if (firstFile) {
         console.log('Compiling...');
         firstFile = false;
       }
-      console.log(`  ${name}`);
       const cmd = `emcc ${name} -o ${out} ${name.match(/\.(?:cpp|cc)$/i) ? "--std=c++11 " : ""}-DNO_SYSTEM -DEMSCRIPTEN -Wno-logical-op-parentheses ${flags} -I.`;
       try {
-        const {stderr} = await execute(cmd);
+        const {stderr} = await execute(cmd, () => console.log(`  ${name}`));
         if (stderr) {
           console.error(stderr);
         }
@@ -84,9 +120,9 @@ async function build_all() {
   }
 
   console.log(`Linking ${is_spawn ? 'spawn' : 'retail'}`);
-  const link_flags = (memSize, ex) => `${optimize} -s WASM=1 -s MODULARIZE=1 -s NO_FILESYSTEM=1 -s EXPORTED_FUNCTIONS="['_malloc', '_free']" --post-js ./module-post.js -s ALLOW_MEMORY_GROWTH=1 -s TOTAL_MEMORY=${memSize}${ex ? " -s DISABLE_EXCEPTION_CATCHING=0" : ""}`;
 
-  const {stderr} = await execute(`emcc ${link_list.join(" ")} -o ${oname}.js -s EXPORT_NAME="${oname}" ${flags} -s WASM=1 -s MODULARIZE=1 -s NO_FILESYSTEM=1 --post-js ./module-post.js -s ALLOW_MEMORY_GROWTH=1 -s TOTAL_MEMORY=134217728 -s DISABLE_EXCEPTION_CATCHING=0`);
+  const cmd = `emcc ${link_list.join(" ")} -o ${oname}.js -s EXPORT_NAME="${oname}" ${flags} -s WASM=1 -s MODULARIZE=1 -s NO_FILESYSTEM=1 --post-js ./module-post.js -s ALLOW_MEMORY_GROWTH=1 -s TOTAL_MEMORY=134217728 -s DISABLE_EXCEPTION_CATCHING=0`;
+  const {stderr} = await execute(cmd);
   if (stderr) {
     console.error(stderr);
   }

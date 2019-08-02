@@ -12,16 +12,6 @@
 #define PASSWORD_MULTI "lshbkfg1"
 #endif
 
-#ifdef EMSCRIPTEN
-#include <emscripten.h>
-EM_JS(void, api_current_save_id, (int id), {
-  self.DApi.current_save_id(id);
-});
-#else
-void api_current_save_id(int id) {
-}
-#endif
-
 static char hero_names[MAX_CHARACTERS][PLR_NAME_LEN];
 BOOL gbValidSaveFile;
 

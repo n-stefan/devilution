@@ -13,4 +13,6 @@ extern HANDLE diabdat_mpq;
 extern char gszVersionNumber[MAX_PATH];
 extern char gszProductName[MAX_PATH];
 
+void api_current_save_id(int id);
+
 #endif /* __INIT_H__ */

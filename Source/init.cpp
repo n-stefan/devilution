@@ -1,6 +1,8 @@
 #ifndef EMSCRIPTEN
 #include <windows.h>
 #include <windowsx.h>
+#else
+#include <emscripten.h>
 #endif
 #include "diablo.h"
 #include "storm/storm.h"
@@ -15,3 +17,12 @@ HANDLE diabdat_mpq;
 
 char gszVersionNumber[MAX_PATH] = "Version 1.0.9.2";
 char gszProductName[MAX_PATH] = "Diablo v1.09";
+
+
+void api_current_save_id(int id) {
+#ifdef EMSCRIPTEN
+  EM_ASM_({
+    self.DApi.current_save_id(id);
+  }, id);
+#endif
+}

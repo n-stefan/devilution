@@ -78,7 +78,8 @@ public:
       }
 
       NetClose();
-      pfile_create_player_description(0, 0);
+      //pfile_create_player_description(0, 0);
+      api_current_save_id(-1);
     }
     _SNetDestroy();
   }
