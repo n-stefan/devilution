@@ -38,12 +38,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>.\Source/WinRel\</OutDir>
-    <IntDir>.\Source/WinRel\</IntDir>
+    <OutDir>./Build/WinRel/</OutDir>
+    <IntDir>./Build/WinRel/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>.\Source/WinDebug\</OutDir>
-    <IntDir>.\Source/WinDebug\</IntDir>
+    <OutDir>./Build/WinDebug/</OutDir>
+    <IntDir>./Build/WinDebug/</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -54,9 +54,6 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NO_SYSTEM;_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AssemblerListingLocation>.\Source/WinRel\</AssemblerListingLocation>
-      <ObjectFileName>.\Source/WinRel\</ObjectFileName>
-      <ProgramDataBaseFileName>.\Source/WinRel\</ProgramDataBaseFileName>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <MinimalRebuild>true</MinimalRebuild>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -79,7 +76,6 @@
     </Bscmake>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <OutputFile>.\Source/WinRel\Diablo.exe</OutputFile>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DataExecutionPrevention>false</DataExecutionPrevention>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
@@ -95,9 +91,6 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <PreprocessorDefinitions>SPAWN;NO_SYSTEM;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AssemblerListingLocation>.\Source/WinDebug\</AssemblerListingLocation>
-      <ObjectFileName>.\Source/WinDebug\</ObjectFileName>
-      <ProgramDataBaseFileName>.\Source/WinDebug\</ProgramDataBaseFileName>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -119,7 +112,6 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <OutputFile>.\Source/WinDebug\Diablo.exe</OutputFile>
       <AdditionalDependencies>version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DataExecutionPrevention>false</DataExecutionPrevention>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>

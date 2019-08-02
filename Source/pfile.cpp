@@ -12,6 +12,16 @@
 #define PASSWORD_MULTI "lshbkfg1"
 #endif
 
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+EM_JS(void, api_current_save_id, (int id), {
+  self.DApi.current_save_id(id);
+});
+#else
+void api_current_save_id(int id) {
+}
+#endif
+
 static char hero_names[MAX_CHARACTERS][PLR_NAME_LEN];
 BOOL gbValidSaveFile;
 
@@ -392,6 +402,7 @@ void pfile_read_player_from_save()
 	PkPlayerStruct pkplr;
 
 	save_num = pfile_get_save_num_from_name(gszHero);
+  api_current_save_id(save_num);
   archive = pfile_open_save_archive(NULL, save_num);
   if (archive == NULL)
 		app_fatal("Unable to open archive");

@@ -37,6 +37,16 @@ EMSCRIPTEN_KEEPALIVE void DApi_Char(int chr);
 EMSCRIPTEN_KEEPALIVE void DApi_Render(unsigned int time);
 
 }
+
+EM_JS(void, api_exit_game, (), {
+  self.DApi.exit_game();
+});
+
+#else
+
+void api_exit_game() {
+}
+
 #endif
 
 GameStatePtr initial_state() {
@@ -149,7 +159,7 @@ void DApi_Render(unsigned int time) {
   TickCount = time;
 #ifdef EMSCRIPTEN
   if (!GameState::current()) {
-    GameState::activate(initial_state());
+
   }
 #endif
   GameState::render(time);
@@ -184,7 +194,7 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
   DWORD wsStyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
   DWORD wsExStyle = WS_EX_CLIENTEDGE;
   AdjustWindowRectEx(&rc, wsStyle, FALSE, wsExStyle);
-  ghMainWnd = CreateWindowEx(wsExStyle, "DIABLO", "DIABLO", wsStyle, SW_SHOWDEFAULT, 0, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, ghInst, NULL);
+  ghMainWnd = CreateWindowEx(wsExStyle, "DIABLO", "DIABLO", wsStyle, 0, 1300, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, ghInst, NULL);
   if (!ghMainWnd)
     app_fatal("Unable to create main window");
   ShowWindow(ghMainWnd, SW_SHOWNORMAL);
