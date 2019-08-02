@@ -157,11 +157,9 @@ void DApi_Char(int chr) {
 
 void DApi_Render(unsigned int time) {
   TickCount = time;
-#ifdef EMSCRIPTEN
   if (!GameState::current()) {
-
+    api_exit_game();
   }
-#endif
   GameState::render(time);
 }
 
