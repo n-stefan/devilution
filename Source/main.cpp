@@ -30,7 +30,7 @@ static BOOL  SelHero_GetHeroInfo( _uiheroinfo *pInfo )
 
 extern "C" {
 
-EMSCRIPTEN_KEEPALIVE void DApi_Init(unsigned int time, int offscreen);
+EMSCRIPTEN_KEEPALIVE void DApi_Init(unsigned int time, int offscreen, int v0, int v1, int v2);
 EMSCRIPTEN_KEEPALIVE void DApi_Mouse(int action, int button, int mods, int x, int y);
 EMSCRIPTEN_KEEPALIVE void DApi_Key(int action, int mods, int key);
 EMSCRIPTEN_KEEPALIVE void DApi_Char(int chr);
@@ -91,7 +91,10 @@ void init_archives() {
   WCloseFile(fh);
 }
 
-void DApi_Init(unsigned int time, int offscreen) {
+void DApi_Init(unsigned int time, int offscreen, int v0, int v1, int v2) {
+  sprintf(gszVersionNumber, "Version %d.%d.%d", v0, v1, v2);
+  sprintf(gszProductName, "DiabloWeb v%d.%d.%d", v0, v1, v2);
+
   TickCount = time;
   use_offscreen = offscreen;
   srand(time);

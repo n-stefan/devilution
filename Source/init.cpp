@@ -13,11 +13,8 @@ _SNETVERSIONDATA fileinfo;
 int gbActive;
 HANDLE diabdat_mpq;
 
-/* data */
-
-char gszVersionNumber[MAX_PATH] = "Version 1.0.9.2";
-char gszProductName[MAX_PATH] = "Diablo v1.09";
-
+char gszVersionNumber[MAX_PATH] = "Version 1.0.0";
+char gszProductName[MAX_PATH] = "DiabloWeb v1.0.0";
 
 void api_current_save_id(int id) {
 #ifdef EMSCRIPTEN

@@ -21,7 +21,7 @@ public:
     addItem({{64, 277, 574, 320}, ControlType::List, ControlFlags::Huge | ControlFlags::Gold | ControlFlags::Center, MM_REPLAYINTRO, "Replay Intro"});
     addItem({{64, 320, 574, 363}, ControlType::List, ControlFlags::Huge | ControlFlags::Gold | ControlFlags::Center, MM_SHOWCREDITS, "Show Credits"});
     addItem({{64, 363, 574, 406}, ControlType::List, ControlFlags::Huge | ControlFlags::Gold | ControlFlags::Center, MM_EXITDIABLO, "Exit Diablo"});
-    addItem({{17, 444, 622, 465}, ControlType::Text, ControlFlags::Small, 0, "Diablo v1.09"});
+    addItem({{17, 444, 622, 465}, ControlType::Text, ControlFlags::Small, 0, gszProductName});
     addItem({{125, 0, 515, 154}, ControlType::Image, 0, -60, "", &ArtLogos[LOGO_MED]});
   }
 
