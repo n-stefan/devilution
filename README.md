@@ -1,3 +1,13 @@
+# Devilution for Web
+
+This is a fork of the original Devilution project, stripped down from all dependencies (Storm.dll, DiabloUI.dll, DirectDraw/DirectSound and Windows). It can be built as a Windows app (using WinAPI and DirectSound) or compiled for web using Emscripten.
+
+To run it normally, simply build the solution (tested in VS2017, but should work with other versions as well) and set the starting directory to somewhere that contains SPAWN.MPQ or DIABDAT.MPQ (depending on whether SPAWN was defined in options).
+
+To compile it to WASM/JSCC (jscc is an extension I'm using for javascript glue files so they don't mix with regular JS in my webpack config), simply run `node build.js`, it should automatically build only the modified files. Requires [Emscripten](https://emscripten.org/docs/getting_started/downloads.html) installed.
+
+Below follows the original Devilution readme.
+
 [![Build Status](https://travis-ci.org/diasurgical/devilution.svg?branch=master)](https://travis-ci.org/diasurgical/devilution)
 [![Build status](https://ci.appveyor.com/api/projects/status/ssk0xjhoka1uu940?svg=true)](https://ci.appveyor.com/project/galaxyhaxz/devilution)
 [![Build status](https://img.shields.io/github/downloads/diasurgical/devilution/total.svg)](https://github.com/diasurgical/devilution/releases)
