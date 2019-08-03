@@ -226,7 +226,10 @@ BOOL ForceQuests()
 
 BOOL QuestStatus(int i)
 {
-	BOOL result;
+#ifdef SPAWN
+  return FALSE;
+#else
+  BOOL result;
 
 	if (setlevel
 	    || currlevel != quests[i]._qlevel
@@ -235,6 +238,7 @@ BOOL QuestStatus(int i)
 		result = FALSE;
 	}
 	return result;
+#endif
 }
 
 void CheckQuestKill(int m, BOOL sendmsg)
