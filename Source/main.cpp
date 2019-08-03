@@ -1,6 +1,8 @@
 #ifndef EMSCRIPTEN
+#define NOMINMAX
 #include <windows.h>
 #include <windowsx.h>
+#include "rmpq/archive.h"
 #endif
 #include "diablo.h"
 #include "storm/storm.h"
@@ -173,6 +175,28 @@ LRESULT __stdcall MainWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )
 {
   ghInst = hInstance;
+
+  //mpq::Archive arc(File("single_0.sv"));
+  //auto tryFile = [&arc](const char* name) {
+  //  File f = arc.load(name);
+  //  if (f) {
+  //    File(std::string("single_0/") + name, "wb").copy(f);
+  //  }
+  //};
+  //tryFile("hero");
+  //tryFile("game");
+  //for (int i = 0; i <= 16; ++i) {
+  //  char buf[16];
+  //  sprintf(buf, "temps%02d", i);
+  //  tryFile(buf);
+  //  sprintf(buf, "templ%02d", i);
+  //  tryFile(buf);
+  //  sprintf(buf, "perms%02d", i);
+  //  tryFile(buf);
+  //  sprintf(buf, "perml%02d", i);
+  //  tryFile(buf);
+  //}
+  //return 0;
 
   ShowCursor(FALSE);
 

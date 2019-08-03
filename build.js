@@ -1,4 +1,4 @@
-const fs = require('fs-extra');
+const fs = require('fs');
 const fsp = fs.promises;
 const path = require('path');
 const { exec } = require('child_process');
@@ -25,6 +25,31 @@ const execute = async_limit((cmd, cb) => new Promise((resolve, reject) => {
     }
   });
 }), 6);
+
+function isDir(p) {
+  try {
+    let stat = fs.statSync(p);
+    return stat.isDirectory() ? 1 : -1;
+  } catch (e) {
+    return 0;
+  }
+}
+
+function mkdirsSync(p) {
+  const status = isDir(p);
+  if (status === 1) {
+    return;
+  } else if (status === -1) {
+    throw new Error(`path ${p} is not a directory`);
+  } else {
+    const par = path.dirname(p);
+    if (par === p) {
+      return; // how?
+    }
+    mkdirsSync(par);
+    fs.mkdirSync(p);
+  }
+}
 
 async function run_build(flags) {
   const is_spawn = flags.match(/-DSPAWN/);
@@ -76,7 +101,7 @@ async function run_build(flags) {
       if (fs.existsSync(out)) {
         statDst = await fsp.stat(out);
       } else {
-        fs.createFileSync(out);
+        mkdirsSync(path.dirname(out));
       }
 
       if (rebuild || !statDst || srcTime > statDst.mtime) {
@@ -107,14 +132,14 @@ async function run_build(flags) {
   }
 
   await handle_file('Source');
-  fs.createFileSync(`${out_dir}/args.txt`);
+  mkdirsSync(out_dir);
   fs.writeFileSync(`${out_dir}/args.txt`, flags);
 
   const oname = (is_spawn ? 'DiabloSpawn' : 'Diablo');
 
   if (!rebuild && (!maxTime || maxTime <= fs.statSync(oname + '.wasm').mtime)) {
     console.log('Everything is up to date');
-    return;    
+    return;
   }
 
   console.log(`Linking ${is_spawn ? 'spawn' : 'retail'}`);
