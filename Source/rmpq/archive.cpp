@@ -355,12 +355,12 @@ File Archive::load_(size_t pos, uint32_t key, bool keyValid) {
       }
     }
     if (flags & FileFlags::CompressMulti) {
-      size_t size = fileSize;
+      uint32_t size = fileSize;
       if (!multi_decompress(buf, cmpSize, data.data(), &size) || size != fileSize) {
         return File();
       }
     } else if (flags & FileFlags::CompressPkWare) {
-      size_t size = fileSize;
+      uint32_t size = fileSize;
       if (!pkzip_decompress(buf, cmpSize, data.data(), &size) || size != fileSize) {
         return File();
       }
@@ -425,12 +425,12 @@ File Archive::load_(size_t pos, uint32_t key, bool keyValid) {
         decryptBlock(sBuf, cSize, key + block);
       }
       if (flags & FileFlags::CompressMulti) {
-        size_t size = uSize;
+        uint32_t size = uSize;
         if (!multi_decompress(sBuf, cSize, data.data() + oPos, &size, dBuf) || size != uSize) {
           return File();
         }
       } else if (flags & FileFlags::CompressPkWare) {
-        size_t size = uSize;
+        uint32_t size = uSize;
         if (!pkzip_decompress(sBuf, cSize, data.data() + oPos, &size) || size != uSize) {
           return File();
         }

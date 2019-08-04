@@ -8,6 +8,7 @@
 #include "trace.h"
 #include "rmpq/file.h"
 #include "rmpq/common.h"
+#include "rmpq/archive.h"
 #include "storm/storm.h"
 
 #ifdef EMSCRIPTEN
@@ -15,7 +16,11 @@
 #include <emscripten.h>
 
 EM_JS(void, api_create_sound_float, (int id, const float* ptr, int samples, int channels, int rate), {
-  self.DApi.create_sound(id, HEAPF32.slice(ptr / 4, ptr / 4 + samples * channels), samples, channels, rate);
+  self.DApi.create_sound_raw(id, HEAPF32.slice(ptr / 4, ptr / 4 + samples * channels), samples, channels, rate);
+});
+
+EM_JS(void, api_create_sound, (int id, const uint8_t* ptr, size_t size), {
+  self.DApi.create_sound(id, HEAPU8.slice(ptr, ptr + size));
 });
 
 EM_JS(void, api_duplicate_sound, (int id, int srcId), {
@@ -38,7 +43,7 @@ EM_JS(void, api_delete_sound, (int id), {
   self.DApi.delete_sound(id);
 });
 
-void api_create_sound(int id, const uint8_t* ptr, int samples, int channels, int depth, int rate) {
+void api_create_sound_raw(int id, const uint8_t* ptr, int samples, int channels, int depth, int rate) {
   std::vector<float> data(samples * channels);
   float* raw = data.data();
   if (depth == 8) {
@@ -67,7 +72,7 @@ std::unordered_map<int, LPDIRECTSOUNDBUFFER> soundBuffers;
 
 LPDIRECTSOUND sglpDS = NULL;
 
-void api_create_sound(int id, const uint8_t* ptr, int samples, int channels, int depth, int rate) {
+void api_create_sound_raw(int id, const uint8_t* ptr, int samples, int channels, int depth, int rate) {
   if (!sglpDS) {
     return;
   }
@@ -100,6 +105,9 @@ void api_create_sound(int id, const uint8_t* ptr, int samples, int channels, int
     }
     soundBuffers[id] = DSB;
   }
+}
+
+void api_create_sound(int id, const uint8_t* ptr, size_t size) {
 }
 
 void api_duplicate_sound(int id, int srcId) {
@@ -297,29 +305,29 @@ void snd_play_snd(TSnd *pSnd, int lVolume, int lPan) {
   pSnd->play(lVolume, lPan);
 }
 
+size_t get_mp3_duration(const uint8_t* data, size_t size);
+size_t get_wave_duration(const uint8_t* data, size_t size);
+
 TSnd *sound_file_load(const char *path) {
-  HANDLE file;
-  if (!WOpenFile(path, &file, FALSE)) {
+  MemoryFile file = ((mpq::Archive*)diabdat_mpq)->load(path);
+  if (!file) {
     return NULL;
   }
-  WAVEFORMATEX fmt;
-  CKINFO chunk;
-  BYTE* wave_file = LoadWaveFile(file, &fmt, &chunk);
-  if (!wave_file)
-    app_fatal("Invalid sound format on file %s", path);
 
-  TSnd* pSnd = sound_from_buffer(wave_file + chunk.dwOffset, chunk.dwSize, fmt.nChannels, fmt.wBitsPerSample, fmt.nSamplesPerSec);
+  size_t duration = get_wave_duration(file.data(), file.size());
+  if (!duration) {
+    duration = get_mp3_duration(file.data(), file.size());
+  }
 
-  mem_free_dbg((void *) wave_file);
-  WCloseFile(file);
-
-  return pSnd;
+  int id = nextSoundId++;
+  api_create_sound(id, file.data(), file.size());
+  return new TSnd(id, (DWORD) duration);
 }
 
 TSnd *sound_from_buffer(const uint8_t* buffer, unsigned long size, int channels, int depth, int rate) {
   int id = nextSoundId++;
   int samples = size / (channels * depth / 8);
-  api_create_sound(id, buffer, samples, channels, depth, rate);
+  api_create_sound_raw(id, buffer, samples, channels, depth, rate);
   return new TSnd(id, (DWORD) ((int64_t) samples * 1000 / rate));
 }
 

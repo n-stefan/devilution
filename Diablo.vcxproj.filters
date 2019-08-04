@@ -28,6 +28,9 @@
     <Filter Include="mpq">
       <UniqueIdentifier>{a178d78a-caae-4575-96ae-1f3ed36ec42b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="zlib">
+      <UniqueIdentifier>{ce1e9639-2963-4116-9d5d-3f2bed34974f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\automap.cpp">
@@ -282,9 +285,6 @@
     <ClCompile Include="Source\rmpq\locale.cpp">
       <Filter>mpq</Filter>
     </ClCompile>
-    <ClCompile Include="Source\rmpq\pklib\crc32.c">
-      <Filter>mpq</Filter>
-    </ClCompile>
     <ClCompile Include="Source\rmpq\pklib\explode.c">
       <Filter>mpq</Filter>
     </ClCompile>
@@ -329,6 +329,45 @@
     </ClCompile>
     <ClCompile Include="Source\ui\okbox.cpp">
       <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\mp3.cpp">
+      <Filter>glue</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\adler32.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\compress.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\crc32.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\deflate.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\infback.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\inffast.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\inflate.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\inftrees.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\trees.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\uncompr.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\zutil.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\pklib\crc32a.c">
+      <Filter>mpq</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -623,6 +662,36 @@
     </ClInclude>
     <ClInclude Include="Source\trace.h">
       <Filter>glue</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zlib\crc32.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zlib\deflate.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zlib\inffast.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zlib\inffixed.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zlib\inflate.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zlib\inftrees.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zlib\trees.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zlib\zconf.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zlib\zlib.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zlib\zutil.h">
+      <Filter>zlib</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -172,49 +172,6 @@ void DApi_Render(unsigned int time) {
 
 LRESULT __stdcall MainWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
-#include <algorithm>
-
-bool validate_mpq()
-{
-  char path[MAX_PATH];
-  int save_num = pfile_get_save_num_from_name( gszHero );
-  pfile_get_save_path( path, sizeof( path ), save_num );
-
-  File file( path );
-  mpq::MPQHeader header;
-  file.read( &header, mpq::MPQHeader::size_v1 );
-  std::vector<mpq::MPQBlockEntry> blocks( header.blockTableSize );
-  file.seek( header.blockTablePos, SEEK_SET );
-  file.read( blocks.data(), blocks.size() * sizeof( mpq::MPQBlockEntry ) );
-  mpq::decryptBlock( blocks.data(), blocks.size() * sizeof( mpq::MPQBlockEntry ), mpq::hashString( "(block table)", mpq::HASH_KEY ) );
-
-  std::vector<mpq::MPQBlockEntry> usedBlocks;
-  for ( auto& block : blocks )
-  {
-    if ( block.cSize || block.filePos )
-    {
-      usedBlocks.push_back( block );
-    }
-  }
-  std::sort( usedBlocks.begin(), usedBlocks.end(), []( const mpq::MPQBlockEntry& a, const mpq::MPQBlockEntry& b )
-  {
-    return a.filePos < b.filePos;
-  } );
-  uint32_t offset = 65640;
-  for ( auto& block : usedBlocks )
-  {
-    if ( offset != block.filePos )
-    {
-      return false;
-    }
-    offset = block.filePos + block.cSize;
-  }
-  if ( offset != header.archiveSize )
-  {
-    return false;
-  }
-  return true;
-}
 
 int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )
 {

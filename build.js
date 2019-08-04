@@ -152,5 +152,5 @@ async function run_build(flags) {
   fs.renameSync(oname + '.js', oname + '.jscc');
 }
 
-run_build('-O3').catch(e => console.error(e.message));
-run_build('-O3 -DSPAWN').catch(e => console.error(e.message));
+run_build('-O3 -DZ_SOLO').catch(e => console.error(e.message));
+run_build('-O3 -DZ_SOLO -DSPAWN').catch(e => console.error(e.message));

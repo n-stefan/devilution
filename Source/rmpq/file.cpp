@@ -404,7 +404,7 @@ MemoryFile::MemoryFile(File const& file)
 
 MemoryFile MemoryFile::from(File file) {
   MemoryFile mem(file);
-  if (mem) {
+  if (mem || !file) {
     return mem;
   }
   auto pos = file.tell();
