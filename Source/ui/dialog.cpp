@@ -3,8 +3,8 @@
 
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
-EM_JS(void, api_open_keyboard, (), {
-  self.DApi.open_keyboard();
+EM_JS(void, api_open_keyboard, (int x0, int y0, int x1, int y1), {
+  self.DApi.open_keyboard(x0, y0, x1, y1);
 });
 EM_JS(void, api_close_keyboard, (), {
   self.DApi.close_keyboard();
@@ -25,7 +25,7 @@ EMSCRIPTEN_KEEPALIVE void DApi_SyncText(int c0, int c1, int c2, int c3, int c4, 
 }
 
 #else
-void api_open_keyboard() {
+void api_open_keyboard(int x0, int y0, int x1, int y1) {
 }
 void api_close_keyboard() {
 }
@@ -214,14 +214,11 @@ void DialogState::onRender(unsigned int time) {
 }
 
 void DialogState::onActivate() {
-  bool hasEdit = false;
   for (auto& item : items) {
     if (item.type == ControlType::Edit) {
-      hasEdit = true;
+      api_open_keyboard(item.rect.left, item.rect.top, item.rect.right, item.rect.bottom);
+      break;
     }
-  }
-  if (hasEdit) {
-    api_open_keyboard();
   }
 }
 
@@ -284,7 +281,7 @@ void DialogState::onMouse(const MouseEvent& event) {
     if (event.x >= item.rect.left && event.y >= item.rect.top && event.x < item.rect.right && event.y < item.rect.bottom) {
       if (item.type == ControlType::Edit) {
         if (event.action == MouseEvent::Press) {
-          api_open_keyboard();
+          api_open_keyboard(item.rect.left, item.rect.top, item.rect.right, item.rect.bottom);
         }
       } else if (item.type == ControlType::List) {
         if (!item.text.empty()) {
