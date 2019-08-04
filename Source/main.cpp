@@ -270,11 +270,7 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
       }
     }
     DApi_Render(GetTickCount());
-<<<<<<< HEAD
-    Sleep(10);
-=======
     Sleep(50);
->>>>>>> little mpq fix
   }
 
 	music_stop();

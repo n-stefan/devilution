@@ -174,8 +174,8 @@ public:
       return data_[pos_++ - loadPos_];
     }
     loadPos_ = pos_;
-    data_.resize(MAX_CHUNK);
-    get_file_contents(path_.c_str(), data_.data(), loadPos_, MAX_CHUNK);
+    data_.resize(std::min(MAX_CHUNK, size_ - pos_));
+    get_file_contents(path_.c_str(), data_.data(), loadPos_, data_.size());
     return data_[pos_++ - loadPos_];
   }
   void putc(int chr) {
@@ -215,8 +215,8 @@ public:
     }
     if (size <= MAX_CHUNK) {
       loadPos_ = pos_;
-      data_.resize(MAX_CHUNK);
-      get_file_contents(path_.c_str(), data_.data(), loadPos_, MAX_CHUNK);
+      data_.resize(std::min(MAX_CHUNK, size_ - pos_));
+      get_file_contents(path_.c_str(), data_.data(), loadPos_, data_.size());
       memcpy(ptr, data_.data(), size);
       pos_ += size;
       return size;
