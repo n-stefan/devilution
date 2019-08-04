@@ -54,7 +54,7 @@ public:
   }
 
   void truncate() {
-    _chsize( _fileno( file_ ), tell() );
+    _chsize(_fileno(file_), (long) ftell(file_));
   }
 };
 

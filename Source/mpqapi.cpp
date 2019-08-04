@@ -338,7 +338,7 @@ BOOL OpenMPQ(const char *pszArchive, BOOL hidden, DWORD dwChar)
 	if (sgpBlockTbl == NULL || sgpHashTbl == NULL) {
 		memset(&fhdr, 0, sizeof(fhdr));
 		if (ParseMPQHeader(&fhdr, &sgdwMpqOffset) == FALSE) {
-      sghArchive = File();
+      CloseMPQ(pszArchive, TRUE, dwChar);
       return FALSE;
     }
 		sgpBlockTbl = (_BLOCKENTRY *)DiabloAllocPtr(0x8000);
@@ -346,7 +346,7 @@ BOOL OpenMPQ(const char *pszArchive, BOOL hidden, DWORD dwChar)
 		if (fhdr.blockcount) {
       sghArchive.seek(104, SEEK_SET);
       if (sghArchive.read(sgpBlockTbl, 0x8000) != 0x8000) {
-        sghArchive = File();
+        CloseMPQ(pszArchive, TRUE, dwChar);
         return FALSE;
       }
 			key = Hash("(block table)", 3);
@@ -357,7 +357,7 @@ BOOL OpenMPQ(const char *pszArchive, BOOL hidden, DWORD dwChar)
     if (fhdr.hashcount) {
       sghArchive.seek(32872, SEEK_SET);
       if (sghArchive.read(sgpHashTbl, 0x8000) != 0x8000) {
-        sghArchive = File();
+        CloseMPQ(pszArchive, TRUE, dwChar);
         return FALSE;
       }
 			key = Hash("(hash table)", 3);

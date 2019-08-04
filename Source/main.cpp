@@ -220,63 +220,6 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 {
   ghInst = hInstance;
 
-  //_uiheroinfo hero;
-  //gbMaxPlayers = 1;
-  //strcpy( hero.name, "Riv" );
-  //hero.heroclass = 0;
-  //strcpy( gszHero, "Riv" );
-  //pfile_ui_save_create( &hero );
-  //validate_mpq();
-  //pfile_read_player_from_save();
-  //uint8_t data[262144];
-  //for ( size_t i = 0; i < sizeof data; ++i )
-  //{
-  //  data[i] = i * 123;
-  //}
-  //for ( int i = 0; i < 1000; ++i )
-  //{
-  //  pfile_remove_temp_files();
-  //  validate_mpq();
-  //  for ( int j = 0; j < 5; ++j )
-  //  {
-  //    char name[16];
-  //    sprintf( name, "templ%02d", ( rand() % 8 ) );
-  //    uint32_t size = ( rand() % 500 ) * ( rand() % 500 ) + 1000;
-  //    uint32_t dwLen = codec_get_encoded_len( size );
-  //    pfile_write_save_file( name, data, size, dwLen );
-  //    validate_mpq();
-  //  }
-  //  pfile_write_hero();
-  //  if ( rand() % 2 )
-  //  {
-  //    pfile_rename_temp_to_perm();
-  //  }
-  //  validate_mpq();
-  //}
-  //return 0;
-
-  //mpq::Archive arc(File("single_0.sv"));
-  //auto tryFile = [&arc](const char* name) {
-  //  File f = arc.load(name);
-  //  if (f) {
-  //    File(std::string("single_0/") + name, "wb").copy(f);
-  //  }
-  //};
-  //tryFile("hero");
-  //tryFile("game");
-  //for (int i = 0; i <= 16; ++i) {
-  //  char buf[16];
-  //  sprintf(buf, "temps%02d", i);
-  //  tryFile(buf);
-  //  sprintf(buf, "templ%02d", i);
-  //  tryFile(buf);
-  //  sprintf(buf, "perms%02d", i);
-  //  tryFile(buf);
-  //  sprintf(buf, "perml%02d", i);
-  //  tryFile(buf);
-  //}
-  //return 0;
-
   ShowCursor(FALSE);
 
   WNDCLASSEXA wcex;
@@ -327,7 +270,11 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
       }
     }
     DApi_Render(GetTickCount());
+<<<<<<< HEAD
     Sleep(10);
+=======
+    Sleep(50);
+>>>>>>> little mpq fix
   }
 
 	music_stop();

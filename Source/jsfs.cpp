@@ -267,6 +267,8 @@ File::File(const char* name, const char* mode) {
 
 #ifndef EMSCRIPTEN
 
+#include <io.h>
+
 class StdFileBuffer : public FileBuffer {
   FILE* file_;
 public:
