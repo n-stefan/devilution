@@ -31,6 +31,8 @@ public:
 
   virtual size_t read(void* ptr, size_t size) = 0;
   virtual size_t write(void const* ptr, size_t size) = 0;
+
+  virtual void truncate() = 0;
 };
 
 class File {
@@ -163,6 +165,10 @@ public:
         ((x & 0x00000000FF000000ULL) << 8) | ((x & 0x0000000000FF0000ULL) << 24) | ((x & 0x000000000000FF00ULL) << 40) | ((x & 0x00000000000000FFULL) << 56);
     }
     return file_->write(&x, 8) == 8;
+  }
+
+  void truncate() {
+    file_->truncate();
   }
 
   void printf(char const* fmt, ...);

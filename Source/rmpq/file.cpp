@@ -8,6 +8,7 @@
 #define NOMINMAX
 #ifdef _MSC_VER
 #include <windows.h>
+#include <io.h>
 #endif
 
 void create_dir(char const* path) {
@@ -50,6 +51,10 @@ public:
   }
   size_t write(void const* ptr, size_t size) {
     return fwrite(ptr, 1, size, file_);
+  }
+
+  void truncate() {
+    _chsize( _fileno( file_ ), tell() );
   }
 };
 
@@ -233,6 +238,8 @@ public:
   size_t write(void const* ptr, size_t size) {
     return 0;
   }
+
+  void truncate() {}
 };
 
 File File::subfile(uint64_t offset, uint64_t size) {
@@ -277,7 +284,7 @@ public:
       break;
     }
     if (pos < 0) pos = 0;
-    if (static_cast<size_t>(pos) > data_.size()) pos = data_.size();
+    //if (static_cast<size_t>(pos) > data_.size()) pos = data_.size();
     pos_ = (size_t) pos;
   }
   uint64_t size() {
@@ -315,6 +322,10 @@ public:
     uint8_t* result = data_.data() + pos_;
     pos_ += size;
     return result;
+  }
+
+  void truncate() {
+    data_.resize(pos_, 0);
   }
 };
 
@@ -371,6 +382,8 @@ public:
   uint8_t const* data() const {
     return data_;
   }
+
+  void truncate() {}
 };
 
 MemoryFile::MemoryFile()

@@ -11,43 +11,6 @@
 #error ASM_TRANS_RECT: Parameter not set
 #endif
 
-#if defined(_MSC_VER) && defined(_M_IX86)
-__asm {
-	mov edi, gpBuffer
-	; origin is at 64,160
-	add edi, (SCREEN_Y + TRANS_RECT_Y + TRANS_RECT_HEIGHT - 1) * BUFFER_WIDTH + 64 + TRANS_RECT_X
-	xor eax, eax
-	mov edx, TRANS_RECT_HEIGHT >> 1
-yloop:
-	mov ecx, TRANS_RECT_WIDTH >> 1
-x0loop:
-	stosb
-	inc edi
-	loop x0loop
-#if (TRANS_RECT_WIDTH & 1)
-	stosb
-#endif
-	sub edi, BUFFER_WIDTH + TRANS_RECT_WIDTH
-	mov ecx, TRANS_RECT_WIDTH >> 1
-x1loop:
-	inc edi
-	stosb
-	loop x1loop
-	sub edi, BUFFER_WIDTH + (TRANS_RECT_WIDTH & ~1)
-	dec edx
-	jnz yloop
-#if (TRANS_RECT_HEIGHT & 1)
-	mov ecx, TRANS_RECT_WIDTH >> 1
-x2loop:
-	stosb
-	inc edi
-	loop x2loop
-#if (TRANS_RECT_WIDTH & 1)
-	stosb
-#endif
-#endif
-}
-#else // _MSC_VER && _M_IX86
 {
 	int row, col;
 	BYTE *pix = &gpBuffer[SCREENXY(TRANS_RECT_X, TRANS_RECT_Y + TRANS_RECT_HEIGHT - 1)];
@@ -76,7 +39,6 @@ x2loop:
 #endif
 #endif
 }
-#endif
 
 #undef TRANS_RECT_Y
 #undef TRANS_RECT_X

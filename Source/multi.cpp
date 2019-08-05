@@ -275,7 +275,7 @@ void multi_net_ping()
 
 int multi_handle_delta()
 {
-	int i, received;
+	int i, received = 0;
 
 	if (gbGameDestroyed) {
 		gbRunGame = FALSE;

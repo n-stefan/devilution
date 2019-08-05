@@ -35,6 +35,8 @@ void File::remove(const char* path) {
 
 #else
 
+#include <io.h>
+
 int get_file_size(const char* path) {
   struct stat st;
   if (stat(path, &st)) {
@@ -143,6 +145,11 @@ public:
     pos_ += size;
     return result;
   }
+
+  void truncate() {
+    modified = true;
+    data_.resize(pos_, 0);
+  }
 };
 
 class ReadOnlyFile : public FileBuffer {
@@ -222,6 +229,8 @@ public:
   size_t write(void const* ptr, size_t size) {
     return 0;
   }
+
+  void truncate() {}
 };
 
 File::File(const char* name, const char* mode) {
@@ -287,6 +296,10 @@ public:
   }
   size_t write(void const* ptr, size_t size) {
     return fwrite(ptr, 1, size, file_);
+  }
+
+  void truncate() {
+    _chsize( _fileno( file_ ), (long) tell() );
   }
 };
 

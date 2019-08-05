@@ -172,9 +172,88 @@ void DApi_Render(unsigned int time) {
 
 LRESULT __stdcall MainWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
+#include <algorithm>
+
+bool validate_mpq()
+{
+  char path[MAX_PATH];
+  int save_num = pfile_get_save_num_from_name( gszHero );
+  pfile_get_save_path( path, sizeof( path ), save_num );
+
+  File file( path );
+  mpq::MPQHeader header;
+  file.read( &header, mpq::MPQHeader::size_v1 );
+  std::vector<mpq::MPQBlockEntry> blocks( header.blockTableSize );
+  file.seek( header.blockTablePos, SEEK_SET );
+  file.read( blocks.data(), blocks.size() * sizeof( mpq::MPQBlockEntry ) );
+  mpq::decryptBlock( blocks.data(), blocks.size() * sizeof( mpq::MPQBlockEntry ), mpq::hashString( "(block table)", mpq::HASH_KEY ) );
+
+  std::vector<mpq::MPQBlockEntry> usedBlocks;
+  for ( auto& block : blocks )
+  {
+    if ( block.cSize || block.filePos )
+    {
+      usedBlocks.push_back( block );
+    }
+  }
+  std::sort( usedBlocks.begin(), usedBlocks.end(), []( const mpq::MPQBlockEntry& a, const mpq::MPQBlockEntry& b )
+  {
+    return a.filePos < b.filePos;
+  } );
+  uint32_t offset = 65640;
+  for ( auto& block : usedBlocks )
+  {
+    if ( offset != block.filePos )
+    {
+      return false;
+    }
+    offset = block.filePos + block.cSize;
+  }
+  if ( offset != header.archiveSize )
+  {
+    return false;
+  }
+  return true;
+}
+
 int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )
 {
   ghInst = hInstance;
+
+  //_uiheroinfo hero;
+  //gbMaxPlayers = 1;
+  //strcpy( hero.name, "Riv" );
+  //hero.heroclass = 0;
+  //strcpy( gszHero, "Riv" );
+  //pfile_ui_save_create( &hero );
+  //validate_mpq();
+  //pfile_read_player_from_save();
+  //uint8_t data[262144];
+  //for ( size_t i = 0; i < sizeof data; ++i )
+  //{
+  //  data[i] = i * 123;
+  //}
+  //for ( int i = 0; i < 1000; ++i )
+  //{
+  //  pfile_remove_temp_files();
+  //  validate_mpq();
+  //  for ( int j = 0; j < 5; ++j )
+  //  {
+  //    char name[16];
+  //    sprintf( name, "templ%02d", ( rand() % 8 ) );
+  //    uint32_t size = ( rand() % 500 ) * ( rand() % 500 ) + 1000;
+  //    uint32_t dwLen = codec_get_encoded_len( size );
+  //    pfile_write_save_file( name, data, size, dwLen );
+  //    validate_mpq();
+  //  }
+  //  pfile_write_hero();
+  //  if ( rand() % 2 )
+  //  {
+  //    pfile_rename_temp_to_perm();
+  //  }
+  //  validate_mpq();
+  //}
+  //return 0;
 
   //mpq::Archive arc(File("single_0.sv"));
   //auto tryFile = [&arc](const char* name) {
@@ -215,11 +294,11 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
   if (!RegisterClassEx(&wcex))
     app_fatal("Unable to register window class");
 
-  RECT rc = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+  RECT rc = {0, 0, 500, 240};
   DWORD wsStyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
   DWORD wsExStyle = WS_EX_CLIENTEDGE;
   AdjustWindowRectEx(&rc, wsStyle, FALSE, wsExStyle);
-  ghMainWnd = CreateWindowEx(wsExStyle, "DIABLO", "DIABLO", wsStyle, CW_USEDEFAULT, 0, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, ghInst, NULL);
+  ghMainWnd = CreateWindowEx(wsExStyle, "DIABLO", "DIABLO", wsStyle, 0, 1300, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, ghInst, NULL);
   if (!ghMainWnd)
     app_fatal("Unable to create main window");
   ShowWindow(ghMainWnd, SW_SHOWNORMAL);
@@ -248,7 +327,7 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
       }
     }
     DApi_Render(GetTickCount());
-    Sleep(20);
+    Sleep(10);
   }
 
 	music_stop();

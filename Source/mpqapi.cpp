@@ -493,5 +493,6 @@ BOOL mpqapi_write_hash_table()
 BOOL mpqapi_can_seek()
 {
   sghArchive.seek(sgdwMpqOffset, SEEK_SET);
+  sghArchive.truncate();
   return TRUE;
 }
