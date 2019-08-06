@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../types.h"
+#include "../types.h"
 #include "../diablo.h"
 #include "event.h"
 #include <functional>

@@ -2,7 +2,7 @@
 #ifndef __DIABLO_H__
 #define __DIABLO_H__
 
-#include "../types.h"
+#include "types.h"
 
 #include "appfat.h"
 #include "automap.h"

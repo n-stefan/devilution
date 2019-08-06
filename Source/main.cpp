@@ -172,6 +172,7 @@ void DApi_Render(unsigned int time) {
 
 LRESULT __stdcall MainWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
+#include "../resource.h"
 
 int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )
 {
@@ -185,8 +186,8 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
   wcex.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
   wcex.lpfnWndProc = MainWndProc;
   wcex.hInstance = ghInst;
-  wcex.hIcon = LoadIcon(ghInst, MAKEINTRESOURCE(IDI_ICON1));
-  wcex.hCursor = LoadCursor(0, IDC_ARROW);
+  wcex.hIcon = LoadIcon(ghInst, "Diablo.ico");
+  wcex.hCursor = LoadCursor(0, MAKEINTRESOURCE(IDI_ICON1));
   wcex.hbrBackground = (HBRUSH) GetStockObject(BLACK_BRUSH);
   wcex.lpszMenuName = "DIABLO";
   wcex.lpszClassName = "DIABLO";
