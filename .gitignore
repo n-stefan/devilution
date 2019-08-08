@@ -4,6 +4,7 @@
 *.idb
 
 run/
+Debug/
 
 # macOS
 .DS_Store

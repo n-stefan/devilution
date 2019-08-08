@@ -31,6 +31,9 @@
     <Filter Include="zlib">
       <UniqueIdentifier>{4ce0dfc7-4439-43f3-a5fe-2ddcb9d9e0e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="net">
+      <UniqueIdentifier>{f33ecc77-7daf-41b0-b81f-c6203a20fc7e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\automap.cpp">
@@ -369,6 +372,18 @@
     <ClCompile Include="Source\rmpq\mpqcompress.cpp">
       <Filter>rmpq</Filter>
     </ClCompile>
+    <ClCompile Include="Source\net\abstract_net.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\net\base.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\net\loopback.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\net\packet.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\automap.h">
@@ -676,6 +691,18 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\net\abstract_net.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\net\base.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\net\loopback.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\net\packet.h">
+      <Filter>net</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

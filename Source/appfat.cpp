@@ -14,22 +14,29 @@ EM_JS( void, show_alert, ( const char* err ), {
   var text = String.fromCharCode.apply( null, HEAPU8.subarray( err, end ) );
   self.alert( text );
 });
+
+void api_exit_error(const char* err) {
+  exit_error(err);
+  exit(1);
+}
+
+void api_show_alert(const char* err) {
+  show_alert(err);
+}
+
 #else
 #include <windows.h>
-void exit_error( const char* err )
-{
-  if ( err )
-  {
+void api_exit_error(const char* err) {
+  if (err) {
     ShowCursor(TRUE);
-    MessageBox( NULL, err, "ERROR", MB_TASKMODAL | MB_ICONHAND );
+    MessageBox(NULL, err, "ERROR", MB_TASKMODAL | MB_ICONHAND);
   }
   __debugbreak();
-  exit( 1 );
+  exit(1);
 }
-void show_alert( const char* err )
-{
+void api_show_alert(const char* err) {
   ShowCursor(TRUE);
-  MessageBox( NULL, err, "Diablo", MB_TASKMODAL | MB_ICONEXCLAMATION );
+  MessageBox(NULL, err, "Diablo", MB_TASKMODAL | MB_ICONEXCLAMATION);
 }
 #endif
 
@@ -71,12 +78,12 @@ void __cdecl app_fatal( const char *pszFmt, ... )
     char Text[256];
     vsprintf( Text, pszFmt, va );
     va_end( va );
-    exit_error( Text );
+    api_exit_error( Text );
   }
   else
   {
     va_end( va );
-    exit_error( NULL );
+    api_exit_error( NULL );
   }
 }
 
@@ -89,7 +96,7 @@ void __cdecl DrawDlg( const char *pszFmt, ... )
   vsprintf( text, pszFmt, arglist );
   va_end( arglist );
 
-  show_alert( text );
+  api_show_alert( text );
 }
 
 #ifdef _DEBUG
@@ -108,14 +115,14 @@ void ErrMsg(const char* text, const char *log_file_path, int log_line_nr) {
 
 void TextDlg( HWND hDlg, char *text )
 {
-  show_alert( text );
+  api_show_alert( text );
 }
 
 void ErrOkDlg( int template_id, DWORD error_code, const char *log_file_path, int log_line_nr )
 {
   char text[256];
   sprintf( text, "%s\nat: %s line %d", GetErrorStr( error_code ), log_file_path, log_line_nr );
-  show_alert( text );
+  api_show_alert( text );
 }
 
 void FileErrDlg( const char *error )
