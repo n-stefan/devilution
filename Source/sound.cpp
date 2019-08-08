@@ -309,6 +309,7 @@ size_t get_mp3_duration(const uint8_t* data, size_t size);
 size_t get_wave_duration(const uint8_t* data, size_t size);
 
 TSnd *sound_file_load(const char *path) {
+#ifdef EMSCRIPTEN
   MemoryFile file = ((mpq::Archive*)diabdat_mpq)->load(path);
   if (!file) {
     return NULL;
@@ -322,6 +323,24 @@ TSnd *sound_file_load(const char *path) {
   int id = nextSoundId++;
   api_create_sound(id, file.data(), file.size());
   return new TSnd(id, (DWORD) duration);
+#else
+  HANDLE file;
+  if (!WOpenFile(path, &file, FALSE)) {
+    return NULL;
+  }
+  WAVEFORMATEX fmt;
+  CKINFO chunk;
+  BYTE* wave_file = LoadWaveFile(file, &fmt, &chunk);
+  if (!wave_file)
+    app_fatal("Invalid sound format on file %s", path);
+
+  TSnd* pSnd = sound_from_buffer(wave_file + chunk.dwOffset, chunk.dwSize, fmt.nChannels, fmt.wBitsPerSample, fmt.nSamplesPerSec);
+
+  mem_free_dbg((void *) wave_file);
+  WCloseFile(file);
+
+  return pSnd;
+#endif
 }
 
 TSnd *sound_from_buffer(const uint8_t* buffer, unsigned long size, int channels, int depth, int rate) {
@@ -380,7 +399,7 @@ void music_stop() {
 
 void music_start(int nTrack) {
   music_stop();
-  if (gbMusicOn) {
+  if (gbMusicOn && nTrack != NUM_MUSIC) {
     sgpMusicTrack = sound_file_load(sgszMusicTracks[nTrack]);
     sgnMusicTrack = nTrack;
     if (sgpMusicTrack) {

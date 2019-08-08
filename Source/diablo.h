@@ -41,7 +41,6 @@
 #include "missiles.h"
 #include "monstdat.h"
 #include "monster.h"
-#include "movie.h"
 #include "mpqapi.h"
 #include "msg.h"
 #include "msgcmd.h"

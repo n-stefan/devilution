@@ -1,5 +1,6 @@
 #include "diablo.h"
 #include "storm/storm.h"
+#include "ui/common.h"
 
 // Tracks which missile files are already loaded
 int MissileFileFlag;
@@ -2531,14 +2532,11 @@ void M_UpdateLeader(int i)
 
 void DoEnding()
 {
-	BOOL bMusicOn;
-	int musicVolume;
-
 	if (gbMaxPlayers > 1) {
 		_SNetLeaveGame(0x40000004);
 	}
 
-	music_stop();
+  queue_music_state(NUM_MUSIC);
 
 	if (gbMaxPlayers > 1) {
 		//Sleep(1000);
@@ -2546,28 +2544,17 @@ void DoEnding()
 
 #ifndef SPAWN
   if (plr[myplr]._pClass == PC_WARRIOR) {
-		play_movie("gendata\\DiabVic2.smk", 0);
+    queue_video_state("gendata\\DiabVic2.smk", false, false);
 	} else if (plr[myplr]._pClass == PC_SORCERER) {
-		play_movie("gendata\\DiabVic1.smk", 0);
+    queue_video_state("gendata\\DiabVic1.smk", false, false);
 	} else {
-		play_movie("gendata\\DiabVic3.smk", 0);
+    queue_video_state("gendata\\DiabVic3.smk", false, false);
 	}
-	play_movie("gendata\\Diabend.smk", 0);
+  queue_video_state("gendata\\Diabend.smk", false, false);
 
-	bMusicOn = gbMusicOn;
-	gbMusicOn = TRUE;
-
-	musicVolume = sound_get_or_set_music_volume(1);
-	sound_get_or_set_music_volume(0);
-
-	music_start(2);
-	loop_movie = TRUE;
-	play_movie("gendata\\loopdend.smk", 1);
-	loop_movie = FALSE;
-	music_stop();
-
-	sound_get_or_set_music_volume(musicVolume);
-	gbMusicOn = bMusicOn;
+  queue_music_state(2);
+  queue_video_state("gendata\\loopdend.smk", true, true);
+  queue_music_state(NUM_MUSIC);
 #endif
 }
 

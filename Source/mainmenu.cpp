@@ -113,6 +113,6 @@ BOOL mainmenu_multi_player()
 void mainmenu_play_intro()
 {
 	music_stop();
-	play_movie("gendata\\diablo1.smk", 1);
+	//play_movie("gendata\\diablo1.smk", 1);
 	mainmenu_refresh_music();
 }

@@ -186,24 +186,31 @@ private:
   }
 };
 
-class VideoState : public GameState {
+class MediaState : public GameState {
+public:
+  MediaState(GameStatePtr next)
+    : nextState_(next)
+  {
+  }
+  GameStatePtr nextState_;
+};
+
+class VideoState : public MediaState {
 public:
   VideoState(const char *path, bool canClose, bool loop, GameStatePtr next)
-    : video_(path, loop),
-    nextState_(next)
+    : MediaState(next)
+    , video_(path, loop)
   {
     canClose_ = canClose;
   }
 
   void onActivate() override {
     get_palette(prevPalette_);
-    sound_disable_music(TRUE);
     sfx_stop();
     //effects_play_sound("Sfx\\Misc\\blank.wav");
   }
   void onDeactivate() override {
     video_.stop();
-    sound_disable_music(FALSE);
     set_palette(prevPalette_);
   }
 
@@ -225,8 +232,6 @@ public:
     }
   }
 
-  GameStatePtr nextState_;
-
 private:
   SmkVideo video_;
   bool canClose_;
@@ -234,22 +239,56 @@ private:
   PALETTEENTRY prevPalette_[256];
 };
 
-GameStatePtr get_video_state(const char *path, bool allowSkip, bool loop,
-                             GameStatePtr next) {
+class MusicState : public MediaState {
+public:
+  MusicState(int nTrack, GameStatePtr next)
+    : MediaState(next)
+    , nTrack_(nTrack)
+  {
+  }
+
+  void onActivate() override {
+    music_start(nTrack_);
+    activate(nextState_);
+  }
+
+  void onKey(const KeyEvent &e) override {}
+
+  void onMouse(const MouseEvent &e) override {}
+
+  void onRender(unsigned int time) override {}
+
+private:
+  int nTrack_;
+};
+
+GameStatePtr get_video_state(const char *path, bool allowSkip, bool loop, GameStatePtr next) {
   return new VideoState(path, allowSkip, loop, next);
 }
 
-void queue_video_state(const char *path, bool allowSkip, bool loop) {
+GameStatePtr get_music_state(int nTrack, GameStatePtr next) {
+  return new MusicState(nTrack, next);
+}
+
+void queue_media_state(MediaState* state) {
   auto next = GameState::current();
-  VideoState* last = nullptr;
-  while (auto* video = dynamic_cast<VideoState*>(next)) {
+  MediaState* last = nullptr;
+  while (auto* video = dynamic_cast<MediaState*>(next)) {
     last = video;
     next = video->nextState_;
   }
-  auto* state = new VideoState(path, allowSkip, loop, next);
+  state->nextState_ = next;
   if (last) {
     last->nextState_ = state;
   } else {
     GameState::activate(state);
   }
+}
+
+void queue_video_state(const char *path, bool allowSkip, bool loop) {
+  queue_media_state(new VideoState(path, allowSkip, loop, nullptr));
+}
+
+void queue_music_state(int nTrack) {
+  queue_media_state(new MusicState(nTrack, nullptr));
 }

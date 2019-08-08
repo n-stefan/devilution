@@ -51,6 +51,7 @@ public:
     case MM_REPLAYINTRO:
       UiPlaySelectSound();
 #ifndef SPAWN
+      music_stop();
       GameState::activate(get_video_state("gendata\\diablo1.smk", true, false,
                                           get_main_menu_dialog()));
 #else

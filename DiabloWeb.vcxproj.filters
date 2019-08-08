@@ -135,9 +135,6 @@
     <ClCompile Include="Source\monster.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\movie.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\mpqapi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -486,9 +483,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\monster.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\movie.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\mpqapi.h">

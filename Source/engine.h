@@ -10,6 +10,7 @@ extern BOOL gbRotateMap; // flip - if y < x
 extern int orgseed;
 extern int SeedCount;
 extern BOOL gbNotInView; // valid - if x/y are in bounds
+extern BOOL loop_movie;
 
 void CelDrawDatOnly(BYTE *pDecodeTo, BYTE *pRLEBytes, int nDataSize, int nWidth);
 void CelDecodeOnly(int sx, int sy, BYTE *pCelBuff, int nCel, int nWidth);

@@ -4,6 +4,32 @@
 
 #include "../trace.h"
 
+// This is an awful hack, I promise I'll make a proper state queue system
+class EndGameState : public GameState {
+public:
+  EndGameState(bool exit)
+    : exit_(exit)
+  {
+  }
+
+  void onKey(const KeyEvent &e) override {}
+
+  void onMouse(const MouseEvent &e) override {}
+
+  void onRender(unsigned int time) override {
+    if (exit_) {
+      activate(nullptr);
+    } else {
+      activate(get_single_player_dialog());
+      current()->render(time);
+    }
+  }
+
+private:
+  bool exit_;
+};
+
+
 class MainState : public GameState {
 public:
   MainState(BOOL bNewGame, BOOL bSinglePlayer) {
@@ -119,11 +145,7 @@ public:
     }
 
     if (!gbRunGame) {
-      if (!gbRunGameResult) {
-        activate(nullptr);
-      } else {
-        activate(get_single_player_dialog());
-      }
+      activate(new EndGameState(!gbRunGameResult));
       stop();
     }
   }

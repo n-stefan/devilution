@@ -1,5 +1,6 @@
 #include "diablo.h"
 #include "storm/storm.h"
+#include "ui/common.h"
 
 #ifdef USE_ASM
 #pragma warning(disable : 4731) // frame pointer register 'ebp' modified by inline assembly code
@@ -15,6 +16,7 @@ static CCritSect sgMemCrit;
 #endif
 int SeedCount;
 BOOL gbNotInView; // valid - if x/y are in bounds
+BOOL loop_movie = FALSE;
 
 const int rand_increment = 1;
 const int rand_multiplier = 0x015A4E35;
@@ -2378,7 +2380,7 @@ void Cl2DecodeFrm6(int sx, int sy, BYTE *pCelBuff, int nCel, int nWidth, int Cel
 void PlayInGameMovie(const char *pszMovie)
 {
 	PaletteFadeOut(8);
-	play_movie(pszMovie, 0);
+  queue_video_state(pszMovie, 0, loop_movie);
 	ClearScreenBuffer();
 	drawpanflag = 255;
 	scrollrt_draw_game_screen(1);

@@ -12,7 +12,6 @@ public:
   }
 
   void onActivate() override {
-    printf("Hello World!");
     UiFadeReset();
     LoadBackgroundArt("ui_art\\title.pcx");
   }

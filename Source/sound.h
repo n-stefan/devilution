@@ -3,6 +3,7 @@
 #define __SOUND_H__
 
 extern BOOLEAN gbSndInited;
+extern int sgnMusicTrack;
 
 void snd_update(BOOL bStopAll);
 void snd_stop_snd(TSnd *pSnd);

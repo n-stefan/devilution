@@ -183,7 +183,6 @@
     <ClCompile Include="Source\missiles.cpp" />
     <ClCompile Include="Source\monstdat.cpp" />
     <ClCompile Include="Source\monster.cpp" />
-    <ClCompile Include="Source\movie.cpp" />
     <ClCompile Include="Source\mp3.cpp" />
     <ClCompile Include="Source\mpqapi.cpp" />
     <ClCompile Include="Source\msg.cpp" />
@@ -304,7 +303,6 @@
     <ClInclude Include="Source\missiles.h" />
     <ClInclude Include="Source\monstdat.h" />
     <ClInclude Include="Source\monster.h" />
-    <ClInclude Include="Source\movie.h" />
     <ClInclude Include="Source\mpqapi.h" />
     <ClInclude Include="Source\msg.h" />
     <ClInclude Include="Source\msgcmd.h" />
