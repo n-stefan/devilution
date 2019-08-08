@@ -177,6 +177,7 @@ GameStatePtr get_title_dialog();
 GameStatePtr get_main_menu_dialog();
 GameStatePtr get_credits_dialog();
 GameStatePtr get_video_state(const char *path, bool allowSkip, bool loop, GameStatePtr next);
+void queue_video_state(const char *path, bool allowSkip, bool loop);
 GameStatePtr get_ok_dialog(const char* text, GameStatePtr next, bool background = false);
 GameStatePtr get_yesno_dialog(const char* title, const char* text, std::function<void(bool)>&& select);
 GameStatePtr get_single_player_dialog();

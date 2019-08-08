@@ -7,5 +7,5 @@ BOOL loop_movie;
 
 void play_movie(const char *pszMovie, BOOL user_can_close)
 {
-  GameState::activate(get_video_state(pszMovie, user_can_close, loop_movie, GameState::current()));
+  queue_video_state(pszMovie, user_can_close, loop_movie);
 }

@@ -68,7 +68,7 @@ public:
     std::unique_lock lock(mutex_);
     for (auto& kv : clients_) {
       if (id != kv.first) {
-        kv.second->send(msg.data(), msg.size());
+        //kv.second->send(msg.data(), msg.size());
       }
     }
   }

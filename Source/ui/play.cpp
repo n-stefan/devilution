@@ -118,13 +118,13 @@ public:
       DrawAndBlit();
     }
 
-    if (!gbRunGame && current() == this) {
-      stop();
+    if (!gbRunGame) {
       if (!gbRunGameResult) {
         activate(nullptr);
       } else {
         activate(get_single_player_dialog());
       }
+      stop();
     }
   }
 

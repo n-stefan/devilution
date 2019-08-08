@@ -225,10 +225,11 @@ public:
     }
   }
 
+  GameStatePtr nextState_;
+
 private:
   SmkVideo video_;
   bool canClose_;
-  GameStatePtr nextState_;
   unsigned int firstFrame_ = 0;
   PALETTEENTRY prevPalette_[256];
 };
@@ -236,4 +237,19 @@ private:
 GameStatePtr get_video_state(const char *path, bool allowSkip, bool loop,
                              GameStatePtr next) {
   return new VideoState(path, allowSkip, loop, next);
+}
+
+void queue_video_state(const char *path, bool allowSkip, bool loop) {
+  auto next = GameState::current();
+  VideoState* last = nullptr;
+  while (auto* video = dynamic_cast<VideoState*>(next)) {
+    last = video;
+    next = video->nextState_;
+  }
+  auto* state = new VideoState(path, allowSkip, loop, next);
+  if (last) {
+    last->nextState_ = state;
+  } else {
+    GameState::activate(state);
+  }
 }
