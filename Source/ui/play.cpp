@@ -13,6 +13,7 @@ public:
 
   void onActivate() override {
     if (started_) {
+      drawpanflag = 255;
       return;
     }
     byte_678640 = 1;
@@ -117,7 +118,7 @@ public:
       DrawAndBlit();
     }
 
-    if (!gbRunGame) {
+    if (!gbRunGame && current() == this) {
       stop();
       if (!gbRunGameResult) {
         activate(nullptr);
