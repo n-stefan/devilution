@@ -109,7 +109,7 @@ async function run_build(flags) {
           console.log('Compiling...');
           firstFile = false;
         }
-        const cmd = `emcc ${name} -o ${out} ${name.match(/\.(?:cpp|cc)$/i) ? "--std=c++11 " : ""}-DNO_SYSTEM -DEMSCRIPTEN -Wno-logical-op-parentheses ${flags} -I.`;
+        const cmd = `emcc ${name} -o ${out} ${name.match(/\.(?:cpp|cc)$/i) ? "--std=c++17 " : ""}-DNO_SYSTEM -DEMSCRIPTEN -Wno-logical-op-parentheses ${flags} -I.`;
         try {
           const {stderr} = await execute(cmd, () => console.log(`  ${name}`));
           if (stderr) {
