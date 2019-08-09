@@ -378,9 +378,6 @@
     <ClCompile Include="Source\net\loopback.cpp">
       <Filter>net</Filter>
     </ClCompile>
-    <ClCompile Include="Source\net\packet.cpp">
-      <Filter>net</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\automap.h">
@@ -693,9 +690,6 @@
       <Filter>net</Filter>
     </ClInclude>
     <ClInclude Include="Source\net\loopback.h">
-      <Filter>net</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\net\packet.h">
       <Filter>net</Filter>
     </ClInclude>
   </ItemGroup>

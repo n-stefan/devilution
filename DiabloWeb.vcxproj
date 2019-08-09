@@ -191,7 +191,6 @@
     <ClCompile Include="Source\net\abstract_net.cpp" />
     <ClCompile Include="Source\net\base.cpp" />
     <ClCompile Include="Source\net\loopback.cpp" />
-    <ClCompile Include="Source\net\packet.cpp" />
     <ClCompile Include="Source\objdat.cpp" />
     <ClCompile Include="Source\objects.cpp" />
     <ClCompile Include="Source\pack.cpp" />
@@ -310,7 +309,6 @@
     <ClInclude Include="Source\net\abstract_net.h" />
     <ClInclude Include="Source\net\base.h" />
     <ClInclude Include="Source\net\loopback.h" />
-    <ClInclude Include="Source\net\packet.h" />
     <ClInclude Include="Source\objdat.h" />
     <ClInclude Include="Source\objects.h" />
     <ClInclude Include="Source\pack.h" />
