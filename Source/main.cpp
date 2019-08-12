@@ -16,17 +16,6 @@ DWORD _GetTickCount() {
   return TickCount;
 }
 
-#ifdef INSTANT_LOAD
-#include <vector>
-
-static std::vector<_uiheroinfo> _heroes;
-static BOOL  SelHero_GetHeroInfo( _uiheroinfo *pInfo )
-{
-  _heroes.push_back( *pInfo );
-  return TRUE;
-}
-#endif
-
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
 
@@ -114,7 +103,7 @@ void DApi_Init(unsigned int time, int offscreen, int v0, int v1, int v2) {
   GameState::activate(initial_state());
 #else
   gbMaxPlayers = 1;
-  pfile_ui_set_hero_infos( SelHero_GetHeroInfo );
+  auto _heroes = pfile_ui_set_hero_infos();
   if ( _heroes.empty() )
   {
     _uidefaultstats defaults;

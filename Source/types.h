@@ -12,6 +12,7 @@
 #include <limits.h>
 #include <math.h>
 #include <time.h>
+#include <vector>
 
 #ifdef NO_WINDOWS
 

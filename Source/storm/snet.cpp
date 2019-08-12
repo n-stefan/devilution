@@ -95,3 +95,7 @@ void SNet_CreateGame(const char* name, const char* password, uint32_t difficulty
 void SNet_JoinGame(const char* name, const char* password) {
   dvlnet_inst->join(name, password);
 }
+
+void SNet_Poll() {
+  dvlnet_inst->poll();
+}

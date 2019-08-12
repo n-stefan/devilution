@@ -3,7 +3,7 @@
 
 class OkDialog : public DialogState {
 public:
-  OkDialog(const char* text, GameStatePtr next, bool background)
+  OkDialog(const char* text, std::function<void()>&& next, bool background)
     : next_(next)
     , background_(background)
   {
@@ -19,14 +19,20 @@ public:
 
   void onInput(int) override {
     UiPlaySelectSound();
-    activate(next_);
+    next_();
   }
 
 private:
   bool background_;
-  GameStatePtr next_;
+  std::function<void()> next_;
 };
 
+GameStatePtr get_ok_dialog(const char* text, std::function<void()>&& next, bool background) {
+  return new OkDialog(text, std::move(next), background);
+}
+
 GameStatePtr get_ok_dialog(const char* text, GameStatePtr next, bool background) {
-  return new OkDialog(text, next, background);
+  return new OkDialog(text, [next]() {
+    GameState::activate(next);
+  }, background);
 }

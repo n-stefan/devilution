@@ -21,6 +21,7 @@ public:
 
 private:
   uint32_t cookie_;
+  bool closed_ = false;
   std::unique_ptr<websocket_impl> impl_;
   void handle_packet(const uint8_t* data, size_t size);
 };

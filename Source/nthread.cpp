@@ -100,7 +100,7 @@ void nthread_set_turn_upper_bit() {
 }
 
 void nthread_start(BOOL set_turn_upper_bit) {
-  char *err, *err2;
+  char *err;
   DWORD largestMsgSize;
   _SNETCAPS caps;
 
@@ -158,4 +158,17 @@ void nthread_cleanup() {
   gdwTurnsInTransit = 0;
   gdwNormalMsgSize = 0;
   gdwLargestMsgSize = 0;
+}
+
+BOOL nthread_has_500ms_passed(BOOL unused) {
+  DWORD currentTickCount;
+  int ticksElapsed;
+
+  currentTickCount = _GetTickCount();
+  ticksElapsed = currentTickCount - last_tick;
+  if (gbMaxPlayers == 1 && ticksElapsed > 500) {
+    last_tick = currentTickCount;
+    ticksElapsed = 0;
+  }
+  return ticksElapsed >= 0;
 }

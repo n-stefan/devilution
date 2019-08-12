@@ -47,8 +47,6 @@ void dthread_send_delta(int pnum, char cmd, void *pbSrc, int dwLen) {
 }
 
 void dthread_start() {
-  char *error_buf;
-
   if (gbMaxPlayers == 1) {
     return;
   }
@@ -59,9 +57,7 @@ void dthread_start() {
 }
 
 void dthread_loop() {
-  char *error_buf;
   TMegaPkt *pkt;
-  DWORD dwMilliseconds;
 
   if (!dthread_running) {
     return;
@@ -87,7 +83,6 @@ void dthread_loop() {
 }
 
 void dthread_cleanup() {
-  char *error_buf;
   TMegaPkt *tmp;
 
   if (sghWorkToDoEvent == NULL) {

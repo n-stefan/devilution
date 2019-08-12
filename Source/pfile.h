@@ -3,6 +3,7 @@
 #define __PFILE_H__
 
 extern BOOL gbValidSaveFile;
+extern char gszHero[16];
 
 void pfile_init_save_directory();
 void pfile_check_available_space(char *pszDir);
@@ -17,7 +18,7 @@ BOOL pfile_rename_hero(const char *name_1, const char *name_2);
 void pfile_flush_W();
 void game_2_ui_player(const PlayerStruct *p, _uiheroinfo *heroinfo, BOOL bHasSaveFile);
 BYTE game_2_ui_class(const PlayerStruct *p);
-BOOL  pfile_ui_set_hero_infos(BOOL( *ui_add_hero_info)(_uiheroinfo *));
+std::vector<_uiheroinfo> pfile_ui_set_hero_infos();
 BOOL pfile_read_hero(HANDLE archive, PkPlayerStruct *pPack);
 HANDLE pfile_open_save_archive(BOOL *showFixedMsg, DWORD save_num);
 void pfile_SFileCloseArchive(HANDLE hsArchive);

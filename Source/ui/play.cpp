@@ -20,7 +20,7 @@ public:
     if (exit_) {
       activate(nullptr);
     } else {
-      activate(get_single_player_dialog());
+      start_game(gbMaxPlayers > 1);
       current()->render(time);
     }
   }
@@ -215,8 +215,7 @@ void post_event(int code) {
   }
 }
 
-GameStatePtr get_play_state(const char* name, int mode, int difficulty) {
-  gnDifficulty = difficulty;
+GameStatePtr get_play_state(const char* name, int mode) {
   strcpy(gszHero, name);
   pfile_create_player_description(NULL, 0);
   gbLoadGame = (mode == SELHERO_CONTINUE);

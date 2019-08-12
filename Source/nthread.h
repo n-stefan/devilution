@@ -21,6 +21,7 @@ void nthread_set_turn_upper_bit();
 void nthread_start(BOOL set_turn_upper_bit);
 void nthread_cleanup();
 void nthread_loop();
+BOOL nthread_has_500ms_passed(BOOL unused);
 
 /* rdata */
 

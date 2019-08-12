@@ -117,9 +117,6 @@
     <ClCompile Include="Source\loadsave.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\mainmenu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\minitext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -393,7 +390,7 @@
     <ClCompile Include="Source\net\websocket.cpp">
       <Filter>net</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ui\selmulti.cpp">
+    <ClCompile Include="Source\ui\workflow.cpp">
       <Filter>ui</Filter>
     </ClCompile>
   </ItemGroup>
@@ -480,9 +477,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\loadsave.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\mainmenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\minitext.h">

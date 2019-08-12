@@ -179,7 +179,6 @@
     <ClCompile Include="Source\lighting.cpp" />
     <ClCompile Include="Source\loadsave.cpp" />
     <ClCompile Include="Source\main.cpp" />
-    <ClCompile Include="Source\mainmenu.cpp" />
     <ClCompile Include="Source\minitext.cpp" />
     <ClCompile Include="Source\misdat.cpp" />
     <ClCompile Include="Source\missiles.cpp" />
@@ -247,9 +246,9 @@
     <ClCompile Include="Source\ui\okbox.cpp" />
     <ClCompile Include="Source\ui\play.cpp" />
     <ClCompile Include="Source\ui\selhero.cpp" />
-    <ClCompile Include="Source\ui\selmulti.cpp" />
     <ClCompile Include="Source\ui\titlescreen.cpp" />
     <ClCompile Include="Source\ui\video.cpp" />
+    <ClCompile Include="Source\ui\workflow.cpp" />
     <ClCompile Include="Source\ui\yesno.cpp" />
     <ClCompile Include="Source\wave.cpp" />
     <ClCompile Include="Source\zlib\adler32.c" />
@@ -304,7 +303,6 @@
     <ClInclude Include="Source\lighting.h" />
     <ClInclude Include="Source\list.h" />
     <ClInclude Include="Source\loadsave.h" />
-    <ClInclude Include="Source\mainmenu.h" />
     <ClInclude Include="Source\minitext.h" />
     <ClInclude Include="Source\misdat.h" />
     <ClInclude Include="Source\missiles.h" />

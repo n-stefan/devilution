@@ -344,6 +344,9 @@ void DialogState::onKey(const KeyEvent& e) {
         }
       }
       break;
+    case KeyCode::ESCAPE:
+      onCancel();
+      break;
     }
   }
 }

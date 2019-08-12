@@ -3,8 +3,8 @@
 
 class YesNoDialog : public DialogState {
 public:
-  YesNoDialog(const char *title, const char *text, std::function<void(bool)>&& select) :
-    select_(std::move(select))
+  YesNoDialog(const char *title, const char *text, std::function<void(bool)>&& next) :
+    next_(std::move(next))
   {
     addItem({{0, 0, 640, 480}, ControlType::Image, 0, 0, "", &ArtBackground});
     addItem({{24, 161, 614, 196}, ControlType::Text, ControlFlags::Center | ControlFlags::Big, 0, title});
@@ -18,15 +18,19 @@ public:
     LoadBackgroundArt("ui_art\\black.pcx");
   }
 
+  void onCancel() override {
+    next_(false);
+  }
+
   void onInput(int value) override {
     UiPlaySelectSound();
-    select_(value == 0);
+    next_(value == 0);
   }
 
 private:
-  std::function<void(bool)> select_;
+  std::function<void(bool)> next_;
 };
 
-GameStatePtr get_yesno_dialog(const char* title, const char* text, std::function<void(bool)>&& select) {
-  return new YesNoDialog(title, text, std::move(select));
+GameStatePtr get_yesno_dialog(const char* title, const char* text, std::function<void(bool)>&& next) {
+  return new YesNoDialog(title, text, std::move(next));
 }

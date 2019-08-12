@@ -13,6 +13,7 @@
 #endif
 
 static char hero_names[MAX_CHARACTERS][PLR_NAME_LEN];
+char gszHero[16];
 BOOL gbValidSaveFile;
 
 void pfile_init_save_directory()
@@ -194,12 +195,13 @@ BYTE game_2_ui_class(const PlayerStruct *p)
 	return uiclass;
 }
 
-BOOL  pfile_ui_set_hero_infos(BOOL( *ui_add_hero_info)(_uiheroinfo *))
-{
+std::vector<_uiheroinfo> pfile_ui_set_hero_infos() {
 	DWORD i;
 	BOOL showFixedMsg;
 
 	memset(hero_names, 0, sizeof(hero_names));
+
+    std::vector<_uiheroinfo> heroes;
 
 	showFixedMsg = TRUE;
 	for (i = 0; i < MAX_CHARACTERS; i++) {
@@ -211,13 +213,13 @@ BOOL  pfile_ui_set_hero_infos(BOOL( *ui_add_hero_info)(_uiheroinfo *))
 				strcpy(hero_names[i], pkplr.pName);
 				UnPackPlayer(&pkplr, 0, FALSE);
 				game_2_ui_player(plr, &uihero, pfile_archive_contains_game(archive, i));
-				ui_add_hero_info(&uihero);
+                heroes.emplace_back(std::move(uihero));
 			}
 			pfile_SFileCloseArchive(archive);
 		}
 	}
 
-	return TRUE;
+	return heroes;
 }
 
 BOOL pfile_read_hero(HANDLE archive, PkPlayerStruct *pPack)

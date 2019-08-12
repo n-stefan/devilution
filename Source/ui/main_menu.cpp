@@ -13,6 +13,17 @@ enum {
   MM_EXITDIABLO,
 };
 
+int menu_music_track_id = TMUSIC_INTRO;
+
+void mainmenu_refresh_music() {
+  music_start(menu_music_track_id);
+  do {
+    menu_music_track_id++;
+    if (menu_music_track_id == NUM_MUSIC)
+      menu_music_track_id = 0;
+  } while (!menu_music_track_id || menu_music_track_id == 1);
+}
+
 class MainMenuDialog : public DialogState {
 public:
   MainMenuDialog() {
@@ -46,13 +57,11 @@ public:
     switch (index) {
     case MM_SINGLEPLAYER:
       UiPlaySelectSound();
-      gbMaxPlayers = 1;
-      GameState::activate(get_select_player_dialog());
+      start_game(false);
       break;
     case MM_MULTIPLAYER:
       UiPlaySelectSound();
-      gbMaxPlayers = MAX_PLRS;
-      GameState::activate(get_select_player_dialog());
+      start_game(true);
       break;
     case MM_REPLAYINTRO:
       UiPlaySelectSound();

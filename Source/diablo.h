@@ -35,7 +35,6 @@
 #include "items.h"
 #include "lighting.h"
 #include "loadsave.h"
-#include "mainmenu.h"
 #include "minitext.h"
 #include "misdat.h"
 #include "missiles.h"

@@ -29,6 +29,13 @@ void websocket_client::poll() {
   impl_->receive([this](const uint8_t* data, size_t size) {
     handle_packet(data, size);
   });
+  if (!closed_ && impl_->is_closed()) {
+    closed_ = true;
+    NetworkState* net_state = dynamic_cast<NetworkState*>(GameState::current());
+    if (net_state) {
+      net_state->onClosed();
+    }
+  }
 }
 
 void websocket_client::send(const packet& pkt) {

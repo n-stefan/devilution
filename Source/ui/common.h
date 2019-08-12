@@ -175,14 +175,13 @@ private:
 
 GameStatePtr get_title_dialog();
 GameStatePtr get_main_menu_dialog();
+void start_game(bool multiplayer);
 GameStatePtr get_credits_dialog();
 GameStatePtr get_video_state(const char *path, bool allowSkip, bool loop, GameStatePtr next);
 GameStatePtr get_music_state(int nTrack, GameStatePtr next);
 void queue_video_state(const char *path, bool allowSkip, bool loop);
 void queue_music_state(int nTrack);
+GameStatePtr get_ok_dialog(const char* text, std::function<void()>&& next, bool background = false);
 GameStatePtr get_ok_dialog(const char* text, GameStatePtr next, bool background = false);
 GameStatePtr get_yesno_dialog(const char* title, const char* text, std::function<void(bool)>&& select);
-GameStatePtr get_select_player_dialog();
-//GameStatePtr get_multi_player_dialog();
-//GameStatePtr get_choose_game_dialog();
-GameStatePtr get_play_state(const char* name, int mode, int difficulty = DIFF_NORMAL);
+GameStatePtr get_play_state(const char* name, int mode);

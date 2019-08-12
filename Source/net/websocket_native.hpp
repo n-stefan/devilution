@@ -49,8 +49,17 @@ public:
   {
   }
 
+  bool is_closed() {
+    return closed_;
+  }
+
   void connect(std::promise<std::shared_ptr<websocket_session>>&& result, std::string host, unsigned short port, std::string target = "/") {
     tcp::endpoint endpoint(boost::asio::ip::make_address(host), port);
+    ws_.control_callback([this](websocket::frame_type type, beast::string_view) {
+      if (type == websocket::frame_type::close) {
+        closed_ = true;
+      }
+    });
     resolver_.async_resolve(endpoint, [self = shared_from_this(), host, target, result = std::move(result)](error_code ec, tcp::resolver::results_type results) mutable {
       check_ec(ec, "resolve");
       boost::asio::async_connect(self->ws_.next_layer(), results.begin(), results.end(), [self, host, target, result = std::move(result)](error_code ec, const auto&) mutable {
@@ -95,6 +104,7 @@ private:
   std::mutex mutex_;
   boost::asio::strand<boost::asio::io_context::executor_type> strand_;
   std::atomic_bool ready_ = false;
+  std::atomic_bool closed_ = false;
   tcp::resolver resolver_;
   websocket::stream<tcp::socket> ws_;
   std::vector<std::vector<uint8_t>> input_;
@@ -150,6 +160,10 @@ public:
 
   void send(const packet& p) {
     session_->send(p);
+  }
+
+  bool is_closed() {
+    return session_->is_closed();
   }
 
   void receive(std::function<void(const uint8_t*, size_t)> handler) {

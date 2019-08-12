@@ -288,7 +288,7 @@ int multi_handle_delta()
 	}
 
 	sgbSentThisCycle = nthread_send_and_recv_turn(sgbSentThisCycle, 1);
-	if (!nthread_recv_turns(&recieved)) {
+	if (!nthread_recv_turns(&received)) {
 		multi_begin_timeout();
 		return FALSE;
 	}

@@ -4,17 +4,6 @@
 #include <string>
 #include "../trace.h"
 
-#ifdef SPAWN
-#define NO_CLASS "The Rogue and Sorcerer are only available in the full retail version of Diablo. For ordering information call (800) 953-SNOW."
-#endif
-
-static std::vector<_uiheroinfo> heroInfos;
-
-static BOOL SelHero_GetHeroInfo(_uiheroinfo *pInfo) {
-  heroInfos.push_back(*pInfo);
-  return TRUE;
-}
-
 SelectBaseDialog::SelectBaseDialog(const char* title) {
   addItem({{0, 0, 640, 480}, ControlType::Image, 0, 0, "", &ArtBackground});
   addItem({{24, 161, 614, 196}, ControlType::Text, ControlFlags::Center | ControlFlags::Big, 0, title});
@@ -57,115 +46,85 @@ void SelectBaseDialog::onActivate() {
   LoadBackgroundArt("ui_art\\selhero.pcx");
 }
 
-class SelectLoadDialog : public SelectBaseDialog {
+class SelectHeroDialog : public SelectBaseDialog {
 public:
-  SelectLoadDialog(const _uiheroinfo& info)
-    : SelectBaseDialog("Single Player Characters")
-    , info_(info)
+  SelectHeroDialog(const std::vector<_uiheroinfo>& heroInfos, std::function<void(int)>&& next)
+      : SelectBaseDialog(gbMaxPlayers > 1 ? "Multi Player Characters" : "Single Player Characters")
+      , heroes_(heroInfos)
+      , next_(next)
   {
-    addItem({{264, 211, 584, 244}, ControlType::Text, ControlFlags::Center | ControlFlags::Big, 0, "Save File Exists"});
-    addItem({{265, 285, 585, 311}, ControlType::List, ControlFlags::Center | ControlFlags::Medium | ControlFlags::Gold, 0, "Load Game"});
-    addItem({{265, 318, 585, 344}, ControlType::List, ControlFlags::Center | ControlFlags::Medium | ControlFlags::Gold, 1, "New Game"});
-    addItem({{279, 427, 419, 462}, ControlType::Button, ControlFlags::Center | ControlFlags::VCenter | ControlFlags::Big | ControlFlags::Gold, -1, "OK"});
-    addItem({{429, 427, 569, 462}, ControlType::Button, ControlFlags::Center | ControlFlags::VCenter | ControlFlags::Big | ControlFlags::Gold, -2, "Cancel"});
+    addItem({{264, 211, 584, 244}, ControlType::Text, ControlFlags::Center | ControlFlags::Big, 0, "Select Hero"});
+    addItem({{239, 429, 359, 464}, ControlType::Button, ControlFlags::Center | ControlFlags::Big | ControlFlags::Gold, -1, "OK"});
+    deleteIdx_ = addItem({{364, 429, 484, 464}, ControlType::Button, ControlFlags::Center | ControlFlags::Big | ControlFlags::Disabled, -2, "Delete"});
+    addItem({{489, 429, 609, 464}, ControlType::Button, ControlFlags::Center | ControlFlags::Big | ControlFlags::Gold, -3, "Cancel"});
 
-    setStats(&info);
+    for (int i = 0; i < (int) heroes_.size(); ++i) {
+      addItem({{265, 256 + i * 26, 585, 282 + i * 26}, ControlType::List, ControlFlags::Center | ControlFlags::Medium | ControlFlags::Gold, i, heroes_[i].name});
+    }
+    if (heroes_.size() < 6) {
+      addItem({{265, 256 + (int) heroes_.size() * 26, 585, 282 + (int) heroes_.size() * 26}, ControlType::List, ControlFlags::Center | ControlFlags::Medium | ControlFlags::Gold, (int) heroes_.size(), "New Hero"});
+    }
+
+    onFocus(selected);
   }
 
-  void onKey(const KeyEvent& e) override {
-    SelectBaseDialog::onKey(e);
-    if (e.action == KeyEvent::Press && e.key == KeyCode::ESCAPE) {
-      UiPlaySelectSound();
-      activate(get_hero_dialog_int(false));
+  void onFocus(int value) override {
+    int baseFlags = ControlFlags::Center | ControlFlags::Big;
+    if (value >= 0 && value < (int) heroes_.size()) {
+      setStats(&heroes_[value]);
+      items[deleteIdx_].flags = baseFlags | ControlFlags::Gold;
+    } else if (value == (int) heroes_.size()) {
+      setStats(nullptr);
+      items[deleteIdx_].flags = baseFlags | ControlFlags::Disabled;
     }
+  }
+
+  void onCancel() override {
+    UiPlaySelectSound();
+    next_(-1);
   }
 
   void onInput(int value) override {
-    switch (value == -1 ? selected : value) {
-    case -2:
+    if (value == -1) {
       UiPlaySelectSound();
-      activate(get_hero_dialog_int(false));
-      break;
-    case 0:
-      UiPlaySelectSound();
-      activate(get_play_state(info_.name, SELHERO_CONTINUE));
-      break;
-    case 1:
-      UiPlaySelectSound();
-      if (info_.level >= MIN_NIGHTMARE_LEVEL) {
-        activate(select_diff_dialog(info_, this));
-      } else {
-        activate(get_play_state(info_.name, SELHERO_NEW_DUNGEON));
-      }
-      break;
-    }
-  }
-
-private:
-  _uiheroinfo info_;
-};
-
-class SelectNameDialog : public SelectBaseDialog {
-public:
-  SelectNameDialog(GameStatePtr prev, _uiheroinfo hero)
-    : SelectBaseDialog(gbMaxPlayers > 1 ? "New Multi Player Hero" : "New Single Player Hero")
-    , prevState_(prev)
-    , hero_(hero)
-  {
-    addItem({{264, 211, 584, 244}, ControlType::Text, ControlFlags::Center | ControlFlags::Big, 0, "Enter Name"});
-    name_ = addItem({{265, 317, 585, 350}, ControlType::Edit, ControlFlags::List | ControlFlags::Medium | ControlFlags::Gold, 0, ""});
-    ok_ = addItem({{279, 427, 419, 462}, ControlType::Button, ControlFlags::Center | ControlFlags::VCenter | ControlFlags::Big | ControlFlags::Disabled, -1, "OK"});
-    addItem({{429, 427, 569, 462}, ControlType::Button, ControlFlags::Center | ControlFlags::VCenter | ControlFlags::Big | ControlFlags::Gold, -2, "Cancel"});
-
-    setStats(&hero_);
-  }
-
-  void onKey(const KeyEvent& e) override {
-    SelectBaseDialog::onKey(e);
-    if (e.action == KeyEvent::Press && e.key == KeyCode::ESCAPE) {
-      UiPlaySelectSound();
-      activate(prevState_);
-    }
-    if (e.action == KeyEvent::Press && e.key == KeyCode::RETURN && !this->items[name_].text.empty()) {
-      UiPlaySelectSound();
-      strcpy(hero_.name, this->items[name_].text.c_str());
-      pfile_ui_save_create(&hero_);
-      activate(get_play_state(hero_.name, SELHERO_NEW_DUNGEON));
-    }
-  }
-
-  void onInput(int value) override {
-    if (value == -2) {
-      UiPlaySelectSound();
-      activate(prevState_);
-    } else if (value == -1) {
-      if (!this->items[name_].text.empty()) {
+      next_(selected);
+    } else if (value == -2) {
+      if (selected >= 0 && selected < (int) heroes_.size()) {
         UiPlaySelectSound();
-        strcpy(hero_.name, this->items[name_].text.c_str());
-        pfile_ui_save_create(&hero_);
-        activate(get_play_state(hero_.name, SELHERO_NEW_DUNGEON));
+        _uiheroinfo hero = heroes_[selected];
+        activate(get_yesno_dialog(gbMaxPlayers > 1 ? "Delete Multi Player Hero" : "Delete Single Player Hero",
+                                  fmtstring("Are you sure you want to delete the character \"%s\"?", hero.name).c_str(),
+                                  [hero, next = next_](bool value) mutable {
+                                    if (value) {
+                                      pfile_delete_save(&hero);
+                                    }
+                                    next(-2);
+                                  }));
       }
-    } else if (value == 0) {
-      int baseFlags = ControlFlags::Center | ControlFlags::Big;
-      if (this->items[name_].text.empty()) {
-        items[ok_].flags = baseFlags | ControlFlags::Disabled;
-      } else {
-        items[ok_].flags = baseFlags | ControlFlags::Gold;
-      }
+    } else if (value == -3) {
+      UiPlaySelectSound();
+      next_(-1);
+    } else {
+      UiPlaySelectSound();
+      next_(value);
     }
   }
 
 private:
-  int name_, ok_;
-  GameStatePtr prevState_;
-  _uiheroinfo hero_;
+  std::vector<_uiheroinfo> heroes_;
+  std::function<void(int)> next_;
+  int deleteIdx_;
 };
 
-class SelectCreateDialog : public SelectBaseDialog {
+GameStatePtr select_hero_dialog(const std::vector<_uiheroinfo>& heroInfos, std::function<void(int)>&& next) {
+  return new SelectHeroDialog(heroInfos, std::move(next));
+}
+
+class SelectClassDialog : public SelectBaseDialog {
 public:
-  SelectCreateDialog(GameStatePtr prev)
-    : SelectBaseDialog(gbMaxPlayers > 1 ? "New Multi Player Hero" : "New Single Player Hero")
-    , prevState_(prev)
+  SelectClassDialog(std::function<void(_uiheroinfo*)>&& next)
+      : SelectBaseDialog(gbMaxPlayers > 1 ? "New Multi Player Hero" : "New Single Player Hero")
+      , next_(next)
   {
     addItem({{264, 211, 584, 244}, ControlType::Text, ControlFlags::Center | ControlFlags::Big, 0, "Choose Class"});
     addItem({{264, 285, 584, 318}, ControlType::List, ControlFlags::Center | ControlFlags::Medium | ControlFlags::Gold, UI_WARRIOR, "Warrior"});
@@ -191,163 +150,189 @@ public:
     setStats(&hero_);
   }
 
-  void onKey(const KeyEvent& e) override {
-    SelectBaseDialog::onKey(e);
-    if (e.action == KeyEvent::Press && e.key == KeyCode::ESCAPE) {
-      UiPlaySelectSound();
-      activate(prevState_);
-    }
-  }
-
-  void onSelect(int value) {
-    if (value >= 0 && value < NUM_CLASSES) {
-      UiPlaySelectSound();
-#ifdef SPAWN
-      if (value > 0) {
-        activate(get_ok_dialog(NO_CLASS, this, false));
-        return;
-      }
-#endif
-      activate(select_name_dialog(this, hero_));
-    }
+  void onCancel() override {
+    UiPlaySelectSound();
+    next_(nullptr);
   }
 
   void onInput(int value) override {
     if (value == -1) {
-      onSelect(selected);
+      UiPlaySelectSound();
+      onFocus(selected);
+      next_(&hero_);
     } else if (value == -2) {
       UiPlaySelectSound();
-      activate(prevState_);
+      next_(nullptr);
     } else {
-      onSelect(value);
+      UiPlaySelectSound();
+      onFocus(value);
+      next_(&hero_);
     }
   }
 
 private:
-  GameStatePtr prevState_;
+  std::function<void(_uiheroinfo*)> next_;
   _uiheroinfo hero_;
 };
 
-class SelectSaveDialog : public SelectBaseDialog {
-public:
-  SelectSaveDialog(std::vector<_uiheroinfo>&& heroInfos)
-    : SelectBaseDialog(gbMaxPlayers > 1 ? "Multi Player Characters" : "Single Player Characters")
-    , heroes_(std::move(heroInfos))
-  {
-    addItem({{264, 211, 584, 244}, ControlType::Text, ControlFlags::Center | ControlFlags::Big, 0, "Select Hero"});
-    addItem({{239, 429, 359, 464}, ControlType::Button, ControlFlags::Center | ControlFlags::Big | ControlFlags::Gold, -1, "OK"});
-    deleteIdx_ = addItem({{364, 429, 484, 464}, ControlType::Button, ControlFlags::Center | ControlFlags::Big | ControlFlags::Disabled, -2, "Delete"});
-    addItem({{489, 429, 609, 464}, ControlType::Button, ControlFlags::Center | ControlFlags::Big | ControlFlags::Gold, -3, "Cancel"});
+GameStatePtr select_class_dialog(std::function<void(_uiheroinfo*)>&& next) {
+  return new SelectClassDialog(std::move(next));
+}
 
-    for (int i = 0; i < (int)heroes_.size(); ++i) {
-      addItem({{265, 256 + i * 26, 585, 282 + i * 26}, ControlType::List, ControlFlags::Center | ControlFlags::Medium | ControlFlags::Gold, i, heroes_[i].name});
+class SelectStringDialog : public SelectBaseDialog {
+public:
+  SelectStringDialog(const _uiheroinfo& hero, const char* title, const char* subtitle, std::function<void(const char*)>&& next)
+      : SelectBaseDialog(title)
+      , next_(next)
+      , hero_(hero)
+  {
+    addItem({{264, 211, 584, 244}, ControlType::Text, ControlFlags::Center | ControlFlags::Big, 0, subtitle});
+    name_ = addItem({{265, 317, 585, 350}, ControlType::Edit, ControlFlags::List | ControlFlags::Medium | ControlFlags::Gold, 0, ""});
+    ok_ = addItem({{279, 427, 419, 462}, ControlType::Button, ControlFlags::Center | ControlFlags::VCenter | ControlFlags::Big | ControlFlags::Disabled, -1, "OK"});
+    addItem({{429, 427, 569, 462}, ControlType::Button, ControlFlags::Center | ControlFlags::VCenter | ControlFlags::Big | ControlFlags::Gold, -2, "Cancel"});
+
+    setStats(&hero_);
+  }
+
+  void onKey(const KeyEvent& e) override {
+    SelectBaseDialog::onKey(e);
+    if (e.action == KeyEvent::Press && e.key == KeyCode::ESCAPE) {
+      UiPlaySelectSound();
+      next_(nullptr);
     }
-    if (heroes_.size() < 6) {
-      addItem({{265, 256 + (int) heroes_.size() * 26, 585, 282 + (int) heroes_.size() * 26}, ControlType::List, ControlFlags::Center | ControlFlags::Medium | ControlFlags::Gold, (int) heroes_.size(), "New Hero"});
+    if (e.action == KeyEvent::Press && e.key == KeyCode::RETURN && !this->items[name_].text.empty()) {
+      UiPlaySelectSound();
+      next_(this->items[name_].text.c_str());
     }
+  }
+
+  void onInput(int value) override {
+    if (value == -2) {
+      UiPlaySelectSound();
+      next_(nullptr);
+    } else if (value == -1) {
+      if (!this->items[name_].text.empty()) {
+        UiPlaySelectSound();
+        next_(this->items[name_].text.c_str());
+      }
+    } else if (value == 0) {
+      int baseFlags = ControlFlags::Center | ControlFlags::Big;
+      if (this->items[name_].text.empty()) {
+        items[ok_].flags = baseFlags | ControlFlags::Disabled;
+      } else {
+        items[ok_].flags = baseFlags | ControlFlags::Gold;
+      }
+    }
+  }
+
+private:
+  int name_, ok_;
+  std::function<void(const char*)> next_;
+  _uiheroinfo hero_;
+};
+
+GameStatePtr select_string_dialog(const _uiheroinfo& hero, const char* title, const char* subtitle, std::function<void(const char*)>&& next) {
+  return new SelectStringDialog(hero, title, subtitle, std::move(next));
+}
+
+class SelectTwooptDialog : public SelectBaseDialog {
+public:
+  SelectTwooptDialog(const _uiheroinfo& info, const char* title, const char* subtitle, const char* opt1, const char* opt2, std::function<void(int)>&& next)
+    : SelectBaseDialog(title)
+    , info_(info)
+    , next_(next)
+  {
+    addItem({{264, 211, 584, 244}, ControlType::Text, ControlFlags::Center | ControlFlags::Big, 0, subtitle});
+    addItem({{265, 285, 585, 311}, ControlType::List, ControlFlags::Center | ControlFlags::Medium | ControlFlags::Gold, 0, opt1});
+    addItem({{265, 318, 585, 344}, ControlType::List, ControlFlags::Center | ControlFlags::Medium | ControlFlags::Gold, 1, opt2});
+    addItem({{279, 427, 419, 462}, ControlType::Button, ControlFlags::Center | ControlFlags::VCenter | ControlFlags::Big | ControlFlags::Gold, -1, "OK"});
+    addItem({{429, 427, 569, 462}, ControlType::Button, ControlFlags::Center | ControlFlags::VCenter | ControlFlags::Big | ControlFlags::Gold, -2, "Cancel"});
+
+    setStats(&info);
+  }
+
+  void onCancel() override {
+    UiPlaySelectSound();
+    next_(-1);
+  }
+
+  void onInput(int value) override {
+    UiPlaySelectSound();
+    next_(value == -1 ? selected : value);
+  }
+
+private:
+  std::function<void(int)> next_;
+  _uiheroinfo info_;
+};
+
+GameStatePtr select_twoopt_dialog(const _uiheroinfo& info, const char* title, const char* subtitle, const char* opt1, const char* opt2, std::function<void(int)>&& next) {
+  return new SelectTwooptDialog(info, title, subtitle, opt1, opt2, std::move(next));
+}
+
+class SelectDiffDialog : public DialogState {
+public:
+  SelectDiffDialog(const _uiheroinfo& info, const char* title, std::function<void(int)>&& next)
+      : info_(info)
+      , next_(next)
+  {
+    bool hasNm = info.level > MIN_NIGHTMARE_LEVEL;
+    bool hasHe = info.level > MIN_HELL_LEVEL;
+    int enabled = ControlFlags::Center | ControlFlags::Medium | ControlFlags::Gold;
+    int disabled = ControlFlags::Center | ControlFlags::Medium | ControlFlags::Silver;
+    addItem({{0, 0, 640, 480}, ControlType::Image, 0, 0, "", &ArtBackground});
+    addItem({{24, 161, 614, 196}, ControlType::Text, ControlFlags::Center | ControlFlags::Big, 0, title});
+    addItem({{300, 211, 595, 244}, ControlType::Text, ControlFlags::Center | ControlFlags::Big, 0, "Select Difficulty"});
+    addItem({{300, 281, 595, 307}, ControlType::List, enabled, DIFF_NORMAL, "Normal"});
+    addItem({{300, 307, 595, 333}, hasNm ? ControlType::List : ControlType::Text, hasNm ? enabled : disabled, DIFF_NIGHTMARE, "Nightmare"});
+    addItem({{300, 333, 595, 359}, hasHe ? ControlType::List : ControlType::Text, hasHe ? enabled : disabled, DIFF_HELL, "Hell"});
+    addItem({{300, 427, 440, 462}, ControlType::Button, ControlFlags::Center | ControlFlags::VCenter | ControlFlags::Big | ControlFlags::Gold, -1, "OK"});
+    addItem({{450, 427, 590, 462}, ControlType::Button, ControlFlags::Center | ControlFlags::VCenter | ControlFlags::Big | ControlFlags::Gold, -2, "Cancel"});
+    typeIdx_ = addItem({{35, 211, 240, 244}, ControlType::Text, ControlFlags::Center | ControlFlags::Big, 0, ""});
+    descIdx_ = addItem({{35, 256, 240, 447}, ControlType::Text, ControlFlags::Small | ControlFlags::WordWrap, 0, ""});
+    addItem({{125, 0, 515, 154}, ControlType::Image, 0, -60, "", &ArtLogos[LOGO_MED]});
+    doubleclick = true;
 
     onFocus(selected);
   }
 
+  void onActivate() override {
+    DialogState::onActivate();
+    LoadBackgroundArt("ui_art\\selgame.pcx");
+  }
+
   void onFocus(int value) override {
-    int baseFlags = ControlFlags::Center | ControlFlags::Big;
-    if (value >= 0 && value < (int) heroes_.size()) {
-      setStats(&heroes_[value]);
-      items[deleteIdx_].flags = baseFlags | ControlFlags::Gold;
-    } else if (value == (int) heroes_.size()) {
-      setStats(nullptr);
-      items[deleteIdx_].flags = baseFlags | ControlFlags::Disabled;
+    switch (value) {
+    case DIFF_NIGHTMARE:
+      items[typeIdx_].text = "Nightmare";
+      items[descIdx_].text = "Nightmare Difficulty\nThe denizens of the Labyrinth have been bolstered and will prove to be a greater challenge. This is recommended for experienced characters only.";
+      break;
+    case DIFF_HELL:
+      items[typeIdx_].text = "Hell";
+      items[descIdx_].text = "Hell Difficulty\nThe most powerful of the underworld's creatures lurk at the gateway into Hell. Only the most experienced characters should venture in this realm.";
+      break;
+    default:
+      items[typeIdx_].text = "Normal";
+      items[descIdx_].text = "Normal Difficulty\nThis is where a starting character should begin the quest to defeat Diablo.";
     }
   }
 
-  void onKey(const KeyEvent& e) override {
-    SelectBaseDialog::onKey(e);
-    if (e.action == KeyEvent::Press && e.key == KeyCode::ESCAPE) {
-      UiPlaySelectSound();
-      activate(get_main_menu_dialog());
-    }
-  }
-
-  void onSelectHero(int value) {
+  void onCancel() override {
     UiPlaySelectSound();
-    if (value >= 0 && value < (int) heroes_.size()) {
-      strcpy(gszHero, heroes_[value].name);
-      if (heroes_[value].hassaved) {
-        activate(select_load_dialog(heroes_[value]));
-      } else if (heroes_[value].level >= MIN_NIGHTMARE_LEVEL) {
-        activate(select_diff_dialog(heroes_[value], this));
-      } else {
-        activate(get_play_state(heroes_[value].name, SELHERO_NEW_DUNGEON));
-      }
-    } else {
-      activate(select_create_dialog(this));
-    }
+    next_(-1);
   }
 
   void onInput(int value) override {
-    if (value == -1) {
-      onSelectHero(selected);
-    } else if (value == -2) {
-      if (selected >= 0 && selected < (int) heroes_.size()) {
-        UiPlaySelectSound();
-        _uiheroinfo hero = heroes_[selected];
-        activate(get_yesno_dialog(gbMaxPlayers > 1 ? "Delete Multi Player Hero" : "Delete Single Player Hero",
-                                  fmtstring("Are you sure you want to delete the character \"%s\"?", heroes_[selected].name).c_str(),
-                                  [hero](bool value) mutable {
-          if (value) {
-            pfile_delete_save(&hero);
-          }
-          //TODO: multiplayer
-          activate(get_hero_dialog_int());
-        }));
-      }
-    } else if (value == -3) {
-      UiPlaySelectSound();
-      activate(get_main_menu_dialog());
-    } else {
-      onSelectHero(value);
-    }
+    UiPlaySelectSound();
+    next_(value == -1 ? selected : value);
   }
 
 private:
-  std::vector<_uiheroinfo> heroes_;
-  int deleteIdx_;
+  _uiheroinfo info_;
+  std::function<void(int)> next_;
+  int typeIdx_, descIdx_;
 };
 
-GameStatePtr select_load_dialog(const _uiheroinfo& info) {
-  return new SelectLoadDialog(info);
-}
-
-GameStatePtr select_name_dialog(GameStatePtr prev, _uiheroinfo hero) {
-  return new SelectNameDialog(prev, std::move(hero));
-}
-
-GameStatePtr select_create_dialog(GameStatePtr prev) {
-  return new SelectCreateDialog(prev);
-}
-
-GameStatePtr select_save_dialog(std::vector<_uiheroinfo>&& heroInfos) {
-  return new SelectSaveDialog(std::move(heroInfos));
-}
-
-GameStatePtr get_hero_dialog_int() {
-  heroInfos.clear();
-  pfile_ui_set_hero_infos(SelHero_GetHeroInfo);
-  if (!heroInfos.empty()) {
-    return select_save_dialog(std::move(heroInfos));
-  } else {
-    return select_create_dialog(get_main_menu_dialog());
-  }
-}
-
-GameStatePtr get_newgame_dialog(const char* name) {
-  if (gbMaxPlayers > 1) {
-    return get_play_state(name, SELHERO_NEW_DUNGEON)
-  }
-}
-
-GameStatePtr get_select_player_dialog() {
-  SetRndSeed(0);
-  memset(plr, 0, sizeof(plr));
-  return get_hero_dialog_int();
+GameStatePtr select_diff_dialog(const _uiheroinfo& info, const char* title, std::function<void(int)>&& next) {
+  return new SelectDiffDialog(info, title, std::move(next));
 }

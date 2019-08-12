@@ -57,13 +57,22 @@ public:
   }
 
   template<class T>
-  void read(T& result) {
-    static_assert(std::is_pod<T>::value, "read is only defined for plain types");
+  typename std::enable_if<std::is_pod<T>::value>::type
+  read(T& result) {
     if (ptr_ + sizeof(T) > end_) {
       throw parse_error();
     }
     memcpy(&result, ptr_, sizeof(T));
     ptr_ += sizeof(T);
+  }
+
+  void read(std::string& result) {
+    size_t length = read<uint8_t>();
+    if (ptr_ + length > end_) {
+      throw parse_error();
+    }
+    result.assign(ptr_, ptr_ + length);
+    ptr_ += length;
   }
 
   template<class T>
@@ -84,16 +93,6 @@ private:
   const uint8_t* end_;
 };
 
-template<>
-void buffer_reader::read(std::string& result) {
-  size_t length = read<uint8_t>();
-  if (ptr_ + length > end_) {
-    throw parse_error();
-  }
-  result.assign(ptr_, ptr_ + length);
-  ptr_ += length;
-}
-
 class buffer_writer {
 public:
   buffer_writer(uint8_t* ptr)
@@ -101,10 +100,16 @@ public:
   }
 
   template<class T>
-  void write(const T& value) {
-    static_assert(std::is_pod<T>::value, "write is only defined for plain types");
+  typename std::enable_if<std::is_pod<T>::value>::type
+  write(const T& value) {
     memcpy(ptr_, &value, sizeof(T));
     ptr_ += sizeof(T);
+  }
+
+  void write(const std::string& str) {
+    *ptr_++ = (uint8_t) str.size();
+    memcpy(ptr_, str.data(), str.size());
+    ptr_ += str.size();
   }
 
   void rest(const std::vector<uint8_t>& vec) {
@@ -115,13 +120,6 @@ public:
 private:
   uint8_t* ptr_;
 };
-
-template<>
-void buffer_writer::write(const std::string& str) {
-  *ptr_++ = (uint8_t) str.size();
-  memcpy(ptr_, str.data(), str.size());
-  ptr_ += str.size();
-}
 
 class packet {
 public:
