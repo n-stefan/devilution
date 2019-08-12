@@ -17,8 +17,19 @@ void LoadGame(BOOL firstflag)
   LoadBuff = pfile_read(szName, &dwLen);
 	tbuff = LoadBuff;
 
-	if (ILoad() != 'RETL')
-		app_fatal("Invalid save file");
+  switch (ILoad()) {
+  case 'RETL':
+    gnDifficulty = DIFF_NORMAL;
+    break;
+  case 'RETN':
+    gnDifficulty = DIFF_NIGHTMARE;
+    break;
+  case 'RETH':
+    gnDifficulty = DIFF_HELL;
+    break;
+  default:
+    app_fatal("Invalid save file");
+  }
 
   setlevel = OLoad();
 	setlvlnum = WLoad();
@@ -282,7 +293,17 @@ void SaveGame()
 	BYTE *SaveBuff = DiabloAllocPtr(dwLen);
 	tbuff = SaveBuff;
 
-	ISave('RETL');
+  switch (gnDifficulty) {
+  case DIFF_NIGHTMARE:
+    ISave('RETN');
+    break;
+  case DIFF_HELL:
+    ISave('RETH');
+    break;
+  default:
+    ISave('RETL');
+    break;
+  }
 	OSave(setlevel);
 	WSave(setlvlnum);
 	WSave(currlevel);

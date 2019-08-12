@@ -7,6 +7,7 @@
 
 enum {
   MM_SINGLEPLAYER,
+  MM_MULTIPLAYER,
   MM_REPLAYINTRO,
   MM_SHOWCREDITS,
   MM_EXITDIABLO,
@@ -17,7 +18,7 @@ public:
   MainMenuDialog() {
     addItem({{0, 0, 640, 480}, ControlType::Image, 0, 0, "", &ArtBackground});
     addItem({{64, 192, 574, 235}, ControlType::List, ControlFlags::Huge | ControlFlags::Gold | ControlFlags::Center, MM_SINGLEPLAYER, "Single Player"});
-    addItem({{64, 235, 574, 278}, ControlType::Text, ControlFlags::Huge | ControlFlags::Silver | ControlFlags::Center, 0, "Multi Player"});
+    addItem({{64, 235, 574, 278}, ControlType::Text, ControlFlags::Huge | ControlFlags::Gold | ControlFlags::Center, MM_MULTIPLAYER, "Multi Player"});
     addItem({{64, 277, 574, 320}, ControlType::List, ControlFlags::Huge | ControlFlags::Gold | ControlFlags::Center, MM_REPLAYINTRO, "Replay Intro"});
     addItem({{64, 320, 574, 363}, ControlType::List, ControlFlags::Huge | ControlFlags::Gold | ControlFlags::Center, MM_SHOWCREDITS, "Show Credits"});
     addItem({{64, 363, 574, 406}, ControlType::List, ControlFlags::Huge | ControlFlags::Gold | ControlFlags::Center, MM_EXITDIABLO, "Exit Diablo"});
@@ -46,7 +47,12 @@ public:
     case MM_SINGLEPLAYER:
       UiPlaySelectSound();
       gbMaxPlayers = 1;
-      GameState::activate(get_single_player_dialog());
+      GameState::activate(get_select_player_dialog());
+      break;
+    case MM_MULTIPLAYER:
+      UiPlaySelectSound();
+      gbMaxPlayers = MAX_PLRS;
+      GameState::activate(get_select_player_dialog());
       break;
     case MM_REPLAYINTRO:
       UiPlaySelectSound();

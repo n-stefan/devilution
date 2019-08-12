@@ -106,7 +106,7 @@ bool read_wave_section(const uint8_t* data, size_t size, size_t& offset, DWORD i
   DWORD hdr[2];
 
   while (true) {
-    if (offset + 8 < size) {
+    if (offset + 8 > size) {
       return false;
     }
     memcpy(&hdr, data + offset, 8);

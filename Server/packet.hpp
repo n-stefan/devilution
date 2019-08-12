@@ -57,44 +57,20 @@ public:
   }
 
   template<class T>
-  T read() {
+  void read(T& result) {
+    static_assert(std::is_pod<T>::value, "read is only defined for plain types");
     if (ptr_ + sizeof(T) > end_) {
       throw parse_error();
     }
-    T result;
     memcpy(&result, ptr_, sizeof(T));
     ptr_ += sizeof(T);
-    return result;
   }
 
   template<class T>
-  void read(T& result) {
-    if (ptr_ + sizeof(T) > end_) {
-      throw parse_error();
-    }
-    memcpy(&result, ptr_, sizeof(T));
-    ptr_ += sizeof(T);
-  }
-
-  template<>
-  std::string read<std::string>() {
-    size_t length = read<uint8_t>();
-    if (ptr_ + length > end_) {
-      throw parse_error();
-    }
-    std::string result(ptr_, ptr_ + length);
-    ptr_ += length;
+  T read() {
+    T result;
+    read(result);
     return result;
-  }
-
-  template<>
-  void read(std::string& result) {
-    size_t length = read<uint8_t>();
-    if (ptr_ + length > end_) {
-      throw parse_error();
-    }
-    result.assign(ptr_, ptr_ + length);
-    ptr_ += length;
   }
 
   std::vector<uint8_t> rest() {
@@ -108,6 +84,16 @@ private:
   const uint8_t* end_;
 };
 
+template<>
+void buffer_reader::read(std::string& result) {
+  size_t length = read<uint8_t>();
+  if (ptr_ + length > end_) {
+    throw parse_error();
+  }
+  result.assign(ptr_, ptr_ + length);
+  ptr_ += length;
+}
+
 class buffer_writer {
 public:
   buffer_writer(uint8_t* ptr)
@@ -116,15 +102,9 @@ public:
 
   template<class T>
   void write(const T& value) {
+    static_assert(std::is_pod<T>::value, "write is only defined for plain types");
     memcpy(ptr_, &value, sizeof(T));
     ptr_ += sizeof(T);
-  }
-
-  template<class T>
-  void write(const std::string& str) {
-    *ptr_++ = (uint8_t) str.size();
-    memcpy(ptr_, str.data(), str.size());
-    ptr_ += str.size();
   }
 
   void rest(const std::vector<uint8_t>& vec) {
@@ -135,6 +115,13 @@ public:
 private:
   uint8_t* ptr_;
 };
+
+template<>
+void buffer_writer::write(const std::string& str) {
+  *ptr_++ = (uint8_t) str.size();
+  memcpy(ptr_, str.data(), str.size());
+  ptr_ += str.size();
+}
 
 class packet {
 public:
@@ -399,11 +386,11 @@ public:
   std::string password;
   uint32_t difficulty;
 
-  client_create_game_packet(uint32_t cookie, std::string&& name, std::string&& password, uint8_t difficulty)
+  client_create_game_packet(uint32_t cookie, std::string name, std::string password, uint8_t difficulty)
     : cookie(cookie)
     , name(name)
-    , password(password)
-    , difficulty(difficulty)
+    , password(std::move(password))
+    , difficulty(std::move(difficulty))
   {
   }
 
@@ -434,10 +421,10 @@ public:
   std::string name;
   std::string password;
 
-  client_join_game_packet(uint32_t cookie, std::string&& name, std::string&& password)
+  client_join_game_packet(uint32_t cookie, std::string name, std::string password)
       : cookie(cookie)
-      , name(name)
-      , password(password) {
+      , name(std::move(name))
+      , password(std::move(password)) {
   }
 
   client_join_game_packet(buffer_reader& reader) {

@@ -94,8 +94,7 @@ void init_archives() {
 }
 
 void DApi_Init(unsigned int time, int offscreen, int v0, int v1, int v2) {
-  sprintf(gszVersionNumber, "Version %d.%d.%d", v0, v1, v2);
-  sprintf(gszProductName, "DiabloWeb v%d.%d.%d", v0, v1, v2);
+  set_client_version(v0, v1, v2);
 
   TickCount = time;
   use_offscreen = offscreen;
@@ -227,6 +226,7 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
         continue;
       }
     }
+    SNet_Poll();
     DApi_Render(GetTickCount());
     Sleep(50);
   }

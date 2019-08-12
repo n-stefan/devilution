@@ -12,6 +12,9 @@ extern HANDLE diabdat_mpq;
 
 extern char gszVersionNumber[MAX_PATH];
 extern char gszProductName[MAX_PATH];
+extern uint32_t gdwProductVersion;
+
+void set_client_version(int v0, int v1, int v2);
 
 void api_current_save_id(int id);
 

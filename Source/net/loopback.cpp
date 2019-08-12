@@ -2,13 +2,12 @@
 
 namespace net {
 
-int loopback::create(std::string addrstr, std::string passwd) {
-  return plr_single;
+void loopback::create(std::string addrstr, std::string passwd, uint32_t difficulty) {
+  ERROR_MSG("not implemented");
 }
 
-int loopback::join(std::string addrstr, std::string passwd) {
+void loopback::join(std::string addrstr, std::string passwd) {
   ERROR_MSG("not implemented");
-  return 0;
 }
 
 bool loopback::SNetReceiveMessage(int* sender, char** data, int* size) {
@@ -31,7 +30,7 @@ bool loopback::SNetSendMessage(int dest, void* data, unsigned int size) {
   return true;
 }
 
-bool loopback::SNetReceiveTurns(char** data, unsigned int* size, DWORD* status) {
+bool loopback::SNetReceiveTurns(char** data, DWORD* size, DWORD* status) {
   // todo: check that this is safe
   return true;
 }

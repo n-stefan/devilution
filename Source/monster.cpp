@@ -2533,7 +2533,7 @@ void M_UpdateLeader(int i)
 void DoEnding()
 {
 	if (gbMaxPlayers > 1) {
-		_SNetLeaveGame(0x40000004);
+		SNetLeaveGame(0x40000004);
 	}
 
   queue_music_state(NUM_MUSIC);
@@ -2563,7 +2563,7 @@ void PrepDoEnding()
 	int newKillLevel, i;
 	DWORD *killLevel;
 
-	gbSoundOn = sgbSaveSoundOn;
+	//gbSoundOn = sgbSaveSoundOn;
 	gbRunGame = FALSE;
 	deathflag = FALSE;
 	cineflag = TRUE;

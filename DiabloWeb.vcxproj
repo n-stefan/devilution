@@ -91,6 +91,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>Z_SOLO;NO_SYSTEM;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -156,6 +157,7 @@
     <ClCompile Include="Source\drlg_l2.cpp" />
     <ClCompile Include="Source\drlg_l3.cpp" />
     <ClCompile Include="Source\drlg_l4.cpp" />
+    <ClCompile Include="Source\dthread.cpp" />
     <ClCompile Include="Source\dx.cpp" />
     <ClCompile Include="Source\effects.cpp" />
     <ClCompile Include="Source\encrypt.cpp" />
@@ -188,6 +190,8 @@
     <ClCompile Include="Source\msg.cpp" />
     <ClCompile Include="Source\msgcmd.cpp" />
     <ClCompile Include="Source\multi.cpp" />
+    <ClCompile Include="Source\net\websocket.cpp" />
+    <ClCompile Include="Source\nthread.cpp" />
     <ClCompile Include="Source\net\abstract_net.cpp" />
     <ClCompile Include="Source\net\base.cpp" />
     <ClCompile Include="Source\net\loopback.cpp" />
@@ -222,6 +226,7 @@
     <ClCompile Include="Source\stores.cpp" />
     <ClCompile Include="Source\storm\sbmp.cpp" />
     <ClCompile Include="Source\storm\smpq.cpp" />
+    <ClCompile Include="Source\storm\snet.cpp" />
     <ClCompile Include="Source\storm\sreg.cpp" />
     <ClCompile Include="Source\storm\storm.cpp" />
     <ClCompile Include="Source\sync.cpp" />
@@ -238,9 +243,11 @@
     <ClCompile Include="Source\ui\diabloui.cpp" />
     <ClCompile Include="Source\ui\dialog.cpp" />
     <ClCompile Include="Source\ui\main_menu.cpp" />
+    <ClCompile Include="Source\ui\network.cpp" />
     <ClCompile Include="Source\ui\okbox.cpp" />
     <ClCompile Include="Source\ui\play.cpp" />
     <ClCompile Include="Source\ui\selhero.cpp" />
+    <ClCompile Include="Source\ui\selmulti.cpp" />
     <ClCompile Include="Source\ui\titlescreen.cpp" />
     <ClCompile Include="Source\ui\video.cpp" />
     <ClCompile Include="Source\ui\yesno.cpp" />
@@ -274,6 +281,7 @@
     <ClInclude Include="Source\drlg_l2.h" />
     <ClInclude Include="Source\drlg_l3.h" />
     <ClInclude Include="Source\drlg_l4.h" />
+    <ClInclude Include="Source\dthread.h" />
     <ClInclude Include="Source\dx.h" />
     <ClInclude Include="Source\effects.h" />
     <ClInclude Include="Source\encrypt.h" />
@@ -309,6 +317,9 @@
     <ClInclude Include="Source\net\abstract_net.h" />
     <ClInclude Include="Source\net\base.h" />
     <ClInclude Include="Source\net\loopback.h" />
+    <ClInclude Include="Source\net\websocket.h" />
+    <ClInclude Include="Source\net\websocket_native.hpp" />
+    <ClInclude Include="Source\nthread.h" />
     <ClInclude Include="Source\objdat.h" />
     <ClInclude Include="Source\objects.h" />
     <ClInclude Include="Source\pack.h" />
@@ -351,6 +362,8 @@
     <ClInclude Include="Source\ui\diabloui.h" />
     <ClInclude Include="Source\ui\dialog.h" />
     <ClInclude Include="Source\ui\event.h" />
+    <ClInclude Include="Source\ui\network.h" />
+    <ClInclude Include="Source\ui\selhero.h" />
     <ClInclude Include="Source\wave.h" />
     <ClInclude Include="Source\zlib\crc32.h" />
     <ClInclude Include="Source\zlib\deflate.h" />

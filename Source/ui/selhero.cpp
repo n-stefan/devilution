@@ -1,4 +1,4 @@
-#include "common.h"
+#include "selhero.h"
 #include "../diablo.h"
 #include "dialog.h"
 #include <string>
@@ -10,63 +10,58 @@
 
 static std::vector<_uiheroinfo> heroInfos;
 
-GameStatePtr get_single_player_dialog_int();
-
 static BOOL SelHero_GetHeroInfo(_uiheroinfo *pInfo) {
   heroInfos.push_back(*pInfo);
   return TRUE;
 }
 
-class SelectBaseDialog : public DialogState {
-public:
-  SelectBaseDialog(const char* title) {
-    addItem({{0, 0, 640, 480}, ControlType::Image, 0, 0, "", &ArtBackground});
-    addItem({{24, 161, 614, 196}, ControlType::Text, ControlFlags::Center | ControlFlags::Big, 0, title});
-    addItem({{30, 211, 210, 287}, ControlType::Image, 0, UI_NUM_CLASSES, "", &ArtHero});
-    addItem({{39, 323, 149, 344}, ControlType::Text, ControlFlags::Right, 0, "Level:"});
-    addItem({{159, 323, 199, 344}, ControlType::Text, ControlFlags::Center, 0, ""});
-    addItem({{39, 358, 149, 379}, ControlType::Text, ControlFlags::Right, 0, "Strength:"});
-    addItem({{159, 358, 199, 379}, ControlType::Text, ControlFlags::Center, 0, ""});
-    addItem({{39, 380, 149, 401}, ControlType::Text, ControlFlags::Right, 0, "Magic:"});
-    addItem({{159, 380, 199, 401}, ControlType::Text, ControlFlags::Center, 0, ""});
-    addItem({{39, 401, 149, 422}, ControlType::Text, ControlFlags::Right, 0, "Dexterity:"});
-    addItem({{159, 401, 199, 422}, ControlType::Text, ControlFlags::Center, 0, ""});
-    addItem({{39, 422, 149, 443}, ControlType::Text, ControlFlags::Right, 0, "Vitality:"});
-    addItem({{159, 422, 199, 443}, ControlType::Text, ControlFlags::Center, 0, ""});
-    addItem({{125, 0, 515, 154}, ControlType::Image, 0, -60, "", &ArtLogos[LOGO_MED]});
+SelectBaseDialog::SelectBaseDialog(const char* title) {
+  addItem({{0, 0, 640, 480}, ControlType::Image, 0, 0, "", &ArtBackground});
+  addItem({{24, 161, 614, 196}, ControlType::Text, ControlFlags::Center | ControlFlags::Big, 0, title});
+  addItem({{30, 211, 210, 287}, ControlType::Image, 0, UI_NUM_CLASSES, "", &ArtHero});
+  addItem({{39, 323, 149, 344}, ControlType::Text, ControlFlags::Right, 0, "Level:"});
+  addItem({{159, 323, 199, 344}, ControlType::Text, ControlFlags::Center, 0, ""});
+  addItem({{39, 358, 149, 379}, ControlType::Text, ControlFlags::Right, 0, "Strength:"});
+  addItem({{159, 358, 199, 379}, ControlType::Text, ControlFlags::Center, 0, ""});
+  addItem({{39, 380, 149, 401}, ControlType::Text, ControlFlags::Right, 0, "Magic:"});
+  addItem({{159, 380, 199, 401}, ControlType::Text, ControlFlags::Center, 0, ""});
+  addItem({{39, 401, 149, 422}, ControlType::Text, ControlFlags::Right, 0, "Dexterity:"});
+  addItem({{159, 401, 199, 422}, ControlType::Text, ControlFlags::Center, 0, ""});
+  addItem({{39, 422, 149, 443}, ControlType::Text, ControlFlags::Right, 0, "Vitality:"});
+  addItem({{159, 422, 199, 443}, ControlType::Text, ControlFlags::Center, 0, ""});
+  addItem({{125, 0, 515, 154}, ControlType::Image, 0, -60, "", &ArtLogos[LOGO_MED]});
 
-    doubleclick = true;
-  }
+  doubleclick = true;
+}
 
-  void setStats(const _uiheroinfo* info) {
-    if (info) {
-      items[2].value = info->heroclass;
-      items[4].text = std::to_string(info->level);
-      items[6].text = std::to_string(info->strength);
-      items[8].text = std::to_string(info->magic);
-      items[10].text = std::to_string(info->dexterity);
-      items[12].text = std::to_string(info->vitality);
-    } else {
-      items[2].value = UI_NUM_CLASSES;
-      items[4].text = "--";
-      items[6].text = "--";
-      items[8].text = "--";
-      items[10].text = "--";
-      items[12].text = "--";
-    }
+void SelectBaseDialog::setStats(const _uiheroinfo* info) {
+  if (info) {
+    items[2].value = info->heroclass;
+    items[4].text = std::to_string(info->level);
+    items[6].text = std::to_string(info->strength);
+    items[8].text = std::to_string(info->magic);
+    items[10].text = std::to_string(info->dexterity);
+    items[12].text = std::to_string(info->vitality);
+  } else {
+    items[2].value = UI_NUM_CLASSES;
+    items[4].text = "--";
+    items[6].text = "--";
+    items[8].text = "--";
+    items[10].text = "--";
+    items[12].text = "--";
   }
+}
 
-  void onActivate() override {
-    DialogState::onActivate();
-    LoadBackgroundArt("ui_art\\selhero.pcx");
-  }
-};
+void SelectBaseDialog::onActivate() {
+  DialogState::onActivate();
+  LoadBackgroundArt("ui_art\\selhero.pcx");
+}
 
 class SelectLoadDialog : public SelectBaseDialog {
 public:
   SelectLoadDialog(const _uiheroinfo& info)
     : SelectBaseDialog("Single Player Characters")
-    , name_(info.name)
+    , info_(info)
   {
     addItem({{264, 211, 584, 244}, ControlType::Text, ControlFlags::Center | ControlFlags::Big, 0, "Save File Exists"});
     addItem({{265, 285, 585, 311}, ControlType::List, ControlFlags::Center | ControlFlags::Medium | ControlFlags::Gold, 0, "Load Game"});
@@ -81,35 +76,39 @@ public:
     SelectBaseDialog::onKey(e);
     if (e.action == KeyEvent::Press && e.key == KeyCode::ESCAPE) {
       UiPlaySelectSound();
-      activate(get_single_player_dialog_int());
+      activate(get_hero_dialog_int(false));
     }
   }
 
   void onInput(int value) override {
-    switch (value) {
-    case -1:
-      activate(get_play_state(name_.c_str(), selected == 0 ? SELHERO_CONTINUE : SELHERO_NEW_DUNGEON));
-      break;
+    switch (value == -1 ? selected : value) {
     case -2:
-      activate(get_single_player_dialog_int());
+      UiPlaySelectSound();
+      activate(get_hero_dialog_int(false));
       break;
     case 0:
-      activate(get_play_state(name_.c_str(), SELHERO_CONTINUE));
+      UiPlaySelectSound();
+      activate(get_play_state(info_.name, SELHERO_CONTINUE));
       break;
     case 1:
-      activate(get_play_state(name_.c_str(), SELHERO_NEW_DUNGEON));
+      UiPlaySelectSound();
+      if (info_.level >= MIN_NIGHTMARE_LEVEL) {
+        activate(select_diff_dialog(info_, this));
+      } else {
+        activate(get_play_state(info_.name, SELHERO_NEW_DUNGEON));
+      }
       break;
     }
   }
 
 private:
-  std::string name_;
+  _uiheroinfo info_;
 };
 
 class SelectNameDialog : public SelectBaseDialog {
 public:
-  SelectNameDialog(bool multiplayer, GameStatePtr prev, _uiheroinfo hero)
-    : SelectBaseDialog(multiplayer ? "New Multi Player Hero" : "New Single Player Hero")
+  SelectNameDialog(GameStatePtr prev, _uiheroinfo hero)
+    : SelectBaseDialog(gbMaxPlayers > 1 ? "New Multi Player Hero" : "New Single Player Hero")
     , prevState_(prev)
     , hero_(hero)
   {
@@ -157,31 +156,16 @@ public:
   }
 
 private:
-  bool multi_;
   int name_, ok_;
   GameStatePtr prevState_;
   _uiheroinfo hero_;
 };
 
-GameStatePtr get_select_name_dialog(bool multiplayer, GameStatePtr prev, int cls) {
-  _uidefaultstats defaults;
-  _uiheroinfo hero;
-  pfile_ui_set_class_stats(cls, &defaults);
-  hero.level = 1;
-  hero.heroclass = cls;
-  hero.strength = defaults.strength;
-  hero.magic = defaults.magic;
-  hero.dexterity = defaults.dexterity;
-  hero.vitality = defaults.vitality;
-  return new SelectNameDialog(multiplayer, prev, hero);
-}
-
 class SelectCreateDialog : public SelectBaseDialog {
 public:
-  SelectCreateDialog(bool multiplayer, GameStatePtr prev)
-    : SelectBaseDialog(multiplayer ? "New Multi Player Hero" : "New Single Player Hero")
+  SelectCreateDialog(GameStatePtr prev)
+    : SelectBaseDialog(gbMaxPlayers > 1 ? "New Multi Player Hero" : "New Single Player Hero")
     , prevState_(prev)
-    , multi_(multiplayer)
   {
     addItem({{264, 211, 584, 244}, ControlType::Text, ControlFlags::Center | ControlFlags::Big, 0, "Choose Class"});
     addItem({{264, 285, 584, 318}, ControlType::List, ControlFlags::Center | ControlFlags::Medium | ControlFlags::Gold, UI_WARRIOR, "Warrior"});
@@ -224,7 +208,7 @@ public:
         return;
       }
 #endif
-      activate(new SelectNameDialog(multi_, this, hero_));
+      activate(select_name_dialog(this, hero_));
     }
   }
 
@@ -240,16 +224,14 @@ public:
   }
 
 private:
-  bool multi_;
   GameStatePtr prevState_;
   _uiheroinfo hero_;
 };
 
 class SelectSaveDialog : public SelectBaseDialog {
 public:
-  SelectSaveDialog(bool multiplayer, std::vector<_uiheroinfo>&& heroInfos)
-    : SelectBaseDialog(multiplayer ? "Multi Player Characters" : "Single Player Characters")
-    , multi_(multiplayer)
+  SelectSaveDialog(std::vector<_uiheroinfo>&& heroInfos)
+    : SelectBaseDialog(gbMaxPlayers > 1 ? "Multi Player Characters" : "Single Player Characters")
     , heroes_(std::move(heroInfos))
   {
     addItem({{264, 211, 584, 244}, ControlType::Text, ControlFlags::Center | ControlFlags::Big, 0, "Select Hero"});
@@ -291,12 +273,14 @@ public:
     if (value >= 0 && value < (int) heroes_.size()) {
       strcpy(gszHero, heroes_[value].name);
       if (heroes_[value].hassaved) {
-        activate(new SelectLoadDialog(heroes_[value]));
+        activate(select_load_dialog(heroes_[value]));
+      } else if (heroes_[value].level >= MIN_NIGHTMARE_LEVEL) {
+        activate(select_diff_dialog(heroes_[value], this));
       } else {
         activate(get_play_state(heroes_[value].name, SELHERO_NEW_DUNGEON));
       }
     } else {
-      activate(new SelectCreateDialog(multi_, this));
+      activate(select_create_dialog(this));
     }
   }
 
@@ -307,14 +291,14 @@ public:
       if (selected >= 0 && selected < (int) heroes_.size()) {
         UiPlaySelectSound();
         _uiheroinfo hero = heroes_[selected];
-        activate(get_yesno_dialog(multi_ ? "Delete Multi Player Hero" : "Delete Single Player Hero",
+        activate(get_yesno_dialog(gbMaxPlayers > 1 ? "Delete Multi Player Hero" : "Delete Single Player Hero",
                                   fmtstring("Are you sure you want to delete the character \"%s\"?", heroes_[selected].name).c_str(),
                                   [hero](bool value) mutable {
           if (value) {
             pfile_delete_save(&hero);
           }
           //TODO: multiplayer
-          activate(get_single_player_dialog_int());
+          activate(get_hero_dialog_int());
         }));
       }
     } else if (value == -3) {
@@ -326,23 +310,44 @@ public:
   }
 
 private:
-  bool multi_;
   std::vector<_uiheroinfo> heroes_;
   int deleteIdx_;
 };
 
-GameStatePtr get_single_player_dialog_int() {
+GameStatePtr select_load_dialog(const _uiheroinfo& info) {
+  return new SelectLoadDialog(info);
+}
+
+GameStatePtr select_name_dialog(GameStatePtr prev, _uiheroinfo hero) {
+  return new SelectNameDialog(prev, std::move(hero));
+}
+
+GameStatePtr select_create_dialog(GameStatePtr prev) {
+  return new SelectCreateDialog(prev);
+}
+
+GameStatePtr select_save_dialog(std::vector<_uiheroinfo>&& heroInfos) {
+  return new SelectSaveDialog(std::move(heroInfos));
+}
+
+GameStatePtr get_hero_dialog_int() {
   heroInfos.clear();
   pfile_ui_set_hero_infos(SelHero_GetHeroInfo);
   if (!heroInfos.empty()) {
-    return new SelectSaveDialog(false, std::move(heroInfos));
+    return select_save_dialog(std::move(heroInfos));
   } else {
-    return new SelectCreateDialog(false, get_main_menu_dialog());
+    return select_create_dialog(get_main_menu_dialog());
   }
 }
 
-GameStatePtr get_single_player_dialog() {
+GameStatePtr get_newgame_dialog(const char* name) {
+  if (gbMaxPlayers > 1) {
+    return get_play_state(name, SELHERO_NEW_DUNGEON)
+  }
+}
+
+GameStatePtr get_select_player_dialog() {
   SetRndSeed(0);
   memset(plr, 0, sizeof(plr));
-  return get_single_player_dialog_int();
+  return get_hero_dialog_int();
 }

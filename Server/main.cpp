@@ -17,7 +17,7 @@ class game_instance;
 const uint32_t SERVER_VERSION = 1;
 
 uint64_t make_init_info(uint32_t difficulty) {
-  static std::mt19937 mt(time(0));
+  static std::mt19937 mt((uint32_t) time(0));
   uint64_t result;
   uint32_t* data = reinterpret_cast<uint32_t*>(&result);
   data[0] = mt();
@@ -106,7 +106,7 @@ void game_server::get_game_list(uint32_t version, std::vector<std::pair<std::str
   std::lock_guard lock(mutex_);
   for (const auto& game : games_) {
     if (game.second->version == version && !game.second->full()) {
-      list.emplace_back(game.first, game.second->difficulty);
+      list.emplace_back(game.first, game.second->difficulty | (game.second->password.size() ? 0x80000000 : 0));
     }
   }
 }

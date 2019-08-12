@@ -179,34 +179,28 @@ enum SFileFlags {
 #define SSCmp(s,x) ( SStrCmp(s,x,__STORM_SSIZEMIN(s,x)) )
 #define SSCmpI(s,x) ( SStrCmpI(s,x,__STORM_SSIZEMIN(s,x)) )
 
-BOOL  _SNetReceiveMessage(int *senderplayerid, char **data, int *databytes);
-BOOL  _SNetSendMessage(int playerID, void *data, unsigned int databytes);
-BOOL  _SNetReceiveTurns(int a1, int arraysize, char **arraydata, DWORD *arraydatabytes, DWORD *arrayplayerstatus);
-BOOL  _SNetSendTurn(char *data, unsigned int databytes);
-int  _SNetGetProviderCaps(struct _SNETCAPS *caps);
-BOOL  _SNetUnregisterEventHandler(int evtype, SEVTHANDLER func);
-BOOL  _SNetRegisterEventHandler(int evtype, SEVTHANDLER func);
-BOOL  _SNetDestroy();
-BOOL  _SNetDropPlayer(int playerid, DWORD flags);
-BOOL  _SNetGetGameInfo(int type, void *dst, unsigned int length, unsigned int *byteswritten);
-BOOL  _SNetLeaveGame(int type);
-BOOL  _SNetSendServerChatCommand(const char *command);
-int  _SNetInitializeProvider(unsigned long provider, struct _SNETPROGRAMDATA *client_info,
-                           struct _SNETPLAYERDATA *user_info, struct _SNETUIDATA *ui_info,
-                           struct _SNETVERSIONDATA *fileinfo);
-BOOL  _SNetCreateGame(const char *pszGameName, const char *pszGamePassword, const char *pszGameStatString,
-                      DWORD dwGameType, const char *GameTemplateData, int GameTemplateSize, int playerCount,
-                      const char *creatorName, const char *a11, int *playerID);
+BOOL SNetReceiveMessage(int *senderplayerid, char **data, int *databytes);
+BOOL SNetSendMessage(int playerID, void *data, unsigned int databytes);
+BOOL SNetReceiveTurns(int a1, int arraysize, char **arraydata, DWORD *arraydatabytes, DWORD *arrayplayerstatus);
+BOOL SNetSendTurn(char *data, unsigned int databytes);
+int SNetGetProviderCaps(struct _SNETCAPS *caps);
+BOOL SNetUnregisterEventHandler(int evtype, SEVTHANDLER func);
+BOOL SNetRegisterEventHandler(int evtype, SEVTHANDLER func);
+BOOL SNetDestroy();
+BOOL SNetDropPlayer(int playerid, DWORD flags);
+BOOL SNetLeaveGame(int type);
+BOOL SNetSendServerChatCommand(const char *command);
+BOOL SNetGetOwnerTurnsWaiting(DWORD *turns);
+BOOL SNetGetTurnsInTransit(int *turns);
 
-BOOL  _SNetJoinGame(int id, char *pszGameName, char *pszGamePassword, char *playerName, char *userStats, int *playerID);
-BOOL  _SNetGetOwnerTurnsWaiting(DWORD *turns);
-BOOL  _SNetGetTurnsInTransit(int *turns);
-BOOLEAN  _SNetSetBasePlayer(int);
-BOOL  _SNetPerformUpgrade(DWORD *upgradestatus);
-BOOL  _SNetSetGameMode(DWORD modeFlags, bool makePublic);
+BOOL SNet_HasMultiplayer();
+void SNet_InitializeProvider(BOOL multiplayer);
+void SNet_CreateGame(const char* name, const char* password, uint32_t difficulty);
+void SNet_JoinGame(const char* name, const char* password);
+void SNet_Poll();
 
-void*  SMemAlloc(unsigned int amount, const char *logfilename, int logline, int defaultValue);
-BOOL  SMemFree(void *location, const char *logfilename, int logline, char defaultValue);
+void* SMemAlloc(unsigned int amount, const char *logfilename, int logline, int defaultValue);
+BOOL SMemFree(void *location, const char *logfilename, int logline, char defaultValue);
 
 DWORD  SErrGetLastError();
 void  SErrSetLastError(DWORD dwErrCode);

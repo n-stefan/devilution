@@ -55,7 +55,7 @@ void msgcmd_send_chat()
 		tick = _GetTickCount();
 		if (tick - sgdwMsgCmdTimer >= 2000) {
 			sgdwMsgCmdTimer = tick;
-			_SNetSendServerChatCommand(msg->command);
+			SNetSendServerChatCommand(msg->command);
 			sgChat_Cmd.Remove(msg);
 		}
 	}

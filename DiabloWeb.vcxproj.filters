@@ -378,6 +378,24 @@
     <ClCompile Include="Source\net\loopback.cpp">
       <Filter>net</Filter>
     </ClCompile>
+    <ClCompile Include="Source\storm\snet.cpp">
+      <Filter>storm</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ui\network.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\nthread.cpp">
+      <Filter>glue</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\dthread.cpp">
+      <Filter>glue</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\net\websocket.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ui\selmulti.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\automap.h">
@@ -691,6 +709,24 @@
     </ClInclude>
     <ClInclude Include="Source\net\loopback.h">
       <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ui\network.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\nthread.h">
+      <Filter>glue</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\dthread.h">
+      <Filter>glue</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\net\websocket_native.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\net\websocket.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ui\selhero.h">
+      <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

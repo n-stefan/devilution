@@ -108,7 +108,7 @@ public:
       //pfile_create_player_description(0, 0);
       api_current_save_id(-1);
     }
-    _SNetDestroy();
+    SNetDestroy();
   }
 
   void onRender(unsigned int time) override {
@@ -138,6 +138,8 @@ public:
     if (gbRunGame) {
       diablo_color_cyc_logic();
       multi_process_network_packets();
+      dthread_loop();
+      nthread_loop();
       game_loop(gbGameLoopStartup);
       msgcmd_send_chat();
       gbGameLoopStartup = FALSE;
@@ -213,9 +215,10 @@ void post_event(int code) {
   }
 }
 
-GameStatePtr get_play_state(const char* name, int mode) {
+GameStatePtr get_play_state(const char* name, int mode, int difficulty) {
+  gnDifficulty = difficulty;
   strcpy(gszHero, name);
-  gbLoadGame = (mode == SELHERO_CONTINUE);
   pfile_create_player_description(NULL, 0);
+  gbLoadGame = (mode == SELHERO_CONTINUE);
   return new MainState(TRUE, TRUE);
 }

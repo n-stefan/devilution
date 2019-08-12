@@ -15,19 +15,19 @@ private:
   const int plr_single = 0;
 
 public:
-  virtual int create(std::string addrstr, std::string passwd);
-  virtual int join(std::string addrstr, std::string passwd);
-  virtual bool SNetReceiveMessage(int* sender, char** data, int* size);
-  virtual bool SNetSendMessage(int dest, void* data, unsigned int size);
-  virtual bool SNetReceiveTurns(char** data, unsigned int* size, DWORD* status);
-  virtual bool SNetSendTurn(char* data, unsigned int size);
-  virtual int SNetGetProviderCaps(struct _SNETCAPS* caps);
-  virtual bool SNetRegisterEventHandler(event_type evtype, SEVTHANDLER func);
-  virtual bool SNetUnregisterEventHandler(event_type evtype, SEVTHANDLER func);
-  virtual bool SNetLeaveGame(int type);
-  virtual bool SNetDropPlayer(int playerid, DWORD flags);
-  virtual bool SNetGetOwnerTurnsWaiting(DWORD* turns);
-  virtual bool SNetGetTurnsInTransit(int* turns);
+  void create(std::string addrstr, std::string passwd, uint32_t difficulty) override;
+  void join(std::string addrstr, std::string passwd) override;
+  bool SNetReceiveMessage(int* sender, char** data, int* size) override;
+  bool SNetSendMessage(int dest, void* data, unsigned int size) override;
+  bool SNetReceiveTurns(char** data, DWORD* size, DWORD* status) override;
+  bool SNetSendTurn(char* data, unsigned int size) override;
+  int SNetGetProviderCaps(struct _SNETCAPS* caps) override;
+  bool SNetRegisterEventHandler(event_type evtype, SEVTHANDLER func) override;
+  bool SNetUnregisterEventHandler(event_type evtype, SEVTHANDLER func) override;
+  bool SNetLeaveGame(int type) override;
+  bool SNetDropPlayer(int playerid, DWORD flags) override;
+  bool SNetGetOwnerTurnsWaiting(DWORD* turns) override;
+  bool SNetGetTurnsInTransit(int* turns) override;
 };
 
 } // namespace net

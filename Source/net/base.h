@@ -21,12 +21,9 @@ namespace net {
 
 class base : public abstract_net {
 public:
-  virtual int create(std::string name, std::string passwd) = 0;
-  virtual int join(std::string name, std::string passwd) = 0;
-
   virtual bool SNetReceiveMessage(int* sender, char** data, int* size);
   virtual bool SNetSendMessage(int dest, void* data, unsigned int size);
-  virtual bool SNetReceiveTurns(char** data, unsigned int* size,
+  virtual bool SNetReceiveTurns(char** data, DWORD* size,
                                 DWORD* status);
   virtual bool SNetSendTurn(char* data, unsigned int size);
   virtual int SNetGetProviderCaps(struct _SNETCAPS* caps);
@@ -39,7 +36,6 @@ public:
   virtual bool SNetGetOwnerTurnsWaiting(DWORD* turns);
   virtual bool SNetGetTurnsInTransit(int* turns);
 
-  virtual void poll() {}
   virtual void send(const packet& pkt) = 0;
 
 protected:

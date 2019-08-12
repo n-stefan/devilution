@@ -36,10 +36,11 @@ beast::flat_buffer make_buffer(const packet& p) {
 class websocket_client : public std::enable_shared_from_this<websocket_client> {
 public:
   explicit websocket_client(tcp::socket && socket, std::chrono::milliseconds timeout = std::chrono::seconds(15))
-      : ws_(std::move(socket))
-      , strand_(ws_.get_executor())
-      , timer_(ws_.get_executor().context(), std::chrono::steady_clock::time_point::max())
-      , timeout_(timeout) {
+    : ws_(std::move(socket))
+    , strand_(ws_.get_executor())
+    , timer_(ws_.get_executor().context(), std::chrono::steady_clock::time_point::max())
+    , timeout_(timeout)
+  {
   }
 
   bool is_open() const {
@@ -79,9 +80,9 @@ public:
   }
 
   void send(beast::flat_buffer buffer) {
-    if (strand_.running_in_this_thread() && accepted_) {
+    if (strand_.running_in_this_thread()) {
       output_.emplace_back(std::move(buffer));
-      if (output_.size() == 1) {
+      if (output_.size() == 1 && accepted_) {
         do_write();
       }
     } else {
@@ -103,33 +104,33 @@ protected:
 private:
   void do_read() {
     ws_.async_read(input_, net::bind_executor(strand_, [self = shared_from_this()](error_code ec, size_t) {
-                     if (ec == websocket::error::closed || ec == net::error::connection_aborted) {
-                       return;
-                     }
-                     check_ec(ec, "read");
+      if (ec == websocket::error::closed || ec == net::error::connection_aborted) {
+        return;
+      }
+      check_ec(ec, "read");
 
-                     self->activity();
+      self->activity();
 
-                     auto data = self->input_.data();
-                     self->on_receive((uint8_t*) data.data(), data.size());
+      auto data = self->input_.data();
+      self->on_receive((uint8_t*) data.data(), data.size());
 
-                     self->input_.consume(data.size());
-                     self->do_read();
-                   }));
+      self->input_.consume(data.size());
+      self->do_read();
+    }));
   }
 
   void do_write() {
     ws_.text(false);
     ws_.async_write(output_.front().data(), net::bind_executor(strand_, [self = shared_from_this()](error_code ec, size_t) {
-                      if (ec == websocket::error::closed || ec == net::error::connection_aborted) {
-                        return;
-                      }
-                      check_ec(ec, "write");
-                      self->output_.pop_front();
-                      if (!self->output_.empty()) {
-                        self->do_write();
-                      }
-                    }));
+      if (ec == websocket::error::closed || ec == net::error::connection_aborted) {
+        return;
+      }
+      check_ec(ec, "write");
+      self->output_.pop_front();
+      if (!self->output_.empty()) {
+        self->do_write();
+      }
+    }));
   }
 
   void on_timer(error_code ec) {
@@ -141,16 +142,16 @@ private:
         ping_state_ = 1;
         timer_.expires_after(timeout_);
         ws_.async_ping({}, net::bind_executor(strand_, [self = shared_from_this()](error_code ec) {
-                         if (ec == net::error::operation_aborted) {
-                           return;
-                         }
-                         check_ec(ec, "ping");
-                         if (self->ping_state_ == 1) {
-                           self->ping_state_ = 2;
-                         } else {
-                           BOOST_ASSERT(self->ping_state_ == 0);
-                         }
-                       }));
+          if (ec == net::error::operation_aborted) {
+            return;
+          }
+          check_ec(ec, "ping");
+          if (self->ping_state_ == 1) {
+            self->ping_state_ = 2;
+          } else {
+            BOOST_ASSERT(self->ping_state_ == 0);
+          }
+        }));
       } else {
         ws_.next_layer().shutdown(tcp::socket::shutdown_both, ec);
         ws_.next_layer().close();
@@ -178,8 +179,9 @@ private:
 class websocket_server : public std::enable_shared_from_this<websocket_server> {
 public:
   websocket_server(boost::asio::io_context & ioc, unsigned short port)
-      : acceptor_(ioc)
-      , socket_(ioc) {
+    : acceptor_(ioc)
+    , socket_(ioc)
+  {
     error_code ec;
     tcp::endpoint endpoint(net::ip::address_v4(0u), port);
 
