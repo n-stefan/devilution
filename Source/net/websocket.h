@@ -12,6 +12,7 @@ namespace net {
 class websocket_client : public base {
 public:
   websocket_client();
+  ~websocket_client();
 
   void create(std::string name, std::string passwd, uint32_t difficulty) override;
   void join(std::string name, std::string passwd) override;

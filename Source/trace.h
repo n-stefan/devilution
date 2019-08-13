@@ -45,7 +45,6 @@ struct Guard {
 
 }
 
-#ifdef _DEBUG
 #define __EXPAND(x) x
 #define __ARG(...) __Trace::_to_string("\n\t" #__VA_ARGS__ " = ", ## __VA_ARGS__)
 #define __STRINGIFY(x) #x
@@ -57,6 +56,3 @@ struct Guard {
 #define LOG_STACK(...) __EXPAND(__LOG_STACK_ARGS(__VA_ARGS__, __Trace::__null_value, \
   __Trace::__null_value, __Trace::__null_value, __Trace::__null_value, __Trace::__null_value, __Trace::__null_value, \
   __Trace::__null_value, __Trace::__null_value, __Trace::__null_value, __Trace::__null_value, __Trace::__null_value))
-#else
-#define LOG_STACK(...)
-#endif

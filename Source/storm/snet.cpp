@@ -99,3 +99,15 @@ void SNet_JoinGame(const char* name, const char* password) {
 void SNet_Poll() {
   dvlnet_inst->poll();
 }
+
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+extern "C" {
+EMSCRIPTEN_KEEPALIVE
+#endif
+void SNet_InitWebsocket() {
+  dvlnet_inst_multi = net::abstract_net::make_net(net::provider_t::WEBSOCKET, "");
+}
+#ifdef EMSCRIPTEN
+}
+#endif

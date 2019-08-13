@@ -49,8 +49,7 @@ extern Art ArtBackground;
 extern Art ArtCursor;
 extern Art ArtHero;
 
-void LoadArt(const char *pszFile, Art *art, int frames,
-             PALETTEENTRY *pPalette = nullptr);
+void LoadArt(const char *pszFile, Art *art, int frames = 1, PALETTEENTRY *pPalette = nullptr);
 void DrawArt(int screenX, int screenY, Art *art, int nFrame = 0, int drawW = 0);
 void LoadBackgroundArt(const char *pszFile);
 void LoadMaskedArtFont(const char *pszFile, Art *art, int frames, int mask = 250);
@@ -185,3 +184,4 @@ GameStatePtr get_ok_dialog(const char* text, std::function<void()>&& next, bool 
 GameStatePtr get_ok_dialog(const char* text, GameStatePtr next, bool background = false);
 GameStatePtr get_yesno_dialog(const char* title, const char* text, std::function<void(bool)>&& select);
 GameStatePtr get_play_state(const char* name, int mode);
+GameStatePtr get_netplay_state(int mode);

@@ -1,5 +1,7 @@
 #ifndef EMSCRIPTEN
 #include "websocket_native.hpp"
+#else
+#include "websocket_browser.hpp"
 #endif
 
 #include "websocket.h"
@@ -15,13 +17,17 @@ websocket_client::websocket_client()
   impl_->send(client_info_packet(gdwProductVersion));
 }
 
+websocket_client::~websocket_client() = default;
+
 void websocket_client::create(std::string name, std::string passwd, uint32_t difficulty) {
   cookie_ = (uint32_t) time(nullptr);
+  is_creator_ = true;
   impl_->send(client_create_game_packet(cookie_, name, passwd, (uint8_t) difficulty));
 }
 
 void websocket_client::join(std::string name, std::string passwd) {
   cookie_ = (uint32_t) time(nullptr);
+  is_creator_ = false;
   impl_->send(client_join_game_packet(cookie_, name, passwd));
 }
 

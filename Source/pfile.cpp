@@ -1,8 +1,10 @@
+#include <vector>
 #include "diablo.h"
 #include "storm/storm.h"
 #include "ui/diabloui.h"
 #include "rmpq/file.h"
 #include "trace.h"
+#include "pfile_ex.h"
 
 #ifndef SPAWN
 #define PASSWORD_SINGLE "xrgyrkj1"

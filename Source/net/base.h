@@ -57,7 +57,7 @@ protected:
   std::array<bool, MAX_PLRS> connected_table = {};
 
   uint8_t plr_self = PLR_BROADCAST;
-  uint32_t cookie_self = 0;
+  bool is_creator_ = false;
 
   template<class packet_type>
   void handle(const packet_type& pkt);

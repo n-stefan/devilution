@@ -40,6 +40,7 @@ public:
     , strand_(ws_.get_executor())
     , timer_(ws_.get_executor().context(), std::chrono::steady_clock::time_point::max())
     , timeout_(timeout)
+    , accepted_(false)
   {
   }
 
@@ -173,7 +174,7 @@ private:
   int ping_state_ = 0;
   beast::flat_buffer input_;
   std::deque<beast::flat_buffer> output_;
-  std::atomic_bool accepted_ = false;
+  std::atomic_bool accepted_;
 };
 
 class websocket_server : public std::enable_shared_from_this<websocket_server> {

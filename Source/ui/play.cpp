@@ -32,34 +32,15 @@ private:
 
 class MainState : public GameState {
 public:
-  MainState(BOOL bNewGame, BOOL bSinglePlayer) {
-    newGame_ = bNewGame;
-    singlePlayer_ = bSinglePlayer;
-  }
-
   void onActivate() override {
     if (started_) {
       drawpanflag = 255;
       return;
     }
-    byte_678640 = 1;
-    BOOL fExitProgram = FALSE;
-    if (!NetInit(singlePlayer_, &fExitProgram)) {
-      gbRunGameResult = !fExitProgram;
-      if (fExitProgram) {
-        activate(nullptr);
-      } else {
-        activate(get_main_menu_dialog());
-      }
-      return;
-    }
-    byte_678640 = 0;
-    if (newGame_ || !gbValidSaveFile) {
-      InitLevels();
-      InitQuests();
-      InitPortals();
-      InitDungMsgs(myplr);
-    }
+    InitLevels();
+    InitQuests();
+    InitPortals();
+    InitDungMsgs(myplr);
     unsigned int uMsg;
     if (!gbValidSaveFile || !gbLoadGame) {
       uMsg = WM_DIABNEWGAME;
@@ -138,8 +119,6 @@ public:
     if (gbRunGame) {
       diablo_color_cyc_logic();
       multi_process_network_packets();
-      dthread_loop();
-      nthread_loop();
       game_loop(gbGameLoopStartup);
       msgcmd_send_chat();
       gbGameLoopStartup = FALSE;
@@ -204,8 +183,6 @@ public:
   std::vector<int> messages;
 
 private:
-  BOOL newGame_;
-  BOOL singlePlayer_;
   bool started_ = false;
 };
 
@@ -215,9 +192,15 @@ void post_event(int code) {
   }
 }
 
+GameStatePtr get_netplay_state(int mode) {
+  return new MainState;
+}
+
 GameStatePtr get_play_state(const char* name, int mode) {
   strcpy(gszHero, name);
   pfile_create_player_description(NULL, 0);
   gbLoadGame = (mode == SELHERO_CONTINUE);
-  return new MainState(TRUE, TRUE);
+  NetInit_Mid();
+  NetInit_Finish();
+  return new MainState;
 }

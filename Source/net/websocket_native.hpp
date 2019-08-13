@@ -102,11 +102,11 @@ public:
 
 private:
   std::mutex mutex_;
+  websocket::stream<tcp::socket> ws_;
   boost::asio::strand<boost::asio::io_context::executor_type> strand_;
   std::atomic_bool ready_ = false;
   std::atomic_bool closed_ = false;
   tcp::resolver resolver_;
-  websocket::stream<tcp::socket> ws_;
   std::vector<std::vector<uint8_t>> input_;
   beast::flat_buffer next_input_;
   std::deque<beast::flat_buffer> output_;
@@ -153,7 +153,8 @@ public:
     auto future = promise.get_future();
     thread_ = std::thread([promise = std::move(promise)]() mutable {
       boost::asio::io_context ioc(1);
-      std::make_shared<websocket_session>(ioc)->connect(std::move(promise), "localhost", 1339, "/");
+      std::make_shared<websocket_session>(ioc)->connect(std::move(promise), "127.0.0.1", 1339, "/");
+      ioc.run();
     });
     session_ = future.get();
   }

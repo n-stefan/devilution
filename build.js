@@ -123,8 +123,8 @@ async function run_build(flags) {
         }
       }
 
-      if (!maxTime || statSrc.mtime > maxTime) {
-        maxTime = statSrc.mtime;
+      if (!maxTime || srcTime > maxTime) {
+        maxTime = srcTime;
       }
 
       link_list.push(out);
@@ -137,7 +137,12 @@ async function run_build(flags) {
 
   const oname = (is_spawn ? 'DiabloSpawn' : 'Diablo');
 
-  if (!rebuild && (!maxTime || maxTime <= fs.statSync(oname + '.wasm').mtime)) {
+  let wasmTime = null;
+  if (fs.existsSync(oname + '.wasm')) {
+    wasmtime = fs.statSync(oname + '.wasm').mtime;
+  }
+
+  if (!rebuild && (!maxTime || (wasmTime && maxTime <= wasmTime))) {
     console.log('Everything is up to date');
     return;
   }

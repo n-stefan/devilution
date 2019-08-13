@@ -583,7 +583,11 @@ void  multi_handle_events(_SNETEVENT *pEvt)
 		data = (DWORD *)pEvt->data;
 		sgGameInitInfo.dwSeed = data[0];
 		sgGameInitInfo.bDiff = data[1];
-		sgbPlayerTurnBitTbl[pEvt->playerid] = TRUE;
+    if (pEvt->playerid < MAX_PLRS) {
+      // bit of a hack, we shouldn't receive this message if we created the game
+      // but we can't get init info otherwise
+      sgbPlayerTurnBitTbl[pEvt->playerid] = TRUE;
+    }
 		break;
 	case EVENT_TYPE_PLAYER_LEAVE_GAME:
 		sgbPlayerLeftGameTbl[pEvt->playerid] = TRUE;
@@ -607,58 +611,62 @@ void  multi_handle_events(_SNETEVENT *pEvt)
 	}
 }
 
-BOOL NetInit(BOOL bSinglePlayer, BOOL *pfExitProgram)
-{
-	int i;
+void NetInit_Start() {
+  SetRndSeed(0);
+  sgGameInitInfo.dwSeed = time(NULL);
+  sgGameInitInfo.bDiff = gnDifficulty;
+  memset(sgbPlayerTurnBitTbl, 0, sizeof(sgbPlayerTurnBitTbl));
+  gbGameDestroyed = FALSE;
+  memset(sgbPlayerLeftGameTbl, 0, sizeof(sgbPlayerLeftGameTbl));
+  memset(sgdwPlayerLeftReasonTbl, 0, sizeof(sgdwPlayerLeftReasonTbl));
+  memset(sgbSendDeltaTbl, 0, sizeof(sgbSendDeltaTbl));
+  memset(plr, 0, sizeof(plr));
+  memset(sgwPackPlrOffsetTbl, 0, sizeof(sgwPackPlrOffsetTbl));
+}
 
-	while (1) {
-    *pfExitProgram = FALSE;
-    sgGameInitInfo.dwSeed = time(NULL);
-    sgGameInitInfo.bDiff = gnDifficulty;
-    gbGameDestroyed = FALSE;
-    memset(sgbPlayerTurnBitTbl, 0, sizeof(sgbPlayerTurnBitTbl));
-    memset(sgbPlayerLeftGameTbl, 0, sizeof(sgbPlayerLeftGameTbl));
-    memset(sgdwPlayerLeftReasonTbl, 0, sizeof(sgdwPlayerLeftReasonTbl));
-    memset(sgbSendDeltaTbl, 0, sizeof(sgbSendDeltaTbl));
-    memset(sgwPackPlrOffsetTbl, 0, sizeof(sgwPackPlrOffsetTbl));
+void NetInit_Difficulty(int diff) {
+  sgGameInitInfo.bDiff = diff;
+}
+
+void NetInit_Mid() {
 #ifdef _DEBUG
-		gdwHistTicks = _GetTickCount();
-		dumphist("(%d) new game started", myplr);
+  gdwHistTicks = _GetTickCount();
+  dumphist("(%d) new game started", myplr);
 #endif
-		sgbNetInited = TRUE;
-		sgbTimeout = FALSE;
-		delta_init();
-		InitPlrMsg();
-		buffer_init(&sgHiPriBuf);
-		buffer_init(&sgLoPriBuf);
-		gbShouldValidatePackage = FALSE;
-		sync_init();
-		nthread_start(sgbPlayerTurnBitTbl[myplr]);
-		dthread_start();
-		tmsg_start();
-		sgdwGameLoops = 0;
-		sgbSentThisCycle = 0;
-		gbDeltaSender = myplr;
-		gbSomebodyWonGameKludge = FALSE;
-		nthread_send_and_recv_turn(0, 0);
-		SetupLocalCoords();
-		multi_send_pinfo(-2, CMD_SEND_PLRINFO);
-		gbActivePlayers = 1;
-		plr[myplr].plractive = TRUE;
-		if (sgbPlayerTurnBitTbl[myplr] == 0 || msg_wait_resync())
-			break;
-		NetClose();
-		byte_678640 = 0;
-	}
+  sgbNetInited = TRUE;
+  sgbTimeout = FALSE;
+  delta_init();
+  InitPlrMsg();
+  buffer_init(&sgHiPriBuf);
+  buffer_init(&sgLoPriBuf);
+  gbShouldValidatePackage = FALSE;
+  sync_init();
+  nthread_start(sgbPlayerTurnBitTbl[myplr]);
+  dthread_start();
+  tmsg_start();
+  sgdwGameLoops = 0;
+  sgbSentThisCycle = 0;
+  gbDeltaSender = myplr;
+  gbSomebodyWonGameKludge = FALSE;
+  nthread_send_and_recv_turn(0, 0);
+  SetupLocalCoords();
+  multi_send_pinfo(-2, CMD_SEND_PLRINFO);
+  gbActivePlayers = 1;
+  plr[myplr].plractive = TRUE;
+}
+
+void NetInit_Finish() {
 	gnDifficulty = sgGameInitInfo.bDiff;
 	SetRndSeed(sgGameInitInfo.dwSeed);
 
-	for (i = 0; i < 17; i++) {
+  for (int i = 0; i < 17; i++) {
 		glSeedTbl[i] = GetRndSeed();
 		gnLevelTypeTbl[i] = InitLevelType(i);
 	}
+}
 
-	return TRUE;
+bool NetInit_NeedSync() {
+  return (sgbPlayerTurnBitTbl[myplr] != 0);
 }
 
 void buffer_init(TBuffer *pBuf)

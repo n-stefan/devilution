@@ -23,13 +23,12 @@ void base::handle(const server_join_accept_packet& pkt) {
   if (plr_self != PLR_BROADCAST) {
     return; // already have player id
   }
-  assert(pkt.cookie == cookie_self);
   plr_self = pkt.index;
   connected_table[plr_self] = true;
 
   _SNETEVENT ev;
   ev.eventid = EVENT_TYPE_PLAYER_CREATE_GAME;
-  ev.playerid = plr_self;
+  ev.playerid = is_creator_ ? MAX_PLRS : plr_self;
   ev.data = const_cast<decltype(pkt.init_info)*>(&pkt.init_info);
   ev.databytes = sizeof pkt.init_info;
   run_event_handler(ev);
@@ -55,7 +54,7 @@ void base::handle(const server_disconnect_packet& pkt) {
       turn_queue[pkt.id].clear();
     }
   } else {
-    ERROR_MSG("disconnected from the game");
+    //ERROR_MSG("disconnected from the game");
   }
 }
 

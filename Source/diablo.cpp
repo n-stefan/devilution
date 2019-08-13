@@ -1213,7 +1213,7 @@ void game_loop(BOOL bStartup)
 			timeout_cursor(FALSE);
 			game_logic();
 		}
-		if (!gbRunGame || gbMaxPlayers == 1)
+		if (!gbRunGame || gbMaxPlayers == 1 || 1)
 			break;
 	}
 }

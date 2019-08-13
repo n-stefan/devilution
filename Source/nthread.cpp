@@ -15,6 +15,7 @@ char sgbPacketCountdown;
 DWORD gdwLargestMsgSize;
 DWORD gdwNormalMsgSize;
 int last_tick;
+int next_loop_tick = 0;
 
 void nthread_terminate_game(const char *pszFcn) {
   DWORD sErr;
@@ -135,6 +136,7 @@ void nthread_start(BOOL set_turn_upper_bit) {
   if (caps.maxplayers > MAX_PLRS)
     caps.maxplayers = MAX_PLRS;
   gdwNormalMsgSize /= caps.maxplayers;
+  next_loop_tick = 0;
   while (gdwNormalMsgSize < 0x80) {
     gdwNormalMsgSize *= 2;
     sgbNetUpdateRate *= 2;
@@ -148,8 +150,15 @@ void nthread_start(BOOL set_turn_upper_bit) {
 }
 
 void nthread_loop() {
-  if (nthread_should_run) {
+  int received, delta;
+  if (nthread_should_run && _GetTickCount() >= next_loop_tick) {
     nthread_send_and_recv_turn(0, 0);
+    //if (nthread_recv_turns(&received)) {
+    //  delta = last_tick - _GetTickCount();
+    //} else {
+    //  delta = 50;
+    //}
+    //next_loop_tick = _GetTickCount() + delta;
   }
 }
 

@@ -69,7 +69,7 @@ void dthread_loop() {
     netRemainingBytes = gdwDeltaBytesSec;
   }
 
-  while (sgpInfoHead && packetSize(pkt) <= netRemainingBytes) {
+  while (sgpInfoHead && packetSize(sgpInfoHead) <= netRemainingBytes) {
     pkt = sgpInfoHead;
     sgpInfoHead = sgpInfoHead->pNext;
 

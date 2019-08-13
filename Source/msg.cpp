@@ -64,7 +64,6 @@ TMegaPkt* msg_get_next_packet() {
 }
 
 BOOL msg_wait_resync() {
-  BOOL success;
 
   msg_get_next_packet();
   sgbDeltaChunks = 0;
@@ -72,24 +71,25 @@ BOOL msg_wait_resync() {
   sgbRecvCmd = CMD_DLEVEL_END;
   gbBufferMsgs = 1;
   sgdwOwnerWait = _GetTickCount();
-  success = UiProgressDialog(ghMainWnd, "Waiting for game data...", 1, msg_wait_for_turns, 20);
-  gbBufferMsgs = 0;
-  if (!success) {
-    msg_free_packets();
-    return FALSE;
-  }
+  return TRUE;
+  //success = UiProgressDialog(ghMainWnd, "Waiting for game data...", 1, msg_wait_for_turns, 20);
+  //gbBufferMsgs = 0;
+  //if (!success) {
+  //  msg_free_packets();
+  //  return FALSE;
+  //}
 
-  if (gbGameDestroyed) {
-    DrawDlg("The game ended");
-    msg_free_packets();
-    return FALSE;
-  }
+  //if (gbGameDestroyed) {
+  //  DrawDlg("The game ended");
+  //  msg_free_packets();
+  //  return FALSE;
+  //}
 
-  if (sgbDeltaChunks != 21) {
-    DrawDlg("Unable to get level data");
-    msg_free_packets();
-    return FALSE;
-  }
+  //if (sgbDeltaChunks != 21) {
+  //  DrawDlg("Unable to get level data");
+  //  msg_free_packets();
+  //  return FALSE;
+  //}
 
   return TRUE;
 }

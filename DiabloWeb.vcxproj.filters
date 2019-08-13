@@ -722,6 +722,12 @@
     <ClInclude Include="Source\ui\selhero.h">
       <Filter>ui</Filter>
     </ClInclude>
+    <ClInclude Include="Source\pfile_ex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\net\websocket_browser.hpp">
+      <Filter>net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\asm_trans_rect.inc">

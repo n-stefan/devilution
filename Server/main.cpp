@@ -1,7 +1,7 @@
 #include <boost/asio/signal_set.hpp>
 #include <mutex>
-#include <string_view>
 #include <random>
+#include <thread>
 
 #include "server.hpp"
 #include "packet.hpp"
@@ -80,12 +80,13 @@ public:
       , server_(server) {
   }
 
+  ~player_client();
+
   void on_connect() override {
     send(server_info_packet(SERVER_VERSION));
   }
 
   void on_receive(const uint8_t* data, size_t size);
-  void on_close() override;
 
   void join(uint32_t cookie, const std::string& name, const std::string& password);
 
@@ -103,7 +104,7 @@ private:
 };
 
 void game_server::get_game_list(uint32_t version, std::vector<std::pair<std::string, uint32_t>>& list) {
-  std::lock_guard lock(mutex_);
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
   for (const auto& game : games_) {
     if (game.second->version == version && !game.second->full()) {
       list.emplace_back(game.first, game.second->difficulty | (game.second->password.size() ? 0x80000000 : 0));
@@ -112,7 +113,7 @@ void game_server::get_game_list(uint32_t version, std::vector<std::pair<std::str
 }
 
 RejectionReason game_server::create_game(uint32_t version, const std::string& name, const std::string& password, uint32_t difficulty) {
-  std::lock_guard lock(mutex_);
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
   auto it = games_.find(name);
   if (it != games_.end()) {
     return CREATE_GAME_EXISTS;
@@ -122,12 +123,12 @@ RejectionReason game_server::create_game(uint32_t version, const std::string& na
 }
 
 void game_server::close_game(const std::string& name) {
-  std::lock_guard lock(mutex_);
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
   games_.erase(name);
 }
 
 std::shared_ptr<game_instance> game_server::find_game(const std::string& name) {
-  std::lock_guard lock(mutex_);
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
   auto it = games_.find(name);
   return it != games_.end() ? it->second : nullptr;
 }
@@ -137,7 +138,7 @@ void game_server::on_connect(tcp::socket&& socket) {
 }
 
 bool game_instance::full() {
-  std::lock_guard lock(mutex_);
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
   for (const auto& p : players_) {
     if (!p) {
       return false;
@@ -147,7 +148,7 @@ bool game_instance::full() {
 }
 
 uint8_t game_instance::join(std::shared_ptr<player_client> player, uint32_t cookie) {
-  std::lock_guard lock(mutex_);
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
   for (size_t index = 0; index < players_.size(); ++index) {
     if (!players_[index]) {
       players_[index] = player;
@@ -161,19 +162,26 @@ uint8_t game_instance::join(std::shared_ptr<player_client> player, uint32_t cook
 }
 
 void game_instance::drop_player(uint8_t id, LeaveReason reason) {
-  std::lock_guard lock(mutex_);
-  send(PLR_BROADCAST, server_disconnect_packet(id, reason));
-  players_[id] = nullptr;
-  for (size_t i = 0; i < players_.size(); ++i) {
-    if (players_[i]) {
-      return;
+  std::shared_ptr<game_server> server;
+  {
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    send(PLR_BROADCAST, server_disconnect_packet(id, reason));
+    if (players_[id]) {
+      players_[id]->on_leave();
     }
+    players_[id] = nullptr;
+    for (size_t i = 0; i < players_.size(); ++i) {
+      if (players_[i]) {
+        return;
+      }
+    }
+    server = server_;
   }
-  server_->close_game(name);
+  server->close_game(name);
 }
 
 void game_instance::send(uint32_t mask, const packet& p) {
-  std::lock_guard lock(mutex_);
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
   auto buffer = make_buffer(p);
   for (size_t index = 0; index < players_.size(); ++index) {
     if (players_[index] && players_[index]->is_open() && (mask & (1u << index))) {
@@ -183,7 +191,7 @@ void game_instance::send(uint32_t mask, const packet& p) {
 }
 
 void player_client::on_receive(const uint8_t* data, size_t size) {
-  std::lock_guard lock(mutex_);
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
   try {
     buffer_reader reader(data, size);
     switch (reader.read<PacketType>()) {
@@ -262,8 +270,8 @@ void player_client::on_receive(const uint8_t* data, size_t size) {
   }
 }
 
-void player_client::on_close() {
-  std::lock_guard lock(mutex_);
+player_client::~player_client() {
+  std::lock_guard<std::recursive_mutex> lock(mutex_);
   if (game_) {
     game_->drop_player(id_, LEAVE_DROP);
   }

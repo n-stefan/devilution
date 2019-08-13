@@ -1,6 +1,7 @@
 #include "../diablo.h"
 #include "selhero.h"
 #include "../storm/storm.h"
+#include "../pfile_ex.h"
 
 #include "network.h"
 
@@ -8,6 +9,8 @@
 #define NO_CLASS "The Rogue and Sorcerer are only available in the full retail version of Diablo. For ordering information call (800) 953-SNOW."
 #endif
 #define NO_NETWORK "No network selected. Exit game and configure connection on the front page."
+
+void start_game_dialog();
 
 GameStatePtr select_name_dialog(const _uiheroinfo& info, std::function<void(const char*)>&& next) {
   return select_string_dialog(info, gbMaxPlayers > 1 ? "New Multi Player Hero" : "New Single Player Hero", "Enter Name", std::move(next));
@@ -93,7 +96,7 @@ void newgame_dialog(_uiheroinfo hero) {
       if (diff < 0) {
         GameState::activate(prev);
       } else {
-        gnDifficulty = diff;
+        NetInit_Difficulty(diff);
         GameState::activate(get_play_state(hero.name, SELHERO_NEW_DUNGEON));
       }
     }));
@@ -144,13 +147,13 @@ void start_game_dialog() {
 }
 
 void start_game(bool multiplayer) {
-  gnDifficulty = 0;
   if (multiplayer && !SNet_HasMultiplayer()) {
     GameState::activate(get_ok_dialog(NO_NETWORK, get_main_menu_dialog(), false));
     return;
   }
+  gnDifficulty = 0;
   gbMaxPlayers = (multiplayer ? MAX_PLRS : 1);
-  SetRndSeed(0);
-  memset(plr, 0, sizeof(plr));
+  SNet_InitializeProvider(multiplayer);
+  NetInit_Start();
   start_game_dialog();
 }

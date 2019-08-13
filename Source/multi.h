@@ -45,12 +45,17 @@ void multi_send_zero_packet(DWORD pnum, char identifier, void *pbSrc, DWORD dwLe
 void NetClose();
 void multi_event_handler(BOOL add);
 void  multi_handle_events(_SNETEVENT *pEvt);
-BOOL NetInit(BOOL bSinglePlayer, BOOL *pfExitProgram);
 void buffer_init(TBuffer *pBuf);
 void multi_send_pinfo(int pnum, char cmd);
 int InitLevelType(int l);
 void SetupLocalCoords();
 void recv_plrinfo(int pnum, TCmdPlrInfoHdr *p, BOOL recv);
+
+void NetInit_Difficulty(int diff);
+void NetInit_Start();
+void NetInit_Mid();
+void NetInit_Finish();
+bool NetInit_NeedSync();
 
 /* rdata */
 

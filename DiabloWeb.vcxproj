@@ -316,6 +316,7 @@
     <ClInclude Include="Source\net\base.h" />
     <ClInclude Include="Source\net\loopback.h" />
     <ClInclude Include="Source\net\websocket.h" />
+    <ClInclude Include="Source\net\websocket_browser.hpp" />
     <ClInclude Include="Source\net\websocket_native.hpp" />
     <ClInclude Include="Source\nthread.h" />
     <ClInclude Include="Source\objdat.h" />
@@ -324,6 +325,7 @@
     <ClInclude Include="Source\palette.h" />
     <ClInclude Include="Source\path.h" />
     <ClInclude Include="Source\pfile.h" />
+    <ClInclude Include="Source\pfile_ex.h" />
     <ClInclude Include="Source\player.h" />
     <ClInclude Include="Source\plrmsg.h" />
     <ClInclude Include="Source\portal.h" />

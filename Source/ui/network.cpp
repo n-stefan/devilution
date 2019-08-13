@@ -21,10 +21,14 @@ static const char* sGetReason(RejectionReason reason) {
   }
 }
 
+Art ArtPopupSm;
+Art ArtProgBG;
+Art ProgFil;
+Art ButImage;
+
 class JoinGameState : public NetworkState {
 public:
-  JoinGameState(std::string const& name)
-    : name_(name)
+  JoinGameState()
   {
     addItem({{0, 0, 640, 480}, ControlType::Image, 0, 0, "", &ArtBackground});
     textLine_ = addItem({{140, 199, 540, 376}, ControlType::Text, ControlFlags::Medium, 0, "Connecting"});
@@ -32,9 +36,18 @@ public:
     addItem({{125, 0, 515, 154}, ControlType::Image, 0, -60, "", &ArtLogos[LOGO_MED]});
   }
 
+  void onActivate() override {
+    LoadBackgroundArt("ui_art\\black.pcx");
+    LoadArt("ui_art\\spopup.pcx", &ArtPopupSm);
+    LoadArt("ui_art\\prog_bg.pcx", &ArtProgBG);
+    LoadArt("ui_art\\prog_fil.pcx", &ProgFil);
+    LoadArt("ui_art\\but_sml.pcx", &ButImage, 15);
+  }
+
   void onCancel() override {
     UiPlaySelectSound();
     SNetLeaveGame(0);
+    NetClose();
     start_game(true);
   }
 
@@ -51,9 +64,22 @@ public:
   }
 
   void onJoinAccept(int player) override {
-    // do stuff
     myplr = player;
-    activate(get_play_state(name_.c_str(), SELHERO_CONNECT));
+    pfile_read_player_from_save();
+    gbLoadGame = FALSE;
+    NetInit_Mid();
+    postInit_ = true;
+    if (NetInit_NeedSync()) {
+      msg_wait_resync();
+      postInit_ = true;
+    } else {
+      done();
+    }
+  }
+
+  void done() {
+    NetInit_Finish();
+    activate(get_netplay_state(SELHERO_CONNECT));
   }
 
   void onJoinReject(int reason) override {
@@ -63,24 +89,36 @@ public:
   }
 
   void onRender(unsigned int time) override {
+    int progress = -1;
     std::string text = "Connecting";
-    for (int i = (time / 500) % 4; i > 0; --i) {
-      text.push_back('.');
+    if (postInit_) {
+      progress = msg_wait_for_turns();
+      text += fmtstring(" (%d%%)", progress);
+    } else {
+      for (int i = (time / 500) % 4; i > 0; --i) {
+        text.push_back('.');
+      }
     }
     items[textLine_].text = text;
     NetworkState::onRender(time);
+    if (postInit_ && progress >= 100) {
+      done();
+    }
   }
 
 private:
-  std::string name_;
   int textLine_;
+  bool postInit_ = false;
 };
 
 GameStatePtr get_network_state(const char* name, const char* game, int difficulty) {
+  strcpy(gszHero, name);
+  pfile_create_player_description(NULL, 0);
+  multi_event_handler(TRUE);
   if (difficulty < 0) {
     SNet_JoinGame(game, "");
   } else {
     SNet_CreateGame(game, "", difficulty);
   }
-  return new JoinGameState(name);
+  return new JoinGameState;
 }

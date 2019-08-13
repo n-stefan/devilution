@@ -8,6 +8,7 @@
 #include "storm/storm.h"
 #include "ui/diabloui.h"
 #include "ui/common.h"
+#include "pfile_ex.h"
 
 //#define INSTANT_LOAD
 
@@ -149,6 +150,9 @@ void DApi_Char(int chr) {
 }
 
 void DApi_Render(unsigned int time) {
+  SNet_Poll();
+  dthread_loop();
+  nthread_loop();
   TickCount = time;
   if (!GameState::current()) {
     api_exit_game();
@@ -162,9 +166,12 @@ LRESULT __stdcall MainWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 
 #include "../resource.h"
 
+void SNet_InitWebsocket();
+
 int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )
 {
   ghInst = hInstance;
+  SNet_InitWebsocket();
 
   ShowCursor(FALSE);
 
@@ -216,6 +223,8 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
       }
     }
     SNet_Poll();
+    dthread_loop();
+    nthread_loop();
     DApi_Render(GetTickCount());
     Sleep(50);
   }
