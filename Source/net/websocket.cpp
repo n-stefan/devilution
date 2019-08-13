@@ -6,15 +6,20 @@
 
 #include "websocket.h"
 #include "../ui/network.h"
+#include "../trace.h"
 
 const uint32_t SERVER_VERSION = 1;
 
 namespace net {
 
 websocket_client::websocket_client()
-  : impl_(std::make_unique<websocket_impl>())
+    : impl_(std::make_unique<websocket_impl>())
 {
-  impl_->send(client_info_packet(gdwProductVersion));
+  uint32_t version = gdwProductVersion;
+#ifdef SPAWN
+  version |= 0x80000000;
+#endif
+  impl_->send(client_info_packet(version));
 }
 
 websocket_client::~websocket_client() = default;
@@ -54,21 +59,18 @@ void websocket_client::handle_packet(const uint8_t* data, size_t size) {
     NetworkState* net_state = dynamic_cast<NetworkState*>(GameState::current());
     PacketType type = reader.read<PacketType>();
     switch (type) {
-    case PT_SERVER_INFO:
-    {
+    case PT_SERVER_INFO: {
       server_info_packet packet(reader);
       if (packet.version != SERVER_VERSION) {
         app_fatal("Server version mismatch. Expected %u, received %u.", SERVER_VERSION, packet.version);
       }
       break;
     }
-    case PT_GAME_LIST:
-    {
+    case PT_GAME_LIST: {
       server_game_list_packet packet(reader);
       break;
     }
-    case PT_JOIN_ACCEPT:
-    {
+    case PT_JOIN_ACCEPT: {
       server_join_accept_packet packet(reader);
       if (packet.cookie == cookie_ && net_state) {
         // handle first, so we read the init info
@@ -80,8 +82,7 @@ void websocket_client::handle_packet(const uint8_t* data, size_t size) {
       }
       break;
     }
-    case PT_JOIN_REJECT:
-    {
+    case PT_JOIN_REJECT: {
       server_join_reject_packet packet(reader);
       if (packet.cookie == cookie_ && net_state) {
         net_state->onJoinReject(packet.reason);
@@ -111,4 +112,4 @@ void websocket_client::handle_packet(const uint8_t* data, size_t size) {
   }
 }
 
-}
+} // namespace net

@@ -222,9 +222,6 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
         continue;
       }
     }
-    SNet_Poll();
-    dthread_loop();
-    nthread_loop();
     DApi_Render(GetTickCount());
     Sleep(50);
   }

@@ -28,7 +28,9 @@ Art ButImage;
 
 class JoinGameState : public NetworkState {
 public:
-  JoinGameState()
+  JoinGameState(const char* game, int difficulty) :
+    game_(game),
+    difficulty_(difficulty)
   {
     addItem({{0, 0, 640, 480}, ControlType::Image, 0, 0, "", &ArtBackground});
     textLine_ = addItem({{140, 199, 540, 376}, ControlType::Text, ControlFlags::Medium, 0, "Connecting"});
@@ -42,6 +44,12 @@ public:
     LoadArt("ui_art\\prog_bg.pcx", &ArtProgBG);
     LoadArt("ui_art\\prog_fil.pcx", &ProgFil);
     LoadArt("ui_art\\but_sml.pcx", &ButImage, 15);
+
+    if (difficulty_ < 0) {
+      SNet_JoinGame(game_.c_str(), "");
+    } else {
+      SNet_CreateGame(game_.c_str(), "", difficulty_);
+    }
   }
 
   void onCancel() override {
@@ -57,7 +65,7 @@ public:
     }));
   }
 
-  void onInput(int value) {
+  void onInput(int value) override {
     if (value == 0) {
       onCancel();
     }
@@ -107,6 +115,8 @@ public:
   }
 
 private:
+  std::string game_;
+  int difficulty_;
   int textLine_;
   bool postInit_ = false;
 };
@@ -115,10 +125,5 @@ GameStatePtr get_network_state(const char* name, const char* game, int difficult
   strcpy(gszHero, name);
   pfile_create_player_description(NULL, 0);
   multi_event_handler(TRUE);
-  if (difficulty < 0) {
-    SNet_JoinGame(game, "");
-  } else {
-    SNet_CreateGame(game, "", difficulty);
-  }
-  return new JoinGameState;
+  return new JoinGameState(game, difficulty);
 }
