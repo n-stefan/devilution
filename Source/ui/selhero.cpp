@@ -237,9 +237,8 @@ GameStatePtr select_string_dialog(const _uiheroinfo& hero, const char* title, co
 
 class SelectTwooptDialog : public SelectBaseDialog {
 public:
-  SelectTwooptDialog(const _uiheroinfo& info, const char* title, const char* subtitle, const char* opt1, const char* opt2, std::function<void(int)>&& next)
+  SelectTwooptDialog(const _uiheroinfo* info, const char* title, const char* subtitle, const char* opt1, const char* opt2, std::function<void(int)>&& next)
     : SelectBaseDialog(title)
-    , info_(info)
     , next_(next)
   {
     addItem({{264, 211, 584, 244}, ControlType::Text, ControlFlags::Center | ControlFlags::Big, 0, subtitle});
@@ -248,7 +247,7 @@ public:
     addItem({{279, 427, 419, 462}, ControlType::Button, ControlFlags::Center | ControlFlags::VCenter | ControlFlags::Big | ControlFlags::Gold, -1, "OK"});
     addItem({{429, 427, 569, 462}, ControlType::Button, ControlFlags::Center | ControlFlags::VCenter | ControlFlags::Big | ControlFlags::Gold, -2, "Cancel"});
 
-    setStats(&info);
+    setStats(info);
   }
 
   void onCancel() override {
@@ -263,10 +262,9 @@ public:
 
 private:
   std::function<void(int)> next_;
-  _uiheroinfo info_;
 };
 
-GameStatePtr select_twoopt_dialog(const _uiheroinfo& info, const char* title, const char* subtitle, const char* opt1, const char* opt2, std::function<void(int)>&& next) {
+GameStatePtr select_twoopt_dialog(const _uiheroinfo* info, const char* title, const char* subtitle, const char* opt1, const char* opt2, std::function<void(int)>&& next) {
   return new SelectTwooptDialog(info, title, subtitle, opt1, opt2, std::move(next));
 }
 

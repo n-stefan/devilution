@@ -8,7 +8,6 @@
 #ifdef SPAWN
 #define NO_CLASS "The Rogue and Sorcerer are only available in the full retail version of Diablo. For ordering information call (800) 953-SNOW."
 #endif
-#define NO_NETWORK "No network selected. Exit game and configure connection on the front page."
 
 void start_game_dialog();
 
@@ -17,7 +16,7 @@ GameStatePtr select_name_dialog(const _uiheroinfo& info, std::function<void(cons
 }
 
 GameStatePtr select_load_dialog(const _uiheroinfo& info, std::function<void(int)>&& next) {
-  return select_twoopt_dialog(info, "Single Player Characters", "Save File Exists", "Load Game", "New Game", std::move(next));
+  return select_twoopt_dialog(&info, "Single Player Characters", "Save File Exists", "Load Game", "New Game", std::move(next));
 }
 
 void multiplayer_name_dialog(_uiheroinfo hero, int difficulty) {
@@ -48,7 +47,7 @@ void multiplayer_diff_dialog(_uiheroinfo hero) {
 
 void multiplayer_dialog(_uiheroinfo hero) {
   // don't return to prev state, because it might be hero creation
-  GameState::activate(select_twoopt_dialog(hero, "Multi Player Characters", "Select Action", "Create Game", "Join Game", [hero](int value) {
+  GameState::activate(select_twoopt_dialog(&hero, "Multi Player Characters", "Select Action", "Create Game", "Join Game", [hero](int value) {
     if (value < 0) {
       start_game_dialog();
     } else if (value == 0) {
@@ -151,10 +150,6 @@ void start_game_dialog() {
 }
 
 void start_game(bool multiplayer) {
-  if (multiplayer && !SNet_HasMultiplayer()) {
-    GameState::activate(get_ok_dialog(NO_NETWORK, get_main_menu_dialog(), false));
-    return;
-  }
   gnDifficulty = 0;
   gbMaxPlayers = (multiplayer ? MAX_PLRS : 1);
   SNet_InitializeProvider(multiplayer);

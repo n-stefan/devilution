@@ -75,16 +75,19 @@ public:
     ptr_ += length;
   }
 
+  void read(std::vector<uint8_t>& result) {
+    size_t length = read<uint32_t>();
+    if (ptr_ + length > end_) {
+      throw parse_error();
+    }
+    result.assign(ptr_, ptr_ + length);
+    ptr_ += length;
+  }
+
   template<class T>
   T read() {
     T result;
     read(result);
-    return result;
-  }
-
-  std::vector<uint8_t> rest() {
-    std::vector<uint8_t> result(ptr_, end_);
-    ptr_ = end_;
     return result;
   }
 
@@ -112,9 +115,10 @@ public:
     ptr_ += str.size();
   }
 
-  void rest(const std::vector<uint8_t>& vec) {
-    memcpy(ptr_, vec.data(), vec.size());
-    ptr_ += vec.size();
+  void write(const std::vector<uint8_t>& str) {
+    write((uint32_t)str.size());
+    memcpy(ptr_, str.data(), str.size());
+    ptr_ += str.size();
   }
 
 private:
@@ -319,18 +323,18 @@ public:
 
   server_message_packet(buffer_reader& reader) {
     reader.read(id);
-    payload = reader.rest();
+    reader.read(payload);
   }
 
   size_t size() const override {
-    return 1 + sizeof(id) + payload.size();
+    return 5 + sizeof(id) + payload.size();
   }
 
   void serialize(uint8_t* ptr) const override {
     buffer_writer writer(ptr);
     writer.write(type);
     writer.write(id);
-    writer.rest(payload);
+    writer.write(payload);
   }
 };
 
@@ -471,18 +475,18 @@ public:
 
   client_message_packet(buffer_reader& reader) {
     reader.read(id);
-    payload = reader.rest();
+    reader.read(payload);
   }
 
   size_t size() const override {
-    return 1 + sizeof(id) + payload.size();
+    return 5 + sizeof(id) + payload.size();
   }
 
   void serialize(uint8_t* ptr) const override {
     buffer_writer writer(ptr);
     writer.write(type);
     writer.write(id);
-    writer.rest(payload);
+    writer.write(payload);
   }
 };
 

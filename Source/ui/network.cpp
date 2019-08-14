@@ -3,6 +3,11 @@
 #include "../../Server/packet.hpp"
 #include "selhero.h"
 
+#define NO_NETWORK "No network selected. Exit game and configure connection on the front page."
+#define SERVER_VERSION "Server version mismatch."
+#define NO_CONNECTION "Connection timed out."
+#define UNKNOWN_ERROR "Connection failed."
+
 static const char* sGetReason(RejectionReason reason) {
   switch (reason) {
   case JOIN_ALREADY_IN_GAME:
@@ -149,4 +154,97 @@ GameStatePtr get_network_state(const char* name, const char* game, int difficult
   pfile_create_player_description(NULL, 0);
   multi_event_handler(TRUE);
   return new JoinGameState(game, difficulty);
+}
+
+#ifdef EMSCRIPTEN
+
+#include <emscripten.h>
+
+EM_JS(void, api_use_websocket, (int use), {
+  self.DApi.use_websocket(use);
+});
+
+class ConnectingState : public DialogState {
+public:
+  ConnectingState() {
+    addItem({{0, 0, 640, 480}, ControlType::Image, 0, 0, "", &ArtBackground});
+    textLine_ = addItem({{140, 199, 540, 376}, ControlType::Text, ControlFlags::Medium, 0, "Connecting"});
+    addItem({{230, 407, 410, 449}, ControlType::Button, ControlFlags::Center | ControlFlags::Big | ControlFlags::Gold, 0, "Cancel"});
+    addItem({{125, 0, 515, 154}, ControlType::Image, 0, -60, "", &ArtLogos[LOGO_MED]});
+  }
+
+  void onActivate() override {
+    LoadBackgroundArt("ui_art\\black.pcx");
+    api_use_websocket(1);
+  }
+
+  void onCancel() override {
+    UiPlaySelectSound();
+    api_use_websocket(0);
+    start_multiplayer();
+  }
+
+  void onInput(int value) override {
+    if (value == 0) {
+      onCancel();
+    }
+  }
+
+  void onStatus(int status) {
+    if (status == 0) {
+      start_game(true);
+    } else if (status == 1) {
+      activate(get_ok_dialog(NO_CONNECTION, get_main_menu_dialog(), false));
+    } else if (status == 2) {
+      activate(get_ok_dialog(SERVER_VERSION, get_main_menu_dialog(), false));
+    } else {
+      activate(get_ok_dialog(UNKNOWN_ERROR, get_main_menu_dialog(), false));
+    }
+  }
+
+  void onRender(unsigned int time) override {
+    std::string text = "Connecting";
+    for (int i = (time / 500) % 4; i > 0; --i) {
+      text.push_back('.');
+    }
+    items[textLine_].text = text;
+    DialogState::onRender(time);
+  }
+
+private:
+  int textLine_;
+};
+
+extern "C" {
+  EMSCRIPTEN_KEEPALIVE void SNet_WebsocketStatus(int status);
+}
+
+void SNet_WebsocketStatus(int status) {
+  auto ptr = dynamic_cast<ConnectingState*>(GameState::current());
+  if (ptr) {
+    ptr->onStatus(status);
+  }
+}
+
+#endif
+
+void start_multiplayer() {
+  if (!SNet_HasMultiplayer()) {
+    GameState::activate(get_ok_dialog(NO_NETWORK, get_main_menu_dialog(), false));
+    return;
+  }
+#ifdef EMSCRIPTEN
+  GameState::activate(select_twoopt_dialog(nullptr, "Multi Player Characters", "Select Network", "WebRTC (Direct)", "WebSocket (Server)", [](int value) {
+    if (value < 0) {
+      GameState::activate(get_main_menu_dialog());
+    } else if (value == 0) {
+      api_use_websocket(0);
+      start_game(true);
+    } else {
+      GameState::activate(new ConnectingState);
+    }
+  }));
+#else
+  start_game(true);
+#endif
 }

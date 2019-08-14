@@ -153,7 +153,7 @@ public:
     auto future = promise.get_future();
     thread_ = std::thread([promise = std::move(promise)]() mutable {
       boost::asio::io_context ioc(1);
-      std::make_shared<websocket_session>(ioc)->connect(std::move(promise), "127.0.0.1", 1339, "/");
+      std::make_shared<websocket_session>(ioc)->connect(std::move(promise), "127.0.0.1", 3001, "/");
       ioc.run();
     });
     session_ = future.get();

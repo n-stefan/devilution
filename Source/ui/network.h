@@ -13,3 +13,5 @@ public:
 };
 
 GameStatePtr get_network_state(const char* name, const char* game, int difficulty);
+
+void start_multiplayer();

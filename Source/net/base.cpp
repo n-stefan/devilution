@@ -151,7 +151,7 @@ int base::SNetGetProviderCaps(struct _SNETCAPS* caps) {
   caps->maxmessagesize = 512; // capped to 512; underflow if < 24
   caps->maxqueuesize = 0; // unused
   caps->maxplayers = MAX_PLRS; // capped to 4
-  caps->bytessec = 1000000; // ?
+  caps->bytessec = 65536; // ?
   caps->latencyms = 0; // unused
   caps->defaultturnssec = 10; // ?
   caps->defaultturnsintransit = 1; // maximum acceptable number

@@ -1,5 +1,6 @@
 #include "common.h"
 #include "dialog.h"
+#include "network.h"
 
 #ifdef SPAWN
 #define NO_INTRO "The Diablo introduction cinematic is only available in the full retail version of Diablo. For ordering information call (800) 953-SNOW."
@@ -61,7 +62,7 @@ public:
       break;
     case MM_MULTIPLAYER:
       UiPlaySelectSound();
-      start_game(true);
+      start_multiplayer();
       break;
     case MM_REPLAYINTRO:
       UiPlaySelectSound();

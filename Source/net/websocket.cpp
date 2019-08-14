@@ -57,52 +57,59 @@ void websocket_client::handle_packet(const uint8_t* data, size_t size) {
   try {
     buffer_reader reader(data, size);
     NetworkState* net_state = dynamic_cast<NetworkState*>(GameState::current());
-    PacketType type = reader.read<PacketType>();
-    switch (type) {
-    case PT_SERVER_INFO: {
-      server_info_packet packet(reader);
-      if (packet.version != SERVER_VERSION) {
-        app_fatal("Server version mismatch. Expected %u, received %u.", SERVER_VERSION, packet.version);
+    int count = 1;
+    if (data[0] == 0) {
+      reader.read<uint8_t>();
+      count = reader.read<uint16_t>();
+    }
+    while (count--) {
+      PacketType type = reader.read<PacketType>();
+      switch (type) {
+      case PT_SERVER_INFO: {
+        server_info_packet packet(reader);
+        if (packet.version != SERVER_VERSION) {
+          app_fatal("Server version mismatch. Expected %u, received %u.", SERVER_VERSION, packet.version);
+        }
+        break;
       }
-      break;
-    }
-    case PT_GAME_LIST: {
-      server_game_list_packet packet(reader);
-      break;
-    }
-    case PT_JOIN_ACCEPT: {
-      server_join_accept_packet packet(reader);
-      if (packet.cookie == cookie_ && net_state) {
-        // handle first, so we read the init info
-        handle(packet);
-        net_state->onJoinAccept(packet.index, packet.init_info);
-      } else {
-        // tell the server we don't want this game anymore
-        send(client_leave_game_packet());
+      case PT_GAME_LIST: {
+        server_game_list_packet packet(reader);
+        break;
       }
-      break;
-    }
-    case PT_JOIN_REJECT: {
-      server_join_reject_packet packet(reader);
-      if (packet.cookie == cookie_ && net_state) {
-        net_state->onJoinReject(packet.reason);
+      case PT_JOIN_ACCEPT: {
+        server_join_accept_packet packet(reader);
+        if (packet.cookie == cookie_ && net_state) {
+          // handle first, so we read the init info
+          handle(packet);
+          net_state->onJoinAccept(packet.index, packet.init_info);
+        } else {
+          // tell the server we don't want this game anymore
+          send(client_leave_game_packet());
+        }
+        break;
       }
-      break;
-    }
-    case PT_CONNECT:
-      handle(server_connect_packet(reader));
-      break;
-    case PT_DISCONNECT:
-      handle(server_disconnect_packet(reader));
-      break;
-    case PT_MESSAGE:
-      handle(server_message_packet(reader));
-      break;
-    case PT_TURN:
-      handle(server_turn_packet(reader));
-      break;
-    default:
-      app_fatal("Unrecognized server message type %d", (int) type);
+      case PT_JOIN_REJECT: {
+        server_join_reject_packet packet(reader);
+        if (packet.cookie == cookie_ && net_state) {
+          net_state->onJoinReject(packet.reason);
+        }
+        break;
+      }
+      case PT_CONNECT:
+        handle(server_connect_packet(reader));
+        break;
+      case PT_DISCONNECT:
+        handle(server_disconnect_packet(reader));
+        break;
+      case PT_MESSAGE:
+        handle(server_message_packet(reader));
+        break;
+      case PT_TURN:
+        handle(server_turn_packet(reader));
+        break;
+      default:
+        app_fatal("Unrecognized server message type %d", (int) type);
+      }
     }
     if (!reader.done()) {
       app_fatal("Invalid server message size");
