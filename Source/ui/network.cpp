@@ -130,7 +130,7 @@ public:
     }
     items[textLine_].text = text;
     NetworkState::onRender(time);
-    if (postInit_ && progress_ >= 100 && 0) {
+    if (postInit_ && progress_ >= 100) {
       done();
     }
   }
