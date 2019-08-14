@@ -192,6 +192,7 @@ BOOL SNetLeaveGame(int type);
 BOOL SNetSendServerChatCommand(const char *command);
 BOOL SNetGetOwnerTurnsWaiting(DWORD *turns);
 BOOL SNetGetTurnsInTransit(int *turns);
+BOOL SNetGetGameInfo(int type, void *dst, unsigned int length, unsigned int *byteswritten);
 
 BOOL SNet_HasMultiplayer();
 void SNet_InitializeProvider(BOOL multiplayer);

@@ -384,11 +384,11 @@ public:
   std::string password;
   uint32_t difficulty;
 
-  client_create_game_packet(uint32_t cookie, std::string name, std::string password, uint8_t difficulty)
+  client_create_game_packet(uint32_t cookie, std::string name, std::string password, uint32_t difficulty)
     : cookie(cookie)
-    , name(name)
+    , name(std::move(name))
     , password(std::move(password))
-    , difficulty(std::move(difficulty))
+    , difficulty(difficulty)
   {
   }
 

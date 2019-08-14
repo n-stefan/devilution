@@ -663,6 +663,12 @@ void NetInit_Finish() {
 		glSeedTbl[i] = GetRndSeed();
 		gnLevelTypeTbl[i] = InitLevelType(i);
 	}
+
+  unsigned int len;
+  if (!SNetGetGameInfo(GAMEINFO_NAME, szPlayerName, 128, &len))
+    nthread_terminate_game("SNetGetGameInfo1");
+  if (!SNetGetGameInfo(GAMEINFO_PASSWORD, szPlayerDescript, 128, &len))
+    nthread_terminate_game("SNetGetGameInfo2");
 }
 
 bool NetInit_NeedSync() {

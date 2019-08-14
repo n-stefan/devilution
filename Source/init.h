@@ -18,4 +18,7 @@ void set_client_version(int v0, int v1, int v2);
 
 void api_current_save_id(int id);
 
+void api_open_keyboard(int x0, int y0, int x1, int y1, int len);
+void api_close_keyboard();
+
 #endif /* __INIT_H__ */

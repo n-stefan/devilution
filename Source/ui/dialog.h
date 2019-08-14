@@ -42,8 +42,6 @@ public:
     Art* image;
   };
 
-  void syncText(const char* text);
-
 protected:
   int addItem(Item&& item) {
     items.emplace_back(std::move(item));
@@ -71,6 +69,7 @@ protected:
   virtual void onMouse(const MouseEvent& e) override;
   virtual void onKey(const KeyEvent& e) override;
   virtual void onChar(char chr) override;
+  virtual void onText(const char* text, int flags) override;
 
   virtual void renderExtra(unsigned int time){};
 

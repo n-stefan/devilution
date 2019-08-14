@@ -32,14 +32,18 @@ void multiplayer_name_dialog(_uiheroinfo hero, int difficulty) {
 }
 
 void multiplayer_diff_dialog(_uiheroinfo hero) {
-  GameStatePtr prev = GameState::current();
-  GameState::activate(select_diff_dialog(hero, "Create Game", [hero, prev](int value) {
-    if (value < 0) {
-      GameState::activate(prev);
-    } else {
-      multiplayer_name_dialog(hero, value);
-    }
-  }));
+  if (hero.level >= MIN_NIGHTMARE_LEVEL) {
+    GameStatePtr prev = GameState::current();
+    GameState::activate(select_diff_dialog(hero, "Create Game", [hero, prev](int value) {
+      if (value < 0) {
+        GameState::activate(prev);
+      } else {
+        multiplayer_name_dialog(hero, value);
+      }
+    }));
+  } else {
+    multiplayer_name_dialog(hero, 0);
+  }
 }
 
 void multiplayer_dialog(_uiheroinfo hero) {

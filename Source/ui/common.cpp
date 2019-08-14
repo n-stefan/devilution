@@ -99,6 +99,12 @@ void GameState::processChar(char chr) {
   }
 }
 
+void GameState::syncText(const char* text, int flags) {
+  if (auto state = game_state) {
+    state->onText(text, flags);
+  }
+}
+
 int GameState::mouseX() {
   return mouseX_;
 }

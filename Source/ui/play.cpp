@@ -65,6 +65,10 @@ public:
     started_ = true;
   }
 
+  void onDeactivate() override {
+    api_close_keyboard();
+  }
+
   void stop() {
     if (started_) {
       started_ = false;
@@ -125,6 +129,14 @@ public:
       DrawAndBlit();
     }
 
+    if (gbMaxPlayers > 1 && talkflag) {
+      api_open_keyboard(169, 358, 471, 408, 78);
+    } else if (dropGoldFlag) {
+      api_open_keyboard(351, 43, 612, 179, -initialDropGoldValue);
+    } else {
+      api_close_keyboard();
+    }
+
     if (!gbRunGame) {
       activate(new EndGameState(!gbRunGameResult));
       stop();
@@ -178,6 +190,21 @@ public:
 
   void onChar(char chr) override {
     PressChar(chr);
+  }
+
+  void onText(const char* text, int flags) override {
+    if (gbMaxPlayers > 1 && talkflag) {
+      strcpy(sgszTalkMsg, text);
+      if (flags == 1) {
+        control_reset_talk();
+      }
+    } if (dropGoldFlag) {
+      dropGoldValue = atoi(text);
+      if (flags == 1) {
+        dropGoldFlag = 0;
+        dropGoldValue = 0;
+      }
+    }
   }
 
   std::vector<int> messages;

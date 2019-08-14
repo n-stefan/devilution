@@ -19,6 +19,7 @@ devilution-comparer
 comparer-config.toml
 
 *.wasm
+*.wast
 *.jscc
 *.bc
 

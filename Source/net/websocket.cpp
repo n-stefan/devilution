@@ -75,7 +75,7 @@ void websocket_client::handle_packet(const uint8_t* data, size_t size) {
       if (packet.cookie == cookie_ && net_state) {
         // handle first, so we read the init info
         handle(packet);
-        net_state->onJoinAccept(packet.index);
+        net_state->onJoinAccept(packet.index, packet.init_info);
       } else {
         // tell the server we don't want this game anymore
         send(client_leave_game_packet());

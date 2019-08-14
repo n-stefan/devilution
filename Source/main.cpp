@@ -17,6 +17,8 @@ DWORD _GetTickCount() {
   return TickCount;
 }
 
+char _textBuffer[256];
+
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
 
@@ -27,6 +29,10 @@ EMSCRIPTEN_KEEPALIVE void DApi_Mouse(int action, int button, int mods, int x, in
 EMSCRIPTEN_KEEPALIVE void DApi_Key(int action, int mods, int key);
 EMSCRIPTEN_KEEPALIVE void DApi_Char(int chr);
 EMSCRIPTEN_KEEPALIVE void DApi_Render(unsigned int time);
+EMSCRIPTEN_KEEPALIVE void* DApi_SyncTextPtr() {
+  return _textBuffer;
+}
+EMSCRIPTEN_KEEPALIVE void DApi_SyncText(int flags);
 
 }
 
@@ -160,6 +166,10 @@ void DApi_Render(unsigned int time) {
   GameState::render(time);
 }
 
+void DApi_SyncText(int flags) {
+  GameState::syncText(_textBuffer, flags);
+}
+
 #ifndef EMSCRIPTEN
 
 LRESULT __stdcall MainWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
@@ -190,7 +200,7 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
   if (!RegisterClassEx(&wcex))
     app_fatal("Unable to register window class");
 
-  RECT rc = {0, 0, 640, 480};
+  RECT rc = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
   DWORD wsStyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
   DWORD wsExStyle = WS_EX_CLIENTEDGE;
   AdjustWindowRectEx(&rc, wsStyle, FALSE, wsExStyle);
@@ -298,9 +308,9 @@ LRESULT __stdcall MainWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     }
     return 0;
   case WM_CHAR:
-    if (wParam >= 32 && wParam <= 128 && isprint(wParam)) {
-      DApi_Char((int) wParam);
-    }
+    //if (wParam >= 32 && wParam <= 128 && isprint(wParam)) {
+    DApi_Char((int) wParam);
+    //}
     return 0;
   }
 

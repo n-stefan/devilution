@@ -88,12 +88,35 @@ void SNet_InitializeProvider(BOOL multiplayer) {
   }
 }
 
+std::string _name = "", _pass = "";
+
 void SNet_CreateGame(const char* name, const char* password, uint32_t difficulty) {
+  _name = name;
+  _pass = password;
   dvlnet_inst->create(name, password, difficulty);
 }
 
 void SNet_JoinGame(const char* name, const char* password) {
+  _name = name;
+  _pass = password;
   dvlnet_inst->join(name, password);
+}
+
+BOOL SNetGetGameInfo(int type, void *dst, unsigned int length, unsigned int *byteswritten) {
+  if (type == GAMEINFO_NAME || type == GAMEINFO_PASSWORD) {
+    std::string& src = (type == GAMEINFO_NAME ? _name : _pass);
+    unsigned int count = src.size();
+    if (count > length - 1) {
+      count = length - 1;
+    }
+    memcpy(dst, src.data(), count);
+    ((char*) dst)[count] = 0;
+    if (byteswritten) {
+      *byteswritten = count;
+    }
+    return TRUE;
+  }
+  return FALSE;
 }
 
 void SNet_Poll() {

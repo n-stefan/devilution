@@ -52,6 +52,7 @@ extern BYTE *pSpellCels;
 extern BOOL panbtndown;
 extern BYTE *pTalkPanel;
 extern int spselflag;
+extern char sgszTalkMsg[MAX_SEND_STR_LEN];
 
 void DrawSpellCel(int xp, int yp, BYTE *Trans, int nCel, int w);
 void SetSpellTrans(char t);

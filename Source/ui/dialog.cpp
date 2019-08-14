@@ -1,36 +1,6 @@
 #include "dialog.h"
 #include "../trace.h"
 
-#ifdef EMSCRIPTEN
-#include <emscripten.h>
-EM_JS(void, api_open_keyboard, (int x0, int y0, int x1, int y1), {
-  self.DApi.open_keyboard(x0, y0, x1, y1);
-});
-EM_JS(void, api_close_keyboard, (), {
-  self.DApi.close_keyboard();
-});
-
-extern "C" {
-  EMSCRIPTEN_KEEPALIVE void DApi_SyncText(int c0, int c1, int c2, int c3, int c4, int c5, int c6, int c7, int c8, int c9, int c10, int c11, int c12, int c13, int c14);
-}
-
-EMSCRIPTEN_KEEPALIVE void DApi_SyncText(int c0, int c1, int c2, int c3, int c4, int c5, int c6, int c7, int c8, int c9, int c10, int c11, int c12, int c13, int c14) {
-  auto ptr = dynamic_cast<DialogState*>(GameState::current());
-  char text[16] = {(char) c0, (char) c1, (char) c2, (char) c3, (char) c4, (char) c5, (char) c6,
-    (char) c7, (char) c8, (char) c9, (char) c10, (char) c11, (char) c12, (char) c13, (char) c14};
-  text[15] = 0;
-  if (ptr) {
-    ptr->syncText(text);
-  }
-}
-
-#else
-void api_open_keyboard(int x0, int y0, int x1, int y1) {
-}
-void api_close_keyboard() {
-}
-#endif
-
 namespace {
 
 void DrawSelector(const DialogState::Item& item, unsigned int time) {
@@ -216,7 +186,7 @@ void DialogState::onRender(unsigned int time) {
 void DialogState::onActivate() {
   for (auto& item : items) {
     if (item.type == ControlType::Edit) {
-      api_open_keyboard(item.rect.left, item.rect.top, item.rect.right, item.rect.bottom);
+      api_open_keyboard(item.rect.left, item.rect.top, item.rect.right, item.rect.bottom, 15);
       break;
     }
   }
@@ -226,17 +196,13 @@ void DialogState::onDeactivate() {
   api_close_keyboard();
 }
 
-void DialogState::syncText(const char* text) {
-  std::string text2;
-  for (size_t i = 0; text[i]; ++i) {
-    unsigned char code = (unsigned char) text[i];
-    if (code >= 32 && code <= 127 && isprint(code)) {
-      text2.push_back(code);
-    }
+void DialogState::onText(const char* text, int flags) {
+  if (strlen(text) > 15) {
+    return;
   }
   for (auto& item : items) {
     if (item.type == ControlType::Edit) {
-      item.text = text2;
+      item.text = text;
       onInput(item.value);
       break;
     }
@@ -281,7 +247,7 @@ void DialogState::onMouse(const MouseEvent& event) {
     if (event.x >= item.rect.left && event.y >= item.rect.top && event.x < item.rect.right && event.y < item.rect.bottom) {
       if (item.type == ControlType::Edit) {
         if (event.action == MouseEvent::Press) {
-          api_open_keyboard(item.rect.left, item.rect.top, item.rect.right, item.rect.bottom);
+          api_open_keyboard(item.rect.left, item.rect.top, item.rect.right, item.rect.bottom, 15);
         }
       } else if (item.type == ControlType::List) {
         if (!item.text.empty()) {

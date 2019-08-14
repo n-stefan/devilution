@@ -214,7 +214,7 @@ void player_client::on_receive(const uint8_t* data, size_t size) {
       if (game_) {
         send(server_join_reject_packet(packet.cookie, JOIN_ALREADY_IN_GAME));
       } else {
-        if (auto reason = server_->create_game(version_, packet.name, packet.password, packet.type)) {
+        if (auto reason = server_->create_game(version_, packet.name, packet.password, packet.difficulty)) {
           send(server_join_reject_packet(packet.cookie, reason));
         } else {
           join(packet.cookie, packet.name, packet.password);

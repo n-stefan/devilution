@@ -84,6 +84,7 @@ public:
   static void processMouse(const MouseEvent &e);
   static void processKey(const KeyEvent &e);
   static void processChar(char chr);
+  static void syncText(const char* text, int flags);
 
   static int mouseX();
   static int mouseY();
@@ -95,7 +96,8 @@ protected:
   virtual void onRender(unsigned int time) = 0;
   virtual void onMouse(const MouseEvent &e) = 0;
   virtual void onKey(const KeyEvent &e) = 0;
-  virtual void onChar(char chr){};
+  virtual void onChar(char chr) {};
+  virtual void onText(const char* text, int flags) {};
 
 private:
   friend class GameStatePtr;
