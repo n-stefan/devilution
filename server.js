@@ -118,7 +118,7 @@ class player_client {
         this.ws.send(writer.result);
         this.batch.length = 0;
       }
-    }, 200);
+    }, 100);
   }
 
   send(msg) {
