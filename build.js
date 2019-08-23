@@ -51,9 +51,8 @@ function mkdirsSync(p) {
   }
 }
 
-async function run_build(flags) {
-  const is_spawn = flags.match(/-DSPAWN/);
-  const out_dir = is_spawn ? './emcc/spawn' : './emcc/retail';
+async function run_build(flags, oname, dirs) {
+  const out_dir = `./emcc/${oname}`;
 
   let rebuild = true;
   if (fs.existsSync(`${out_dir}/args.txt`)) {
@@ -131,11 +130,9 @@ async function run_build(flags) {
     }
   }
 
-  await handle_file('Source');
+  await Promise.all(dirs.map(dir => handle_file(dir)));
   mkdirsSync(out_dir);
   fs.writeFileSync(`${out_dir}/args.txt`, flags);
-
-  const oname = (is_spawn ? 'DiabloSpawn' : 'Diablo');
 
   let wasmTime = null;
   if (fs.existsSync(oname + '.wasm')) {
@@ -147,7 +144,7 @@ async function run_build(flags) {
     return;
   }
 
-  console.log(`Linking ${is_spawn ? 'spawn' : 'retail'}`);
+  console.log(`Linking ${oname}`);
 
   const cmd = `emcc ${link_list.join(" ")} -o ${oname}.js -s EXPORT_NAME="${oname}" ${flags} -s WASM=1 -s MODULARIZE=1 -s NO_FILESYSTEM=1 --post-js ./module-post.js -s ALLOW_MEMORY_GROWTH=1 -s TOTAL_MEMORY=134217728 -s DISABLE_EXCEPTION_CATCHING=0`;
   const {stderr} = await execute(cmd);
@@ -157,5 +154,6 @@ async function run_build(flags) {
   fs.renameSync(oname + '.js', oname + '.jscc');
 }
 
-run_build('-O3 -g -DZ_SOLO').catch(e => console.error(e.message));
-run_build('-O3 -g -DZ_SOLO -DSPAWN').catch(e => console.error(e.message));
+run_build('-O3 -g -DZ_SOLO', 'Diablo', ['Source']).catch(e => console.error(e.message));
+run_build('-O3 -g -DZ_SOLO -DSPAWN', 'DiabloSpawn', ['Source']).catch(e => console.error(e.message));
+run_build('-O3 -g -DZ_SOLO', 'MpqCmp', ['Source/rmpq', 'Source/zlib', 'mpqcmp']).catch(e => console.error(e.message));

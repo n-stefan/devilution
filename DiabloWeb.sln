@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DiabloWeb", "DiabloWeb.vcxp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "Server.vcxproj", "{7A9567DE-9C44-4627-9F13-EF8183101D7B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mpqcmp", "mpqcmp.vcxproj", "{9DA5A2DF-F692-4083-91E3-BDFBD3D85878}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{7A9567DE-9C44-4627-9F13-EF8183101D7B}.Release|x64.Build.0 = Release|x64
 		{7A9567DE-9C44-4627-9F13-EF8183101D7B}.Release|x86.ActiveCfg = Release|Win32
 		{7A9567DE-9C44-4627-9F13-EF8183101D7B}.Release|x86.Build.0 = Release|Win32
+		{9DA5A2DF-F692-4083-91E3-BDFBD3D85878}.Debug|x64.ActiveCfg = Debug|x64
+		{9DA5A2DF-F692-4083-91E3-BDFBD3D85878}.Debug|x64.Build.0 = Debug|x64
+		{9DA5A2DF-F692-4083-91E3-BDFBD3D85878}.Debug|x86.ActiveCfg = Debug|Win32
+		{9DA5A2DF-F692-4083-91E3-BDFBD3D85878}.Debug|x86.Build.0 = Debug|Win32
+		{9DA5A2DF-F692-4083-91E3-BDFBD3D85878}.Release|x64.ActiveCfg = Release|x64
+		{9DA5A2DF-F692-4083-91E3-BDFBD3D85878}.Release|x64.Build.0 = Release|x64
+		{9DA5A2DF-F692-4083-91E3-BDFBD3D85878}.Release|x86.ActiveCfg = Release|Win32
+		{9DA5A2DF-F692-4083-91E3-BDFBD3D85878}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

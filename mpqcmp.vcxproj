@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{7A9567DE-9C44-4627-9F13-EF8183101D7B}</ProjectGuid>
+    <ProjectGuid>{9DA5A2DF-F692-4083-91E3-BDFBD3D85878}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Server</RootNamespace>
+    <RootNamespace>mpqcmp</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -43,7 +43,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -72,19 +72,18 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>./Build/ServerDebug32/</OutDir>
-    <IntDir>./Build/ServerDebug32/</IntDir>
+    <OutDir>./Build/MpqDebug/</OutDir>
+    <IntDir>./Build/MpqDebug/</IntDir>
+    <TargetName>MpqCmp</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>./Build/ServerDebug64/</OutDir>
-    <IntDir>./Build/ServerDebug64/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>./Build/ServerRelease32/</OutDir>
-    <IntDir>./Build/ServerRelease32/</IntDir>
-    <TargetName>Server</TargetName>
+    <IntDir>./Build/MpqRelease/</IntDir>
+    <OutDir>./Build/MpqRelease/</OutDir>
+    <TargetName>MpqCmp</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -93,10 +92,8 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS;_WIN32_WINNT=0x0501;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;Z_SOLO;NO_SYSTEM;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>
-      </LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -107,9 +104,8 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS;_WIN32_WINNT=0x0501;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -122,8 +118,9 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;Z_SOLO;NO_SYSTEM;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -149,11 +146,73 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Server\main.cpp" />
+    <ClCompile Include="mpqcmp\list.cpp" />
+    <ClCompile Include="mpqcmp\main.cpp" />
+    <ClCompile Include="mpqcmp\shine\bitstream.c" />
+    <ClCompile Include="mpqcmp\shine\huffman.c" />
+    <ClCompile Include="mpqcmp\shine\l3bitstream.c" />
+    <ClCompile Include="mpqcmp\shine\l3loop.c" />
+    <ClCompile Include="mpqcmp\shine\l3mdct.c" />
+    <ClCompile Include="mpqcmp\shine\l3subband.c" />
+    <ClCompile Include="mpqcmp\shine\layer3.c" />
+    <ClCompile Include="mpqcmp\shine\reservoir.c" />
+    <ClCompile Include="mpqcmp\shine\tables.c" />
+    <ClCompile Include="mpqcmp\wave.cpp" />
+    <ClCompile Include="Source\rmpq\adpcm\adpcm.cpp" />
+    <ClCompile Include="Source\rmpq\arccommon.cpp" />
+    <ClCompile Include="Source\rmpq\archive.cpp" />
+    <ClCompile Include="Source\rmpq\checksum.cpp" />
+    <ClCompile Include="Source\rmpq\file.cpp" />
+    <ClCompile Include="Source\rmpq\huffman\huff.cpp" />
+    <ClCompile Include="Source\rmpq\locale.cpp" />
+    <ClCompile Include="Source\rmpq\mpqcompress.cpp" />
+    <ClCompile Include="Source\rmpq\pklib\crc32a.c" />
+    <ClCompile Include="Source\rmpq\pklib\explode.c" />
+    <ClCompile Include="Source\rmpq\pklib\implode.c" />
+    <ClCompile Include="Source\zlib\adler32.c" />
+    <ClCompile Include="Source\zlib\compress.c" />
+    <ClCompile Include="Source\zlib\crc32.c" />
+    <ClCompile Include="Source\zlib\deflate.c" />
+    <ClCompile Include="Source\zlib\infback.c" />
+    <ClCompile Include="Source\zlib\inffast.c" />
+    <ClCompile Include="Source\zlib\inflate.c" />
+    <ClCompile Include="Source\zlib\inftrees.c" />
+    <ClCompile Include="Source\zlib\trees.c" />
+    <ClCompile Include="Source\zlib\uncompr.c" />
+    <ClCompile Include="Source\zlib\zutil.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Server\packet.hpp" />
-    <ClInclude Include="Server\server.hpp" />
+    <ClInclude Include="mpqcmp\shine\bitstream.h" />
+    <ClInclude Include="mpqcmp\shine\huffman.h" />
+    <ClInclude Include="mpqcmp\shine\l3bitstream.h" />
+    <ClInclude Include="mpqcmp\shine\l3loop.h" />
+    <ClInclude Include="mpqcmp\shine\l3mdct.h" />
+    <ClInclude Include="mpqcmp\shine\l3subband.h" />
+    <ClInclude Include="mpqcmp\shine\layer3.h" />
+    <ClInclude Include="mpqcmp\shine\mult_mips_gcc.h" />
+    <ClInclude Include="mpqcmp\shine\mult_noarch_gcc.h" />
+    <ClInclude Include="mpqcmp\shine\mult_sarm_gcc.h" />
+    <ClInclude Include="mpqcmp\shine\reservoir.h" />
+    <ClInclude Include="mpqcmp\shine\tables.h" />
+    <ClInclude Include="mpqcmp\shine\types.h" />
+    <ClInclude Include="Source\rmpq\adpcm\adpcm.h" />
+    <ClInclude Include="Source\rmpq\archive.h" />
+    <ClInclude Include="Source\rmpq\checksum.h" />
+    <ClInclude Include="Source\rmpq\common.h" />
+    <ClInclude Include="Source\rmpq\file.h" />
+    <ClInclude Include="Source\rmpq\huffman\huff.h" />
+    <ClInclude Include="Source\rmpq\locale.h" />
+    <ClInclude Include="Source\rmpq\pklib\pklib.h" />
+    <ClInclude Include="Source\zlib\crc32.h" />
+    <ClInclude Include="Source\zlib\deflate.h" />
+    <ClInclude Include="Source\zlib\inffast.h" />
+    <ClInclude Include="Source\zlib\inffixed.h" />
+    <ClInclude Include="Source\zlib\inflate.h" />
+    <ClInclude Include="Source\zlib\inftrees.h" />
+    <ClInclude Include="Source\zlib\trees.h" />
+    <ClInclude Include="Source\zlib\zconf.h" />
+    <ClInclude Include="Source\zlib\zlib.h" />
+    <ClInclude Include="Source\zlib\zutil.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

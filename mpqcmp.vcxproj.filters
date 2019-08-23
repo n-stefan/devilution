@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="rmpq">
+      <UniqueIdentifier>{8672ce55-9454-43f2-a49a-90eb0cc81288}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="zlib">
+      <UniqueIdentifier>{33d02228-7599-4b46-af89-e4f839b3a337}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shine">
+      <UniqueIdentifier>{9ed39916-9cb0-4948-aab5-de7fbc79d8f3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\rmpq\arccommon.cpp">
+      <Filter>rmpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\archive.cpp">
+      <Filter>rmpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\checksum.cpp">
+      <Filter>rmpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\file.cpp">
+      <Filter>rmpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\locale.cpp">
+      <Filter>rmpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\mpqcompress.cpp">
+      <Filter>rmpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\pklib\crc32a.c">
+      <Filter>rmpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\pklib\explode.c">
+      <Filter>rmpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\pklib\implode.c">
+      <Filter>rmpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\adpcm\adpcm.cpp">
+      <Filter>rmpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rmpq\huffman\huff.cpp">
+      <Filter>rmpq</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\adler32.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\compress.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\crc32.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\deflate.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\infback.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\inffast.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\inflate.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\inftrees.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\trees.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\uncompr.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\zlib\zutil.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="mpqcmp\shine\bitstream.c">
+      <Filter>shine</Filter>
+    </ClCompile>
+    <ClCompile Include="mpqcmp\shine\huffman.c">
+      <Filter>shine</Filter>
+    </ClCompile>
+    <ClCompile Include="mpqcmp\shine\l3bitstream.c">
+      <Filter>shine</Filter>
+    </ClCompile>
+    <ClCompile Include="mpqcmp\shine\l3loop.c">
+      <Filter>shine</Filter>
+    </ClCompile>
+    <ClCompile Include="mpqcmp\shine\l3mdct.c">
+      <Filter>shine</Filter>
+    </ClCompile>
+    <ClCompile Include="mpqcmp\shine\l3subband.c">
+      <Filter>shine</Filter>
+    </ClCompile>
+    <ClCompile Include="mpqcmp\shine\layer3.c">
+      <Filter>shine</Filter>
+    </ClCompile>
+    <ClCompile Include="mpqcmp\shine\reservoir.c">
+      <Filter>shine</Filter>
+    </ClCompile>
+    <ClCompile Include="mpqcmp\shine\tables.c">
+      <Filter>shine</Filter>
+    </ClCompile>
+    <ClCompile Include="mpqcmp\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mpqcmp\wave.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mpqcmp\list.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\rmpq\archive.h">
+      <Filter>rmpq</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\rmpq\checksum.h">
+      <Filter>rmpq</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\rmpq\common.h">
+      <Filter>rmpq</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\rmpq\file.h">
+      <Filter>rmpq</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\rmpq\locale.h">
+      <Filter>rmpq</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\rmpq\pklib\pklib.h">
+      <Filter>rmpq</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\rmpq\adpcm\adpcm.h">
+      <Filter>rmpq</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\rmpq\huffman\huff.h">
+      <Filter>rmpq</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zlib\crc32.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zlib\deflate.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zlib\inffast.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zlib\inffixed.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zlib\inflate.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zlib\inftrees.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zlib\trees.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zlib\zconf.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zlib\zlib.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\zlib\zutil.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="mpqcmp\shine\bitstream.h">
+      <Filter>shine</Filter>
+    </ClInclude>
+    <ClInclude Include="mpqcmp\shine\huffman.h">
+      <Filter>shine</Filter>
+    </ClInclude>
+    <ClInclude Include="mpqcmp\shine\l3bitstream.h">
+      <Filter>shine</Filter>
+    </ClInclude>
+    <ClInclude Include="mpqcmp\shine\l3loop.h">
+      <Filter>shine</Filter>
+    </ClInclude>
+    <ClInclude Include="mpqcmp\shine\l3mdct.h">
+      <Filter>shine</Filter>
+    </ClInclude>
+    <ClInclude Include="mpqcmp\shine\l3subband.h">
+      <Filter>shine</Filter>
+    </ClInclude>
+    <ClInclude Include="mpqcmp\shine\layer3.h">
+      <Filter>shine</Filter>
+    </ClInclude>
+    <ClInclude Include="mpqcmp\shine\mult_mips_gcc.h">
+      <Filter>shine</Filter>
+    </ClInclude>
+    <ClInclude Include="mpqcmp\shine\mult_noarch_gcc.h">
+      <Filter>shine</Filter>
+    </ClInclude>
+    <ClInclude Include="mpqcmp\shine\mult_sarm_gcc.h">
+      <Filter>shine</Filter>
+    </ClInclude>
+    <ClInclude Include="mpqcmp\shine\reservoir.h">
+      <Filter>shine</Filter>
+    </ClInclude>
+    <ClInclude Include="mpqcmp\shine\tables.h">
+      <Filter>shine</Filter>
+    </ClInclude>
+    <ClInclude Include="mpqcmp\shine\types.h">
+      <Filter>shine</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

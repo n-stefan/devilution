@@ -118,7 +118,7 @@ bool validateHash(File file, void const* expected);
 #define ID_WAVE         0x46464952
 bool pkzip_compress(void* in, uint32_t in_size, void* out, uint32_t* out_size);
 bool pkzip_decompress(void* in, uint32_t in_size, void* out, uint32_t* out_size);
-//bool multi_compress(void* in, uint32_t in_size, void* out, uint32_t* out_size, uint8_t mask, void* temp);
+bool multi_compress(void* in, uint32_t in_size, void* out, uint32_t* out_size, uint8_t mask, void* temp);
 bool multi_decompress(void* in, uint32_t in_size, void* out, uint32_t* out_size, void* temp = nullptr);
 
 const char* path_name(const char* path);

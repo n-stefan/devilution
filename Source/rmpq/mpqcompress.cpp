@@ -26,7 +26,8 @@ bool zlib_compress(void* in, uint32_t in_size, void* out, uint32_t* out_size) {
   z.zalloc = gzalloc;
   z.zfree = gzfree;
 
-  int result = deflateInit2(&z, 6, Z_DEFLATED, 16 + MAX_WBITS, 8, Z_DEFAULT_STRATEGY);
+  //int result = deflateInit2(&z, 6, Z_DEFLATED, 16 + MAX_WBITS, 8, Z_DEFAULT_STRATEGY);
+  int result = deflateInit( &z, Z_DEFAULT_COMPRESSION );
   if (result == Z_OK) {
     result = deflate(&z, Z_FINISH);
     *out_size = z.total_out;
@@ -177,6 +178,14 @@ struct CompressionType {
   uint8_t id;
   bool(*func) (void* in, uint32_t in_size, void* out, uint32_t* out_size);
 };
+static CompressionType comp_table[] = {
+  //  {0x10, bzip2_compress},
+  { 0x08, pkzip_compress },
+  { 0x02, zlib_compress },
+  { 0x01, huff_compress },
+  { 0x80, wave_compress_stereo },
+  { 0x40, wave_compress_mono }
+};
 static CompressionType decomp_table[] = {
   //  {0x10, bzip2_decompress},
   { 0x08, pkzip_decompress },
@@ -185,6 +194,86 @@ static CompressionType decomp_table[] = {
   { 0x80, wave_decompress_stereo },
   { 0x40, wave_decompress_mono }
 };
+
+bool multi_compress( void* in, uint32_t in_size, void* out, uint32_t* out_size, uint8_t mask, void* temp )
+{
+    uint32_t func_count = 0;
+    uint8_t cur_mask = mask;
+    for ( uint32_t i = 0; i < sizeof comp_table / sizeof comp_table[0]; i++ )
+    {
+        if ( ( cur_mask & comp_table[i].id ) == comp_table[i].id )
+        {
+            func_count++;
+            cur_mask &= ~comp_table[i].id;
+        }
+    }
+    if ( in_size <= 32 || func_count == 0 )
+    {
+        if ( *out_size < in_size )
+        {
+            return false;
+        }
+        if ( in != out )
+        {
+            memcpy( out, in, in_size );
+        }
+        *out_size = in_size;
+        return true;
+    }
+
+    std::vector<uint8_t> temp2;
+    void* tmp = temp;
+    if ( !tmp && ( func_count > 1 || out == in ) )
+    {
+        temp2.resize( *out_size );
+        tmp = temp2.data();
+    }
+
+    void* out_ptr = (uint8_t*) out + 1;
+
+    uint32_t cur_size = in_size;
+    void* cur_ptr = in;
+
+    void* cur_out = ( ( func_count & 1 ) && ( in != out ) ? out : tmp );
+    cur_mask = mask;
+    uint8_t method = 0;
+    for ( uint32_t i = 0; i < sizeof comp_table / sizeof comp_table[0]; i++ )
+    {
+        if ( ( cur_mask & comp_table[i].id ) == comp_table[i].id )
+        {
+            uint32_t size = *out_size - 2;
+            bool res = comp_table[i].func( cur_ptr, cur_size, cur_out, &size );
+            if ( res && size < cur_size )
+            {
+                cur_size = size;
+                cur_ptr = cur_out;
+                cur_out = ( cur_out == tmp ? out_ptr : tmp );
+                method |= comp_table[i].id;
+            }
+            cur_mask &= ~comp_table[i].id;
+        }
+    }
+    if ( method == 0 )
+    {
+        if ( *out_size < in_size )
+        {
+            return false;
+        }
+        *out_size = in_size;
+        if ( in != out )
+        {
+            memcpy( out, in, in_size );
+        }
+        return true;
+    }
+    if ( cur_ptr != out_ptr )
+    {
+        memcpy( out_ptr, cur_ptr, cur_size );
+    }
+    *(uint8_t*) out = method;
+    *out_size = cur_size + 1;
+    return true;
+}
 
 bool multi_decompress(void* in, uint32_t in_size, void* out, uint32_t* out_size, void* temp) {
   if (in_size == *out_size) {
@@ -223,7 +312,7 @@ bool multi_decompress(void* in, uint32_t in_size, void* out, uint32_t* out_size,
 
   std::vector<uint8_t> temp2;
   void* tmp = temp;
-  if (!tmp) {
+  if (!tmp && (func_count > 1 || in == out)) {
     temp2.resize(*out_size);
     tmp = temp2.data();
   }
@@ -248,7 +337,7 @@ bool multi_decompress(void* in, uint32_t in_size, void* out, uint32_t* out_size,
     memcpy(out, cur_ptr, cur_size);
   }
   *out_size = cur_size;
-  return true;
+  return true; 
 }
 
 }

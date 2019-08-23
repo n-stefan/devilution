@@ -181,7 +181,7 @@ void SNet_InitWebsocket();
 int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )
 {
   ghInst = hInstance;
-  SNet_InitWebsocket();
+  //SNet_InitWebsocket();
 
   ShowCursor(FALSE);
 
@@ -204,7 +204,7 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
   DWORD wsStyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
   DWORD wsExStyle = WS_EX_CLIENTEDGE;
   AdjustWindowRectEx(&rc, wsStyle, FALSE, wsExStyle);
-  ghMainWnd = CreateWindowEx(wsExStyle, "DIABLO", "DIABLO", wsStyle, CW_USEDEFAULT, 0, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, ghInst, NULL);
+  ghMainWnd = CreateWindowEx(wsExStyle, "DIABLO", "DIABLO", wsStyle, 0, 1300, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, ghInst, NULL);
   if (!ghMainWnd)
     app_fatal("Unable to create main window");
   ShowWindow(ghMainWnd, SW_SHOWNORMAL);
