@@ -353,14 +353,15 @@ void shine_loop_initialise(shine_global_config *config)
   for(i=128; i--;)
   {
     config->l3loop.steptab[i] = pow(2.0,(double)(127-i)/4);
-    if((config->l3loop.steptab[i]*2)>0x7fffffff) /* MAXINT = 2**31 = 2**(124/4) */
-      config->l3loop.steptabi[i]=0x7fffffff;
-    else
+    if (i <= 7) {
+      config->l3loop.steptabi[i] = 0x7fffffff;
+    } else {
       /* The table is multiplied by 2 to give an extra bit of accuracy.
        * In quantize, the long multiply does not shift it's result left one
        * bit to compensate.
        */
-      config->l3loop.steptabi[i] = (int32_t)((config->l3loop.steptab[i]*2) + 0.5);
+      config->l3loop.steptabi[i] = (int32_t) ((config->l3loop.steptab[i] * 2) + 0.5);
+    }
   }
 
   /* quantize: vector conversion, three quarter power table.

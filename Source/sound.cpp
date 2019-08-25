@@ -309,7 +309,7 @@ size_t get_mp3_duration(const uint8_t* data, size_t size);
 size_t get_wave_duration(const uint8_t* data, size_t size);
 
 TSnd *sound_file_load(const char *path) {
-#ifdef EMSCRIPTEN
+#if 1//def EMSCRIPTEN
   MemoryFile file = ((mpq::Archive*)diabdat_mpq)->load(path);
   if (!file) {
     return NULL;

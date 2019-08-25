@@ -33,7 +33,7 @@ bool zlib_compress(void* in, uint32_t in_size, void* out, uint32_t* out_size) {
     *out_size = z.total_out;
     deflateEnd(&z);
   }
-  return (result == Z_OK || result == Z_STREAM_END);
+  return (result == Z_STREAM_END);
 }
 
 bool zlib_decompress(void* in, uint32_t in_size, void* out, uint32_t* out_size) {
@@ -234,14 +234,14 @@ bool multi_compress( void* in, uint32_t in_size, void* out, uint32_t* out_size, 
     uint32_t cur_size = in_size;
     void* cur_ptr = in;
 
-    void* cur_out = ( ( func_count & 1 ) && ( in != out ) ? out : tmp );
+    void* cur_out = ( ( func_count & 1 ) && ( in != out ) ? out_ptr : tmp );
     cur_mask = mask;
     uint8_t method = 0;
     for ( uint32_t i = 0; i < sizeof comp_table / sizeof comp_table[0]; i++ )
     {
         if ( ( cur_mask & comp_table[i].id ) == comp_table[i].id )
         {
-            uint32_t size = *out_size - 2;
+            uint32_t size = (*out_size * 15 / 16);
             bool res = comp_table[i].func( cur_ptr, cur_size, cur_out, &size );
             if ( res && size < cur_size )
             {
