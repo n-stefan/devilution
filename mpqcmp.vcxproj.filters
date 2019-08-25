@@ -126,6 +126,9 @@
     <ClCompile Include="mpqcmp\list.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mpqcmp\trace.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\rmpq\archive.h">
@@ -220,6 +223,9 @@
     </ClInclude>
     <ClInclude Include="mpqcmp\shine\types.h">
       <Filter>shine</Filter>
+    </ClInclude>
+    <ClInclude Include="mpqcmp\trace.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -10,42 +10,9 @@ typedef int BOOL;
 #include "../Source/rmpq/archive.h"
 #include "../Source/rmpq/common.h"
 
-//#define MULTITHREADING
-
-#ifdef MULTITHREADING
-#include <atomic>
-#include <thread>
-#include <mutex>
-typedef std::mutex mutex_t;
-#else
-typedef int mutex_t;
-#endif
-
 #ifdef EMSCRIPTEN
+
 #include <emscripten.h>
-EM_JS(void, do_error, (const char* err), {
-  var end = HEAPU8.indexOf(0, err);
-  var text = String.fromCharCode.apply(null, HEAPU8.subarray(err, end));
-  self.DApi.exit_error(text);
-});
-EM_JS(void, do_progress, (int done, int total), {
-  self.DApi.progress(done, total);
-});
-#else
-void do_error(const char* err) {
-  printf("%s\r\n", err);
-  exit(0);
-}
-void do_progress(int done, int total) {
-  printf("\r%d / %d", done, total);
-}
-#endif
-
-void ErrMsg(const char* text, const char *log_file_path, int log_line_nr) {
-  do_error(text);
-}
-
-#ifdef EMSCRIPTEN
 
 EM_JS(void, get_file_contents, (void* ptr, size_t offset, size_t size), {
   self.DApi.get_file_contents(HEAPU8.subarray(ptr, ptr + size), offset);
@@ -59,12 +26,26 @@ EM_JS(void, put_file_contents, (void* ptr, size_t offset, size_t size), {
   self.DApi.put_file_contents(HEAPU8.subarray(ptr, ptr + size), offset);
 });
 
+EM_JS(void, do_error, (const char* err), {
+  var end = HEAPU8.indexOf(0, err);
+  var text = String.fromCharCode.apply(null, HEAPU8.subarray(err, end));
+  self.DApi.exit_error(text);
+});
+EM_JS(void, do_progress, (int done, int total), {
+  self.DApi.progress(done, total);
+});
+
 #else
 
+#include <mutex>
+#include <thread>
+
 File __input;
-File __output;
+std::mutex __mutex;
+thread_local File __output;
 
 void get_file_contents(void* ptr, size_t offset, size_t size) {
+  std::unique_lock lock(__mutex);
   __input.seek(offset);
   __input.read(ptr, size);
 }
@@ -77,6 +58,23 @@ void put_file_size(size_t size) {
 void put_file_contents(const void* ptr, size_t offset, size_t size) {
   __output.seek(offset);
   __output.write(ptr, size);
+}
+
+std::unordered_map<std::thread::id, std::pair<int, int>> __progress;
+
+void do_error(const char* err) {
+  printf("%s\r\n", err);
+  exit(0);
+}
+void do_progress(int done, int total) {
+  std::unique_lock lock(__mutex);
+  __progress[std::this_thread::get_id()] = std::make_pair(done, total);
+  int udone = 0, utotal = 0;
+  for (auto& p : __progress) {
+    udone += p.second.first;
+    utotal += p.second.second;
+  }
+  printf("\r%d / %d", udone, utotal);
 }
 
 #include <io.h>
@@ -124,6 +122,10 @@ File::File(const char* name, const char* mode) {
 
 #endif
 
+void ErrMsg(const char* text, const char *log_file_path, int log_line_nr) {
+  do_error(text);
+}
+
 class RandomAccessBuffer : public FileBuffer {
 public:
   RandomAccessBuffer(size_t size = 0)
@@ -157,7 +159,8 @@ protected:
 class InputBuffer : public RandomAccessBuffer {
 public:
   InputBuffer(size_t size)
-    : RandomAccessBuffer(size) {
+    : RandomAccessBuffer(size)
+  {
   }
 
   size_t read(void* ptr, size_t size) override {
@@ -273,28 +276,9 @@ private:
   std::vector<chunk_t> chunks_;
 };
 
-class SafeFile : public File {
-public:
-  SafeFile(const std::shared_ptr<FileBuffer>& buffer)
-    : File(buffer)
-  {
-  }
-
-  size_t safe_read(void* ptr, size_t offset, size_t size) {
-#ifdef MULTITHREADING
-    std::unique_lock lock(mutex_);
-#endif
-    seek(offset);
-    return read(ptr, size);
-  }
-
-private:
-  mutex_t mutex_;
-};
-
 class MpqChunkedBuffer : public RandomAccessBuffer {
 public:
-  MpqChunkedBuffer(SafeFile& input, const mpq::MPQBlockEntry& block, uint32_t key, uint32_t blockSize)
+  MpqChunkedBuffer(File input, const mpq::MPQBlockEntry& block, uint32_t key, uint32_t blockSize)
     : RandomAccessBuffer(block.fSize)
     , input_(input)
     , entry_(block)
@@ -305,7 +289,8 @@ public:
       size_t numBlocks = (block.fSize + blockSize - 1) / blockSize;
       size_t blocksSize = (numBlocks + 1) * sizeof(uint32_t);
       blocks_.resize(numBlocks + 1);
-      if (input.safe_read(blocks_.data(), block.filePos, blocksSize) != blocksSize) {
+      input.seek(block.filePos);
+      if (input.read(blocks_.data(), blocksSize) != blocksSize) {
         ERROR_MSG("read error");
       }
       if (block.flags & mpq::FileFlags::Encrypted) {
@@ -342,7 +327,7 @@ public:
   void truncate() override {}
 
 private:
-  SafeFile& input_;
+  File input_;
   mpq::MPQBlockEntry entry_;
   uint32_t key_;
   uint32_t blockSize_;
@@ -361,7 +346,8 @@ private:
     if (entry_.flags & mpq::FileFlags::Compressed) {
       size_t rawSize = blocks_[index + 1] - blocks_[index];
       rawData_.resize(rawSize);
-      if (input_.safe_read(rawData_.data(), entry_.filePos + blocks_[index], rawSize) != rawSize) {
+      input_.seek(entry_.filePos + blocks_[index]);
+      if (input_.read(rawData_.data(), rawSize) != rawSize) {
         ERROR_MSG("read error");
       }
       if (entry_.flags & mpq::FileFlags::Encrypted) {
@@ -378,7 +364,8 @@ private:
         }
       }
     } else {
-      if (input_.safe_read(data_.data(), entry_.filePos + index * blockSize_, size) != size) {
+      input_.seek(entry_.filePos + index * blockSize_);
+      if (input_.read(data_.data(), size) != size) {
         ERROR_MSG("read error");
       }
       if (entry_.flags & mpq::FileFlags::Encrypted) {
@@ -462,26 +449,6 @@ public:
   }
 
   void write(const char* name, File src) {
-#ifdef MULTITHREADING
-    MemoryFile temp;
-    size_t usize;
-    bool wave = !strcmp(mpq::path_ext(name), ".wav");
-    if (wave) {
-      usize = write_wave(temp, src);
-    } else {
-      write_mpq(temp, src);
-      usize = (size_t) src.size();
-    }
-    temp.seek(0);
-
-    std::unique_lock lock(mutex_);
-    auto& block = alloc_file(name);
-    block.filePos = (uint32_t) file_.tell();
-    block.flags = mpq::FileFlags::Exists | (wave ? 0 : mpq::FileFlags::CompressMulti);
-    block.cSize = (uint32_t) temp.size();
-    block.fSize = usize;
-    file_.copy(temp);
-#else
     auto& block = alloc_file(name);
     block.filePos = (uint32_t) file_.tell();
     if (strcmp(mpq::path_ext(name), ".wav")) {
@@ -493,7 +460,6 @@ public:
       block.cSize = write_wave(file_, src);
       block.fSize = block.cSize;
     }
-#endif
   }
 
   void flush() {
@@ -512,7 +478,6 @@ public:
 
 private:
   std::shared_ptr<OutputBuffer> buffer_;
-  mutex_t mutex_;
   File file_;
   mpq::MPQHeader header_;
   std::vector<mpq::MPQHashEntry> hashTable_;
@@ -522,32 +487,30 @@ private:
 
 };
 
+struct MpqBlock : public mpq::MPQBlockEntry {
+  MpqBlock() {}
+  MpqBlock(const mpq::MPQBlockEntry& block, uint32_t key, int mode)
+    : mpq::MPQBlockEntry(block)
+    , key(key)
+    , mode(mode)
+  {
+  }
+  uint32_t key;
+  int mode;
+};
+
 class MpqReader {
 public:
-  MpqReader(size_t size)
+  MpqReader(size_t size, uint32_t blockSize)
     : file_(std::make_shared<InputBuffer>(size))
+    , blockSize_(blockSize)
   {
-    mpq::MPQHeader header;
-    if (file_.read(&header, mpq::MPQHeader::size_v1) != mpq::MPQHeader::size_v1 || header.id != mpq::MPQHeader::signature) {
-      ERROR_MSG("corrupted MPQ file");
-    }
-    blockSize_ = (1 << (9 + header.blockSize));
-    hashTable_.resize(header.hashTableSize);
-    blockTable_.resize(header.blockTableSize);
-    readTable(hashTable_.data(), header.hashTablePos, header.hashTableSize * sizeof(mpq::MPQHashEntry), "(hash table)");
-    readTable(blockTable_.data(), header.blockTablePos, header.blockTableSize * sizeof(mpq::MPQBlockEntry), "(block table)");
   }
 
-  File read(const char* name) {
-    uint32_t index = findFile(name);
-    if (index == mpq::MPQHashEntry::EMPTY) {
-      return File();
-    }
-    const auto& block = blockTable_[index];
-
-    uint32_t key = mpq::hashString(mpq::path_name(name), mpq::HASH_KEY);
+  File read(MpqBlock& block) {
+    uint32_t key = block.key;
     if (block.flags & mpq::FileFlags::FixSeed) {
-      key = (key + uint32_t(block.filePos)) ^ block.fSize;
+      key = (key + block.filePos) ^ block.fSize;
     }
 
     if (block.flags & mpq::FileFlags::SingleUnit) {
@@ -556,7 +519,8 @@ public:
         csize = block.fSize;
       }
       std::vector<uint8_t> data(csize);
-      if (file_.safe_read(data.data(), block.filePos, csize) != csize) {
+      file_.seek(block.filePos);
+      if (file_.read(data.data(), csize) != csize) {
         ERROR_MSG("read error");
       }
       if (block.flags & mpq::FileFlags::Encrypted) {
@@ -582,88 +546,159 @@ public:
     }
   }
 
-  uint32_t tableSize() const {
-    return hashTable_.size();
-  }
-
 private:
-  SafeFile file_;
-  size_t blockSize_;
-  std::vector<mpq::MPQHashEntry> hashTable_;
-  std::vector<mpq::MPQBlockEntry> blockTable_;
-
-  uint32_t findFile(const char* name) {
-    size_t index = mpq::hashString(name, mpq::HASH_OFFSET) % hashTable_.size();
-    uint32_t name1 = mpq::hashString(name, mpq::HASH_NAME1);
-    uint32_t name2 = mpq::hashString(name, mpq::HASH_NAME2);
-    for (size_t i = index, count = 0; hashTable_[i].blockIndex != mpq::MPQHashEntry::EMPTY && count < hashTable_.size(); i = (i + 1) % hashTable_.size(), ++count) {
-      if (hashTable_[i].name1 == name1 && hashTable_[i].name2 == name2 && hashTable_[i].blockIndex != mpq::MPQHashEntry::DELETED) {
-        return hashTable_[i].blockIndex;
-      }
-    }
-    return mpq::MPQHashEntry::EMPTY;
-  }
-
-  void readTable(void* ptr, size_t offset, size_t size, const char* key) {
-    file_.seek(offset);
-    if (file_.read(ptr, size) != size) {
-      ERROR_MSG("corrupted MPQ file");
-    }
-    mpq::decryptBlock(ptr, size, mpq::hashString(key, mpq::HASH_KEY));
-  }
+  File file_;
+  uint32_t blockSize_;
 };
+
+#ifdef EMSCRIPTEN
+EMSCRIPTEN_KEEPALIVE
+extern "C" void* DApi_Alloc(size_t size) {
+  return malloc(size);
+}
+
+EMSCRIPTEN_KEEPALIVE
+#endif
+extern "C" mpq::MPQBlockEntry* DApi_Compress(size_t size, uint32_t blockSize, size_t files, MpqBlock* blocks) {
+  MpqReader reader(size, blockSize);
+
+  auto buffer = std::make_shared<OutputBuffer>();
+  File output(buffer);
+
+  mpq::MPQBlockEntry* result = new mpq::MPQBlockEntry[files];
+
+  for (size_t i = 0; i < files; ++i) {
+    File input = reader.read(blocks[i]);
+
+    auto& block = result[i];
+    block.filePos = (uint32_t) output.tell();
+    if (blocks[i].mode == 0) {
+      block.flags = mpq::FileFlags::Exists | mpq::FileFlags::CompressMulti;
+      block.cSize = write_mpq(output, input);
+      block.fSize = (uint32_t) input.size();
+    } else {
+      block.flags = mpq::FileFlags::Exists;
+      block.cSize = write_wave(output, input);
+      block.fSize = block.cSize;
+    }
+
+    do_progress(i + 1, files);
+  }
+
+  buffer->flush();
+
+  return result;
+}
+
+#ifndef EMSCRIPTEN
 
 const int NumFiles = 2908;
 extern const char* ListFile[NumFiles];
 
-#ifdef EMSCRIPTEN
-EMSCRIPTEN_KEEPALIVE
-extern "C" void DApi_MpqCmp(size_t size) {
-#else
+template<class T>
+std::vector<T> readTable(size_t offset, size_t size, const char* key) {
+  std::vector<T> result(size);
+  __input.seek(offset);
+  if (__input.read(result.data(), size * sizeof(T)) != size * sizeof(T)) {
+    ERROR_MSG("corrupted MPQ file");
+  }
+  mpq::decryptBlock(result.data(), size * sizeof(T), mpq::hashString(key, mpq::HASH_KEY));
+  return result;
+}
+
 int main() {
   __input = File("C:\\Projects\\diabloweb\\run\\DIABDAT0.MPQ", "rb");
-  __output = File("C:\\Projects\\diabloweb\\run\\DIABDAT1.MPQ", "wb");
-  size_t size = (size_t) __input.size();
-#endif
 
-  MpqReader reader(size);
-  MpqWriter writer(reader.tableSize());
+  mpq::MPQHeader header;
+  if (__input.read(&header, mpq::MPQHeader::size_v1) != mpq::MPQHeader::size_v1 || header.id != mpq::MPQHeader::signature) {
+    ERROR_MSG("corrupted MPQ file");
+  }
+  auto hashTable = readTable<mpq::MPQHashEntry>(header.hashTablePos, header.hashTableSize, "(hash table)");
+  auto blockTable = readTable<mpq::MPQBlockEntry>(header.blockTablePos, header.blockTableSize, "(block table)");
 
-  int count = 0;
+  std::unordered_map<uint64_t, int> fileMap;
+  for (int i = 0; i < NumFiles; ++i) {
+    uint64_t hash = mpq::hashString(ListFile[i], mpq::HASH_NAME1) | (uint64_t(mpq::hashString(ListFile[i], mpq::HASH_NAME2)) << 32);
+    fileMap[hash] = i;
+  }
 
-#ifdef MULTITHREADING
-  std::atomic<int> next = 0;
+  const int NUM_TASKS = 4;
+  struct Task {
+    std::vector<std::pair<mpq::MPQHashEntry*, MpqBlock>> input;
+    std::pair<MemoryFile, mpq::MPQBlockEntry*> output;
+  };
+  Task tasks[NUM_TASKS];
+
+  for (auto& entry : hashTable) {
+    if (entry.blockIndex == mpq::MPQHashEntry::EMPTY || entry.blockIndex == mpq::MPQHashEntry::DELETED) {
+      continue;
+    }
+    auto it = fileMap.find(entry.name1 | (uint64_t(entry.name2) << 32));
+    if (it == fileMap.end()) {
+      entry.blockIndex = mpq::MPQHashEntry::DELETED;
+      continue;
+    }
+    auto& block = blockTable[entry.blockIndex];
+    int task = block.filePos * NUM_TASKS / (uint32_t) __input.size();
+    uint32_t key = mpq::hashString(mpq::path_name(ListFile[it->second]), mpq::HASH_KEY);
+    int mode = strcmp(mpq::path_ext(ListFile[it->second]), ".wav") ? 0 : 1;
+    tasks[task].input.emplace_back(&entry, MpqBlock(block, key, mode));
+  }
+
+  std::vector<mpq::MPQBlockEntry> resBlocks;
+  File result("C:\\Projects\\diabloweb\\run\\DIABDAT1.MPQ", "wb");
+  size_t hashPos = mpq::MPQHeader::size_v1;
+  size_t blockPos = hashPos + hashTable.size() * sizeof(mpq::MPQHashEntry);
+  size_t filePos = blockPos + blockTable.size() * sizeof(mpq::MPQBlockEntry);
+  uint32_t blockSize = 1 << (9 + header.blockSize);
+
   std::vector<std::thread> threads;
-  std::mutex mutex;
-  for (int i = 0; i < 4; ++i) {
-    threads.emplace_back([&next, &reader, &writer, &mutex, &count]() {
-      int index;
-      while ((index = next++) < NumFiles) {
-        auto file = reader.read(ListFile[index]);
-        if (file) {
-          writer.write(ListFile[index], file);
-        }
+  std::pair<mpq::MPQBlockEntry*, MemoryFile> thOutput[NUM_TASKS];
 
-        std::unique_lock lock(mutex);
-        do_progress(++count, NumFiles);
+  for (auto& task : tasks) {
+    threads.emplace_back([blockSize, &task]() mutable {
+      std::vector<MpqBlock> data;
+      data.reserve(task.input.size());
+      for (auto& p : task.input) {
+        data.emplace_back(p.second);
       }
+      __output = task.output.first = MemoryFile();
+      task.output.second = DApi_Compress((size_t) __input.size(), blockSize, task.input.size(), data.data());
     });
   }
   for (auto& th : threads) {
     th.join();
   }
-#else
-  for (auto name : ListFile) {
-    auto file = reader.read(name);
-    if (file) {
-      writer.write(name, file);
-    }
-    do_progress(++count, NumFiles);
-  }
-#endif
-  writer.flush();
 
-#ifndef EMSCRIPTEN
+  for (auto& task : tasks) {
+    for (size_t i = 0; i < task.input.size(); ++i) {
+      task.input[i].first->blockIndex = resBlocks.size();
+      task.output.second[i].filePos += filePos;
+      resBlocks.push_back(task.output.second[i]);
+    }
+    result.seek(filePos);
+    task.output.first.seek(0);
+    result.copy(task.output.first);
+    filePos += (size_t) task.output.first.size();
+    delete[] task.output.second;
+  }
+
+  resBlocks.resize(blockTable.size());
+  header.headerSize = mpq::MPQHeader::size_v1;
+  header.archiveSize = filePos;
+  header.formatVersion = 1;
+  header.blockSize = (uint16_t) BLOCK_TYPE;
+  header.hashTablePos = hashPos;
+  header.blockTablePos = blockPos;
+
+  mpq::encryptBlock(hashTable.data(), hashTable.size() * sizeof(mpq::MPQHashEntry), mpq::hashString("(hash table)", mpq::HASH_KEY));
+  mpq::encryptBlock(resBlocks.data(), resBlocks.size() * sizeof(mpq::MPQBlockEntry), mpq::hashString("(block table)", mpq::HASH_KEY));
+
+  result.seek(0);
+  result.write(&header, header.headerSize);
+  result.write(hashTable.data(), hashTable.size() * sizeof(mpq::MPQHashEntry));
+  result.write(resBlocks.data(), resBlocks.size() * sizeof(mpq::MPQBlockEntry));
+
   return 0;
-#endif
 }
+#endif

@@ -94,6 +94,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;Z_SOLO;NO_SYSTEM;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -157,6 +158,7 @@
     <ClCompile Include="mpqcmp\shine\layer3.c" />
     <ClCompile Include="mpqcmp\shine\reservoir.c" />
     <ClCompile Include="mpqcmp\shine\tables.c" />
+    <ClCompile Include="mpqcmp\trace.cpp" />
     <ClCompile Include="mpqcmp\wave.cpp" />
     <ClCompile Include="Source\rmpq\adpcm\adpcm.cpp" />
     <ClCompile Include="Source\rmpq\arccommon.cpp" />
@@ -195,6 +197,7 @@
     <ClInclude Include="mpqcmp\shine\reservoir.h" />
     <ClInclude Include="mpqcmp\shine\tables.h" />
     <ClInclude Include="mpqcmp\shine\types.h" />
+    <ClInclude Include="mpqcmp\trace.h" />
     <ClInclude Include="Source\rmpq\adpcm\adpcm.h" />
     <ClInclude Include="Source\rmpq\archive.h" />
     <ClInclude Include="Source\rmpq\checksum.h" />
