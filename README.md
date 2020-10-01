@@ -9,5 +9,6 @@ To run it normally, simply build the solution (tested in VS2017, but should work
 
 To compile it to WASM/JSCC (jscc is an extension I'm using for javascript glue files so they don't mix with regular JS in my webpack config), simply run `node build.js`, it should automatically build only the modified files. Requires [Emscripten](https://emscripten.org/docs/getting_started/downloads.html) installed.
 
-Original readme can be found in https://github.com/diasurgical/devilution
+The source code in this repository is for non-commerical use only. If you use the source code you may not charge others for access to it or any derivative work thereof.
 
+Original readme can be found in https://github.com/diasurgical/devilution
