@@ -366,6 +366,7 @@
     <ClInclude Include="Source\ui\diabloui.h" />
     <ClInclude Include="Source\ui\dialog.h" />
     <ClInclude Include="Source\ui\event.h" />
+    <ClInclude Include="Source\ui\main_menu.h" />
     <ClInclude Include="Source\ui\network.h" />
     <ClInclude Include="Source\ui\selhero.h" />
     <ClInclude Include="Source\wave.h" />

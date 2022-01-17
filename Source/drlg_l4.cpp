@@ -1,4 +1,4 @@
-#ifndef SPAWN
+//#ifndef SPAWN
 #include "diablo.h"
 
 int diabquad1x;
@@ -1989,4 +1989,4 @@ void DRLG_L4Pass3()
 		yy += 2;
 	}
 }
-#endif
+//#endif

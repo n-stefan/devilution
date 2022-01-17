@@ -67,6 +67,10 @@ const char *spszMsgTbl[4] = {
 };
 const char *spszMsgKeyTbl[4] = { "F9", "F10", "F11", "F12" };
 
+int SPAWN = 1;
+int TMUSIC_INTRO = 2;
+int NUM_MUSIC = 3;
+
 void FreeGameMem()
 {
 	music_stop();
@@ -904,7 +908,7 @@ void LoadLvlGFX()
 		pLevelPieces = LoadFileInMem("Levels\\L1Data\\L1.MIN", NULL);
 		pSpecialCels = LoadFileInMem("Levels\\L1Data\\L1S.CEL", NULL);
 		break;
-#ifndef SPAWN
+//#ifndef SPAWN
 	case DTYPE_CATACOMBS:
 		pDungeonCels = LoadFileInMem("Levels\\L2Data\\L2.CEL", NULL);
 		pMegaTiles = LoadFileInMem("Levels\\L2Data\\L2.TIL", NULL);
@@ -923,7 +927,7 @@ void LoadLvlGFX()
 		pLevelPieces = LoadFileInMem("Levels\\L4Data\\L4.MIN", NULL);
 		pSpecialCels = LoadFileInMem("Levels\\L2Data\\L2S.CEL", NULL);
 		break;
-#endif
+//#endif
 	default:
 		app_fatal("LoadLvlGFX");
 		break;
@@ -956,7 +960,7 @@ void CreateLevel(int lvldir)
 		Freeupstairs();
 		LoadRndLvlPal(1);
 		break;
-#ifndef SPAWN
+//#ifndef SPAWN
 	case DTYPE_CATACOMBS:
 		CreateL2Dungeon(glSeedTbl[currlevel], lvldir);
 		InitL2Triggers();
@@ -975,7 +979,7 @@ void CreateLevel(int lvldir)
 		Freeupstairs();
 		LoadRndLvlPal(4);
 		break;
-#endif
+//#endif
 	default:
 		app_fatal("CreateLevel");
 		break;
@@ -1123,9 +1127,9 @@ void LoadGameLevel(BOOL firstflag, int lvldir)
 	} else {
 		/// ASSERT: assert(! pSpeedCels);
 		pSpeedCels = DiabloAllocPtr(0x100000);
-#ifndef SPAWN
+if (!SPAWN) { //#ifndef SPAWN
     LoadSetMap();
-#endif
+} //#endif
 		IncProgress();
 		GetLevelMTypes();
     InitMonsters();
@@ -1296,10 +1300,10 @@ void diablo_color_cyc_logic()
 		if (palette_get_colour_cycling()) {
 			if (leveltype == DTYPE_HELL) {
 				lighting_color_cycling();
-#ifndef SPAWN
+//#ifndef SPAWN
       } else if (leveltype == DTYPE_CAVES) {
   			palette_update_caves();
-#endif
+//#endif
       }
 		}
 	}

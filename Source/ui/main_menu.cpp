@@ -2,9 +2,9 @@
 #include "dialog.h"
 #include "network.h"
 
-#ifdef SPAWN
-#define NO_INTRO "The Diablo introduction cinematic is only available in the full retail version of Diablo. For ordering information call (800) 953-SNOW."
-#endif
+//#ifdef SPAWN
+#define NO_INTRO SPAWN ? "The Diablo introduction cinematic is only available in the full retail version of Diablo. For ordering information call (800) 953-SNOW." : NULL
+//#endif
 
 enum {
   MM_SINGLEPLAYER,
@@ -40,11 +40,11 @@ public:
 
   void onActivate() override {
     mainmenu_refresh_music();
-#ifdef SPAWN
+if (SPAWN) { //#ifdef SPAWN
     LoadBackgroundArt("ui_art\\swmmenu.pcx");
-#else
+} else {
     LoadBackgroundArt("ui_art\\mainmenu.pcx");
-#endif
+} //#endif
   }
 
   void onKey(const KeyEvent& e) override {
@@ -66,13 +66,13 @@ public:
       break;
     case MM_REPLAYINTRO:
       UiPlaySelectSound();
-#ifndef SPAWN
+if (!SPAWN) { //#ifndef SPAWN
       music_stop();
       GameState::activate(get_video_state("gendata\\diablo1.smk", true, false,
                                           get_main_menu_dialog()));
-#else
+} else {
       GameState::activate(get_ok_dialog(NO_INTRO, get_main_menu_dialog(), true));
-#endif
+} //#endif
       break;
     case MM_SHOWCREDITS:
       UiPlaySelectSound();

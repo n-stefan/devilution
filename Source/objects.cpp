@@ -596,7 +596,7 @@ void LoadMapObjs(BYTE *pMap, int startx, int starty)
 	InitObjFlag = FALSE;
 }
 
-#ifndef SPAWN
+//#ifndef SPAWN
 void AddDiabObjs()
 {
 	BYTE *lpSetPiece;
@@ -611,7 +611,7 @@ void AddDiabObjs()
 	LoadMapObjects(lpSetPiece, 2 * diabquad3x, 2 * diabquad3y, diabquad4x, diabquad4y, 9, 9, 3);
 	mem_free_dbg(lpSetPiece);
 }
-#endif
+//#endif
 
 void AddStoryBooks()
 {
@@ -746,9 +746,9 @@ void InitObjects()
 
 	ClrAllObjects();
 	if (currlevel == 16) {
-#ifndef SPAWN
+if (!SPAWN) { //#ifndef SPAWN
     AddDiabObjs();
-#endif
+} //#endif
 	} else {
 		InitObjFlag = TRUE;
 		GetRndSeed();

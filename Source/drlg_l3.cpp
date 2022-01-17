@@ -1,4 +1,4 @@
-#ifndef SPAWN
+//#ifndef SPAWN
 #include "diablo.h"
 
 BOOLEAN lavapool;
@@ -1826,4 +1826,4 @@ void LoadPreL3Dungeon(const char *sFileName, int vx, int vy)
 	memcpy(pdungeon, dungeon, sizeof(pdungeon));
 	mem_free_dbg(pLevelMap);
 }
-#endif
+//#endif

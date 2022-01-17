@@ -14,11 +14,11 @@
 #include "debug.h"
 #include "doom.h"
 #include "drlg_l1.h"
-#ifndef SPAWN
+//#ifndef SPAWN
 #include "drlg_l2.h"
 #include "drlg_l3.h"
 #include "drlg_l4.h"
-#endif
+//#endif
 #include "dx.h"
 #include "effects.h"
 #include "encrypt.h"
@@ -164,5 +164,9 @@ extern int framestart;
 extern BOOL FriendlyMode;
 extern const char *spszMsgTbl[4];
 extern const char *spszMsgKeyTbl[4];
+
+extern int SPAWN;
+extern int TMUSIC_INTRO;
+extern int NUM_MUSIC;
 
 #endif /* __DIABLO_H__ */

@@ -5,9 +5,9 @@
 
 #include "network.h"
 
-#ifdef SPAWN
-#define NO_CLASS "The Rogue and Sorcerer are only available in the full retail version of Diablo. For ordering information call (800) 953-SNOW."
-#endif
+//#ifdef SPAWN
+#define NO_CLASS SPAWN ? "The Rogue and Sorcerer are only available in the full retail version of Diablo. For ordering information call (800) 953-SNOW." : NULL
+//#endif
 
 void start_game_dialog();
 
@@ -81,12 +81,12 @@ void create_dialog() {
     if (!hero) {
       GameState::activate(prev);
     } else {
-#ifdef SPAWN
+if (SPAWN) { //#ifdef SPAWN
       if (hero->heroclass > 0) {
         GameState::activate(get_ok_dialog(NO_CLASS, GameState::current(), false));
         return;
       }
-#endif
+} //#endif
       name_dialog(*hero);
     }
   }));

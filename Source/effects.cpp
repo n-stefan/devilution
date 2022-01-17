@@ -1183,11 +1183,11 @@ void priv_sound_init(BYTE bLoadMask)
 			continue;
 		}
 
-#ifdef SPAWN
+if (SPAWN) { //#ifdef SPAWN
     if (bFlags & (SFX_ROGUE | SFX_SORCEROR)) {
       continue;
     }
-#endif
+} //#endif
 
 		if (bLoadMask && !(bFlags & bLoadMask)) {
 			continue;

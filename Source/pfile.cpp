@@ -6,13 +6,13 @@
 #include "trace.h"
 #include "pfile_ex.h"
 
-#ifndef SPAWN
-#define PASSWORD_SINGLE "xrgyrkj1"
-#define PASSWORD_MULTI "szqnlsk1"
-#else
-#define PASSWORD_SINGLE "lshbkfg1"
-#define PASSWORD_MULTI "lshbkfg1"
-#endif
+//#ifndef SPAWN
+#define PASSWORD_SINGLE !SPAWN ? "xrgyrkj1" : "lshbkfg1"
+#define PASSWORD_MULTI !SPAWN ? "szqnlsk1" : "lshbkfg1"
+//#else
+//#define PASSWORD_SINGLE "lshbkfg1"
+//#define PASSWORD_MULTI "lshbkfg1"
+//#endif
 
 static char hero_names[MAX_CHARACTERS][PLR_NAME_LEN];
 char gszHero[16];
@@ -66,10 +66,12 @@ void pfile_encode_hero(const PkPlayerStruct *pPack)
 {
 	BYTE *packed;
 	DWORD packed_len;
-	char password[16] = PASSWORD_SINGLE;
+	char password[16]; // = PASSWORD_SINGLE;
 
 	if (gbMaxPlayers > 1)
 		strcpy(password, PASSWORD_MULTI);
+	else
+		strcpy(password, PASSWORD_SINGLE);
 
 	packed_len = codec_get_encoded_len(sizeof(*pPack));
 	packed = (BYTE *)DiabloAllocPtr(packed_len);
@@ -92,16 +94,17 @@ BOOL pfile_open_archive(BOOL update, DWORD save_num)
 
 void pfile_get_save_path(char *pszBuf, DWORD dwBufSize, DWORD save_num)
 {
-#ifndef SPAWN
-	const char *fmt = "multi_%d.sv";
-	if (gbMaxPlayers <= 1)
-		fmt = "single_%d.sv";
-#else
-  const char *fmt = "share_%d.sv";
-  if (gbMaxPlayers <= 1)
-    fmt = "spawn%d.sv";
-#endif
-	sprintf(pszBuf, fmt, save_num);
+  const char* fmt;
+  if (!SPAWN) { //#ifndef SPAWN
+    fmt = "multi_%d.sv";
+    if (gbMaxPlayers <= 1)
+      fmt = "single_%d.sv";
+  } else {
+    fmt = "share_%d.sv";
+    if (gbMaxPlayers <= 1)
+      fmt = "spawn%d.sv";
+  } //#endif
+  sprintf(pszBuf, fmt, save_num);
 }
 
 void pfile_flush(BOOL is_single_player, DWORD save_num)
@@ -235,11 +238,13 @@ BOOL pfile_read_hero(HANDLE archive, PkPlayerStruct *pPack)
     return FALSE;
 	} else {
 		BOOL ret = FALSE;
-		char password[16] = PASSWORD_SINGLE;
+		char password[16]; // = PASSWORD_SINGLE;
 		nSize = 16;
 
     if (gbMaxPlayers > 1)
-			strcpy(password, PASSWORD_MULTI);
+		strcpy(password, PASSWORD_MULTI);
+    else
+		strcpy(password, PASSWORD_SINGLE);
 
 		dwlen = SFileGetFileSize(file, NULL);
 		if (dwlen) {
@@ -525,9 +530,11 @@ void pfile_write_save_file(const char *pszName, BYTE *pbData, DWORD dwLen, DWORD
 	pfile_strcpy(FileName, pszName);
 	save_num = pfile_get_save_num_from_name(plr[myplr]._pName);
 	{
-		char password[16] = PASSWORD_SINGLE;
+		char password[16]; // = PASSWORD_SINGLE;
 		if (gbMaxPlayers > 1)
 			strcpy(password, PASSWORD_MULTI);
+		else
+			strcpy(password, PASSWORD_SINGLE);
 
 		codec_encode(pbData, dwLen, qwLen, password);
 	}
@@ -569,11 +576,13 @@ BYTE *pfile_read(const char *pszName, DWORD *pdwLen)
 	pfile_SFileCloseArchive(archive);
 
 	{
-		char password[16] = PASSWORD_SINGLE;
+		char password[16]; // = PASSWORD_SINGLE;
 		DWORD nSize = 16;
 
 		if (gbMaxPlayers > 1)
 			strcpy(password, PASSWORD_MULTI);
+		else
+			strcpy(password, PASSWORD_SINGLE);
 
 		*pdwLen = codec_decode(buf, *pdwLen, password);
 		if (*pdwLen == 0) {

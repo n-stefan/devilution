@@ -1972,7 +1972,7 @@ void InitLevelChange(int pnum)
 
 void StartNewLvl(int pnum, int fom, int lvl)
 {
-#ifdef SPAWN
+if (SPAWN) { //#ifdef SPAWN
   if (lvl > 2) {
     InitDiabloMsg(EMSG_NOT_IN_SHAREWARE);
     PlaySFX(PS_WARR18);
@@ -1981,7 +1981,7 @@ void StartNewLvl(int pnum, int fom, int lvl)
     NetSendCmdLoc(TRUE, CMD_WALKXY, x, y);
     return;
   }
-#endif
+} //#endif
 	InitLevelChange(pnum);
 
 	if ((DWORD)pnum >= MAX_PLRS) {

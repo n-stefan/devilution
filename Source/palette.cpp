@@ -182,7 +182,7 @@ void PaletteFadeOut(int fr)
 	}
 }
 
-#ifndef SPAWN
+//#ifndef SPAWN
 void palette_update_caves()
 {
 	int i;
@@ -200,7 +200,7 @@ void palette_update_caves()
 
 	palette_update();
 }
-#endif
+//#endif
 
 void palette_update_quest_palette(int n)
 {

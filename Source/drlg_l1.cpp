@@ -171,9 +171,9 @@ void LoadL1Dungeon(const char *sFileName, int vx, int vy)
 	DRLG_L1Pass3();
 	DRLG_Init_Globals();
 	DRLG_InitL1Vals();
-#ifndef SPAWN
+if (!SPAWN) { //#ifndef SPAWN
 	SetMapMonsters(pLevelMap, 0, 0);
-#endif
+} //#endif
 	SetMapObjects(pLevelMap, 0, 0);
 	mem_free_dbg(pLevelMap);
 }

@@ -16,9 +16,9 @@ websocket_client::websocket_client()
     : impl_(std::make_unique<websocket_impl>())
 {
   uint32_t version = gdwProductVersion;
-#ifdef SPAWN
+if (SPAWN) { //#ifdef SPAWN
   version |= 0x80000000;
-#endif
+} //#endif
   impl_->send(client_info_packet(version));
 }
 

@@ -226,9 +226,9 @@ BOOL ForceQuests()
 
 BOOL QuestStatus(int i)
 {
-#ifdef SPAWN
+if (SPAWN) { //#ifdef SPAWN
   return FALSE;
-#else
+} else {
   BOOL result;
 
 	if (setlevel
@@ -238,7 +238,7 @@ BOOL QuestStatus(int i)
 		result = FALSE;
 	}
 	return result;
-#endif
+} //#endif
 }
 
 void CheckQuestKill(int m, BOOL sendmsg)

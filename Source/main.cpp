@@ -8,6 +8,7 @@
 #include "storm/storm.h"
 #include "ui/diabloui.h"
 #include "ui/common.h"
+#include "ui/main_menu.h"
 #include "pfile_ex.h"
 
 //#define INSTANT_LOAD
@@ -24,7 +25,7 @@ char _textBuffer[256];
 
 extern "C" {
 
-EMSCRIPTEN_KEEPALIVE void DApi_Init(unsigned int time, int offscreen, int v0, int v1, int v2);
+EMSCRIPTEN_KEEPALIVE void DApi_Init(unsigned int time, int offscreen, int v0, int v1, int v2, int spawn);
 EMSCRIPTEN_KEEPALIVE void DApi_Mouse(int action, int button, int mods, int x, int y);
 EMSCRIPTEN_KEEPALIVE void DApi_Key(int action, int mods, int key);
 EMSCRIPTEN_KEEPALIVE void DApi_Char(int chr);
@@ -50,7 +51,7 @@ void api_exit_game() {
 GameStatePtr initial_state() {
   GameStatePtr nextState = get_title_dialog();
 
-#ifndef SPAWN
+if (!SPAWN) { //#ifndef SPAWN
   {
     int nData;
     char szValueName[] = "Intro";
@@ -61,7 +62,7 @@ GameStatePtr initial_state() {
     }
     SRegSaveValue("Diablo", szValueName, 0, 0);
   }
-#endif
+} //#endif
 
   return get_video_state("gendata\\logo.smk", true, false, nextState);
 }
@@ -75,21 +76,28 @@ HANDLE init_test_access(const char *mpq_path) {
 
 void init_archives() {
   HANDLE fh;
-#ifndef SPAWN
-  diabdat_mpq = init_test_access("diabdat.mpq");
-#else
-  diabdat_mpq = init_test_access("spawn.mpq");
-#endif
-  if (!WOpenFile("ui_art\\title.pcx", &fh, TRUE))
-#ifndef SPAWN
-    FileErrDlg("Main program archive: diabdat.mpq");
-#else
-    FileErrDlg("Main program archive: spawn.mpq");
-#endif
+  if (!SPAWN) { //#ifndef SPAWN
+    diabdat_mpq = init_test_access("diabdat.mpq");
+  } else {
+    diabdat_mpq = init_test_access("spawn.mpq");
+  } //#endif
+  if (!WOpenFile("ui_art\\title.pcx", &fh, TRUE)) {
+    if (!SPAWN) { //#ifndef SPAWN
+      FileErrDlg("Main program archive: diabdat.mpq");
+    } else {
+      FileErrDlg("Main program archive: spawn.mpq");
+    } //#endif
+  }
   WCloseFile(fh);
 }
 
-void DApi_Init(unsigned int time, int offscreen, int v0, int v1, int v2) {
+void DApi_Init(unsigned int time, int offscreen, int v0, int v1, int v2, int spawn) {
+  SPAWN = spawn;
+  TMUSIC_INTRO = SPAWN ? 2 : 5;
+  NUM_MUSIC = SPAWN ? 3 : 6;
+  menu_music_track_id = TMUSIC_INTRO;
+  sgnMusicTrack = NUM_MUSIC;
+
   set_client_version(v0, v1, v2);
 
   TickCount = time;

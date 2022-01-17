@@ -184,11 +184,11 @@ void GetLevelMTypes()
 
 	int nt; // number of types
 
-#ifndef SPAWN
+if (!SPAWN) { //#ifndef SPAWN
 	mamask = 3; // monster availability mask
-#else
-  mamask = 1; // monster availability mask
-#endif
+} else {
+	mamask = 1; // monster availability mask
+} //#endif
 
 	AddMonsterType(MT_GOLEM, 2);
 	if (currlevel == 16) {
@@ -558,7 +558,7 @@ void PlaceMonster(int i, int mtype, int x, int y)
 	InitMonster(i, rd, mtype, x, y);
 }
 
-#ifndef SPAWN
+//#ifndef SPAWN
 void PlaceUniqueMonst(int uniqindex, int miniontype, int unpackfilesize)
 {
 	int xp, yp, x, y, i;
@@ -833,7 +833,7 @@ void PlaceQuestMonsters()
 		PlaceUniqueMonst(UMT_SKELKING, 0, 0);
 	}
 }
-#endif
+//#endif
 
 void PlaceGroup(int mtype, int num, int leaderf, int leader)
 {
@@ -915,7 +915,7 @@ void PlaceGroup(int mtype, int num, int leaderf, int leader)
 	}
 }
 
-#ifndef SPAWN
+//#ifndef SPAWN
 void LoadDiabMonsts()
 {
 	BYTE *lpSetPiece;
@@ -933,7 +933,7 @@ void LoadDiabMonsts()
 	SetMapMonsters(lpSetPiece, 2 * diabquad4x, 2 * diabquad4y);
 	mem_free_dbg(lpSetPiece);
 }
-#endif
+//#endif
 
 void InitMonsters()
 {
@@ -952,10 +952,10 @@ void InitMonsters()
 		AddMonster(1, 0, 0, 0, FALSE);
 		AddMonster(1, 0, 0, 0, FALSE);
 		AddMonster(1, 0, 0, 0, FALSE);
-#ifndef SPAWN
+if (!SPAWN) { //#ifndef SPAWN
     if (!setlevel && currlevel == 16)
 			LoadDiabMonsts();
-#endif
+} //#endif
 	}
 	nt = numtrigs;
 	if (currlevel == 15)
@@ -966,13 +966,13 @@ void InitMonsters()
 				DoVision(s + trigs[i]._tx, t + trigs[i]._ty, 15, FALSE, FALSE);
 		}
 	}
-#ifndef SPAWN
+if (!SPAWN) { //#ifndef SPAWN
   PlaceQuestMonsters();
-#endif
+} //#endif
 	if (!setlevel) {
-#ifndef SPAWN
+if (!SPAWN) { //#ifndef SPAWN
 		PlaceUniques();
-#endif
+} //#endif
 		na = 0;
 		for (s = 16; s < 96; s++)
 			for (t = 16; t < 96; t++)
@@ -1009,7 +1009,7 @@ void InitMonsters()
 	}
 }
 
-#ifndef SPAWN
+//#ifndef SPAWN
 void PlaceUniques()
 {
 	int u, mt;
@@ -1079,7 +1079,7 @@ void SetMapMonsters(BYTE *pMap, int startx, int starty)
 		}
 	}
 }
-#endif
+//#endif
 
 void DeleteMonster(int i)
 {
@@ -1550,9 +1550,9 @@ void M_DiabloDeath(int i, BOOL sendmsg)
 	int _moldx, _moldy;
 
 	Monst = monster + i;
-#ifndef SPAWN
+if (!SPAWN) { //#ifndef SPAWN
   PlaySFX(USFX_DIABLOD);
-#endif
+} //#endif
 	quests[QTYPE_MOD]._qactive = 3;
 	if (sendmsg)
 		NetSendCmdQuest(TRUE, QTYPE_MOD);
@@ -2542,7 +2542,7 @@ void DoEnding()
 		//Sleep(1000);
 	}
 
-#ifndef SPAWN
+if (!SPAWN) { //#ifndef SPAWN
   if (plr[myplr]._pClass == PC_WARRIOR) {
     queue_video_state("gendata\\DiabVic2.smk", false, false);
 	} else if (plr[myplr]._pClass == PC_SORCERER) {
@@ -2555,7 +2555,7 @@ void DoEnding()
   queue_music_state(2);
   queue_video_state("gendata\\loopdend.smk", true, true);
   queue_music_state(NUM_MUSIC);
-#endif
+} //#endif
 }
 
 void PrepDoEnding()
@@ -4200,7 +4200,7 @@ void MAI_Garbud(int i)
 		Monst->mtalkmsg++;
 	}
 
-#ifndef SPAWN
+if (!SPAWN) { //#ifndef SPAWN
   if (dFlags[_mx][_my] & BFLAG_VISIBLE) {
 		if (Monst->mtalkmsg == QUEST_GARBUD4) {
 			if (!effect_is_playing(USFX_GARBUD4) && Monst->_mgoal == MGOAL_TALKING) {
@@ -4210,7 +4210,7 @@ void MAI_Garbud(int i)
 			}
 		}
 	}
-#endif
+} //#endif
 
 	if (Monst->_mgoal == MGOAL_NORMAL || Monst->_mgoal == MGOAL_MOVE)
 		MAI_Round(i, TRUE);
@@ -4525,11 +4525,11 @@ void ProcessMonsters()
 		}
 		mx = Monst->_mx;
 		my = Monst->_my;
-#ifndef SPAWN
+if (!SPAWN) { //#ifndef SPAWN
     if (dFlags[mx][my] & BFLAG_VISIBLE && Monst->_msquelch == 0 && Monst->MType->mtype == MT_CLEAVER) {
 			PlaySFX(USFX_CLEAVER);
 		}
-#endif
+} //#endif
 		if (Monst->_mFlags & MFLAG_TARGETS_MONSTER) {
 			_menemy = Monst->_menemy;
 			if ((DWORD)_menemy >= MAXMONSTERS) {

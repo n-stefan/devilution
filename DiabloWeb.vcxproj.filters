@@ -728,6 +728,9 @@
     <ClInclude Include="Source\net\websocket_browser.hpp">
       <Filter>net</Filter>
     </ClInclude>
+    <ClInclude Include="Source\ui\main_menu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\asm_trans_rect.inc">

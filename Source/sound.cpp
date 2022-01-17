@@ -217,19 +217,19 @@ BOOLEAN gbMusicOn = 1;
 BOOLEAN gbSoundOn = 1;
 BOOLEAN gbDupSounds = 1;
 int sgnMusicTrack = NUM_MUSIC;
-const char *sgszMusicTracks[NUM_MUSIC] = {
-#ifndef SPAWN
+/*const*/ char *sgszMusicTracks[6/*NUM_MUSIC*/] = {
+//#ifndef SPAWN
   "Music\\DTowne.wav",
   "Music\\DLvlA.wav",
   "Music\\DLvlB.wav",
   "Music\\DLvlC.wav",
   "Music\\DLvlD.wav",
   "Music\\Dintro.wav"
-#else
-  "Music\\STowne.wav",
-  "Music\\SLvlA.wav",
-  "Music\\Sintro.wav"
-#endif
+//#else
+//  "Music\\STowne.wav",
+//  "Music\\SLvlA.wav",
+//  "Music\\Sintro.wav"
+//#endif
 };
 
 char unk_volume[4][2] = {
@@ -355,6 +355,15 @@ void sound_file_cleanup(TSnd *sound_file) {
 }
 
 void snd_init() {
+  if (SPAWN) {
+    strcpy(sgszMusicTracks[0], "Music\\STowne.wav");
+    strcpy(sgszMusicTracks[1], "Music\\SLvlA.wav");
+    strcpy(sgszMusicTracks[2], "Music\\Sintro.wav");
+    sgszMusicTracks[3] = NULL;
+    sgszMusicTracks[4] = NULL;
+    sgszMusicTracks[5] = NULL;
+  }
+
   sound_load_volume("Sound Volume", &sglSoundVolume);
   gbSoundOn = sglSoundVolume > VOLUME_MIN;
 
