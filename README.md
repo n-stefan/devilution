@@ -1,6 +1,6 @@
 # Devilution for DiabloBlazor
 
-This is a fork of Devilution for Web (README below), made for [DiabloBlazor](https://github.com/n-stefan/diabloblazor).
+This is a fork of Devilution for Web (original readme below), made for [DiabloBlazor](https://github.com/n-stefan/diabloblazor).
 
 # Devilution for Web
 
