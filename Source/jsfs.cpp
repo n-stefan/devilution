@@ -1,33 +1,29 @@
+#include "diablo.h"
 #include "rmpq/file.h"
 #include <algorithm>
 
 #ifdef EMSCRIPTEN
 
-#include <emscripten.h>
+int get_file_size(const char* path) {
+  // Call C# method
+  return Get_Filesize(path);
+}
 
-EM_JS( int, get_file_size, (const char* path), {
-  var end = HEAPU8.indexOf( 0, path);
-  var text = String.fromCharCode.apply(null, HEAPU8.subarray(path, end ));
-  return self.DApi.get_file_size(text);
-});
+void get_file_contents(const char* path, void* ptr, size_t offset, size_t size) {
+  // Call C# method
+  uint8_t* address = (uint8_t*)Get_File_Contents(path);
+  memcpy(ptr, address + offset, size);
+}
 
-EM_JS( void, get_file_contents, (const char* path, void* ptr, size_t offset, size_t size), {
-  var end = HEAPU8.indexOf( 0, path);
-  var text = String.fromCharCode.apply(null, HEAPU8.subarray(path, end ));
-  self.DApi.get_file_contents(text, HEAPU8.subarray(ptr, ptr + size), offset);
-});
+void put_file_contents(const char* path, void* ptr, size_t size) {
+  // Call C# method
+  Put_File_Contents(path, ptr, size);
+}
 
-EM_JS( void, put_file_contents, (const char* path, void* ptr, size_t size), {
-  var end = HEAPU8.indexOf( 0, path);
-  var text = String.fromCharCode.apply(null, HEAPU8.subarray(path, end));
-  self.DApi.put_file_contents(text, HEAPU8.slice(ptr, ptr + size));
-});
-
-EM_JS( void, remove_file, (const char* path), {
-  var end = HEAPU8.indexOf( 0, path);
-  var text = String.fromCharCode.apply(null, HEAPU8.subarray(path, end ));
-  self.DApi.remove_file( text );
-});
+void remove_file(const char* path) {
+  // Call C# method
+  Remove_File(path);
+}
 
 void File::remove(const char* path) {
   remove_file(path);

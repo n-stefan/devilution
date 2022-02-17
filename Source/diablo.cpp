@@ -70,6 +70,10 @@ const char *spszMsgKeyTbl[4] = { "F9", "F10", "F11", "F12" };
 int SPAWN = 1;
 int TMUSIC_INTRO = 2;
 int NUM_MUSIC = 3;
+GetFilesize Get_Filesize = NULL;
+GetFileContents Get_File_Contents = NULL;
+PutFileContents Put_File_Contents = NULL;
+RemoveFile Remove_File = NULL;
 
 void FreeGameMem()
 {

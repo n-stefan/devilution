@@ -146,6 +146,11 @@
     WORD        wBitsPerSample;
   } PCMWAVEFORMAT, *PPCMWAVEFORMAT, *NPPCMWAVEFORMAT, *LPPCMWAVEFORMAT;
 
+  typedef int(*GetFilesize)(const char* name);
+  typedef void*(*GetFileContents)(const char* name);
+  typedef void(*PutFileContents)(const char* name, void* ptr, size_t size);
+  typedef void(*RemoveFile)(const char* name);
+
 #define MAKEFOURCC(ch0, ch1, ch2, ch3)                              \
                 ((DWORD)(BYTE)(ch0) | ((DWORD)(BYTE)(ch1) << 8) |   \
                 ((DWORD)(BYTE)(ch2) << 16) | ((DWORD)(BYTE)(ch3) << 24 ))

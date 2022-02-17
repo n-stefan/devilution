@@ -168,5 +168,9 @@ extern const char *spszMsgKeyTbl[4];
 extern int SPAWN;
 extern int TMUSIC_INTRO;
 extern int NUM_MUSIC;
+extern GetFilesize Get_Filesize;
+extern GetFileContents Get_File_Contents;
+extern PutFileContents Put_File_Contents;
+extern RemoveFile Remove_File;
 
 #endif /* __DIABLO_H__ */
