@@ -34,23 +34,23 @@ void api_current_save_id(int id) {
 
 
 #ifdef EMSCRIPTEN
-#include <emscripten.h>
-EM_JS(void, _api_open_keyboard, (int x0, int y0, int x1, int y1, int len), {
-  self.DApi.open_keyboard(x0, y0, x1, y1, len);
-});
-EM_JS(void, _api_close_keyboard, (), {
-  self.DApi.close_keyboard();
-});
-int _hasKeyboard = 0;
+//#include <emscripten.h>
+//EM_JS(void, _api_open_keyboard, (int x0, int y0, int x1, int y1, int len), {
+//  self.DApi.open_keyboard(x0, y0, x1, y1, len);
+//});
+//EM_JS(void, _api_close_keyboard, (), {
+//  self.DApi.close_keyboard();
+//});
+//int _hasKeyboard = 0;
 void api_open_keyboard(int x0, int y0, int x1, int y1, int len) {
-  if (_GetTickCount() > _hasKeyboard + 1000) {
-    _api_open_keyboard(x0, y0, x1, y1, len);
-    _hasKeyboard = _GetTickCount();
-  }
+  //if (_GetTickCount() > _hasKeyboard + 1000) {
+  //  _api_open_keyboard(x0, y0, x1, y1, len);
+  //  _hasKeyboard = _GetTickCount();
+  //}
 }
 void api_close_keyboard() {
-  _api_close_keyboard();
-  _hasKeyboard = 0;
+  //_api_close_keyboard();
+  //_hasKeyboard = 0;
 }
 #else
 void api_open_keyboard(int x0, int y0, int x1, int y1, int len) {
