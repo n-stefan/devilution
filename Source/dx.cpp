@@ -128,9 +128,9 @@ EM_JS( void, api_draw_text, (int x, int y, const char* ptr, int color), {
 EM_JS(void, api_set_cursor, (DWORD x, DWORD y), {
   self.DApi.set_cursor(x, y);
 });
-EM_JS(void, api_draw_belt, (int* items), {
-  self.DApi.draw_belt(HEAP32.subarray(items / 4, items / 4 + 8));
-});
+//EM_JS(void, api_draw_belt, (int* items), {
+//  self.DApi.draw_belt(HEAP32.subarray(items / 4, items / 4 + 8));
+//});
 
 BOOL draw_lock(int* ysize) {
   api_draw_begin();
@@ -206,7 +206,7 @@ void _SetCursorPos(DWORD x, DWORD y) {
 }
 
 void draw_belt(int* items) {
-  api_draw_belt(items);
+  //api_draw_belt(items);
 }
 
 #else
