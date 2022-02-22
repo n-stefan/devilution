@@ -172,5 +172,6 @@ extern GetFilesize Get_Filesize;
 extern GetFileContents Get_File_Contents;
 extern PutFileContents Put_File_Contents;
 extern RemoveFile Remove_File;
+extern SetCursor Set_Cursor;
 
 #endif /* __DIABLO_H__ */

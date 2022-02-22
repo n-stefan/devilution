@@ -25,7 +25,7 @@ char _textBuffer[256];
 
 extern "C" {
 
-EMSCRIPTEN_KEEPALIVE void DApi_Init(unsigned int time, int offscreen, int v0, int v1, int v2, int spawn, GetFilesize gfs, GetFileContents gfc, PutFileContents pfc, RemoveFile rf);
+EMSCRIPTEN_KEEPALIVE void DApi_Init(unsigned int time, int offscreen, int v0, int v1, int v2, int spawn, GetFilesize gfs, GetFileContents gfc, PutFileContents pfc, RemoveFile rf, SetCursor sc);
 EMSCRIPTEN_KEEPALIVE void DApi_Mouse(int action, int button, int mods, int x, int y);
 EMSCRIPTEN_KEEPALIVE void DApi_Key(int action, int mods, int key);
 EMSCRIPTEN_KEEPALIVE void DApi_Char(int chr);
@@ -91,7 +91,7 @@ void init_archives() {
   WCloseFile(fh);
 }
 
-void DApi_Init(unsigned int time, int offscreen, int v0, int v1, int v2, int spawn, GetFilesize gfs, GetFileContents gfc, PutFileContents pfc, RemoveFile rf) {
+void DApi_Init(unsigned int time, int offscreen, int v0, int v1, int v2, int spawn, GetFilesize gfs, GetFileContents gfc, PutFileContents pfc, RemoveFile rf, SetCursor sc) {
   // TODO: Own function
   SPAWN = spawn;
   TMUSIC_INTRO = SPAWN ? 2 : 5;
@@ -102,6 +102,7 @@ void DApi_Init(unsigned int time, int offscreen, int v0, int v1, int v2, int spa
   Get_File_Contents = gfc;
   Put_File_Contents = pfc;
   Remove_File = rf;
+  Set_Cursor = sc;
 
   set_client_version(v0, v1, v2);
 

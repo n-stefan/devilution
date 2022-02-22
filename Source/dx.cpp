@@ -125,9 +125,6 @@ EM_JS( void, api_draw_text, (int x, int y, const char* ptr, int color), {
   var text = String.fromCharCode.apply(null, HEAPU8.subarray(ptr, end));
   self.DApi.draw_text(x, y, text, color);
 });
-EM_JS(void, api_set_cursor, (DWORD x, DWORD y), {
-  self.DApi.set_cursor(x, y);
-});
 //EM_JS(void, api_draw_belt, (int* items), {
 //  self.DApi.draw_belt(HEAP32.subarray(items / 4, items / 4 + 8));
 //});
@@ -202,7 +199,8 @@ void draw_text(int x, int y, const char *text, int color) {
 }
 
 void _SetCursorPos(DWORD x, DWORD y) {
-  api_set_cursor(x, y);
+  // Call C# method
+  Set_Cursor(x, y);
 }
 
 void draw_belt(int* items) {
