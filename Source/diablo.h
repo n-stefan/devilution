@@ -173,5 +173,6 @@ extern GetFileContents Get_File_Contents;
 extern PutFileContents Put_File_Contents;
 extern RemoveFile Remove_File;
 extern SetCursor Set_Cursor;
+extern ExitGame Exit_Game;
 
 #endif /* __DIABLO_H__ */

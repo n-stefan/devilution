@@ -75,6 +75,7 @@ GetFileContents Get_File_Contents = NULL;
 PutFileContents Put_File_Contents = NULL;
 RemoveFile Remove_File = NULL;
 SetCursor Set_Cursor = NULL;
+ExitGame Exit_Game = NULL;
 
 void FreeGameMem()
 {
