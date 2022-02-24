@@ -25,7 +25,7 @@ char _textBuffer[256];
 
 extern "C" {
 
-EMSCRIPTEN_KEEPALIVE void DApi_Init(unsigned int time, int offscreen, int v0, int v1, int v2, int spawn, GetFilesize gfs, GetFileContents gfc, PutFileContents pfc, RemoveFile rf, SetCursor sc, ExitGame eg);
+EMSCRIPTEN_KEEPALIVE void DApi_Init(unsigned int time, int offscreen, int v0, int v1, int v2, int spawn, unsigned long *callbacks);
 EMSCRIPTEN_KEEPALIVE void DApi_Mouse(int action, int button, int mods, int x, int y);
 EMSCRIPTEN_KEEPALIVE void DApi_Key(int action, int mods, int key);
 EMSCRIPTEN_KEEPALIVE void DApi_Char(int chr);
@@ -92,19 +92,19 @@ void init_archives() {
   WCloseFile(fh);
 }
 
-void DApi_Init(unsigned int time, int offscreen, int v0, int v1, int v2, int spawn, GetFilesize gfs, GetFileContents gfc, PutFileContents pfc, RemoveFile rf, SetCursor sc, ExitGame eg) {
+void DApi_Init(unsigned int time, int offscreen, int v0, int v1, int v2, int spawn, unsigned long *callbacks) {
   // TODO: Own function
   SPAWN = spawn;
   TMUSIC_INTRO = SPAWN ? 2 : 5;
   NUM_MUSIC = SPAWN ? 3 : 6;
   menu_music_track_id = TMUSIC_INTRO;
   sgnMusicTrack = NUM_MUSIC;
-  Get_Filesize = gfs;
-  Get_File_Contents = gfc;
-  Put_File_Contents = pfc;
-  Remove_File = rf;
-  Set_Cursor = sc;
-  Exit_Game = eg;
+  Get_Filesize = (GetFilesize)callbacks[0];
+  Get_File_Contents = (GetFileContents)callbacks[1];
+  Put_File_Contents = (PutFileContents)callbacks[2];
+  Remove_File = (RemoveFile)callbacks[3];
+  Set_Cursor = (SetCursor)callbacks[4];
+  Exit_Game = (ExitGame)callbacks[5];
 
   set_client_version(v0, v1, v2);
 
