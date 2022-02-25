@@ -106,6 +106,7 @@ void DApi_Init(unsigned int time, int offscreen, int v0, int v1, int v2, int spa
   Set_Cursor = (SetCursor)callbacks[4];
   Exit_Game = (ExitGame)callbacks[5];
   Exit_Error = (ExitError)callbacks[6];
+  Current_Save_Id = (CurrentSaveId)callbacks[7];
 
   set_client_version(v0, v1, v2);
 

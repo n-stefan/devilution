@@ -77,6 +77,7 @@ RemoveFile Remove_File = NULL;
 SetCursor Set_Cursor = NULL;
 ExitGame Exit_Game = NULL;
 ExitError Exit_Error = NULL;
+CurrentSaveId Current_Save_Id = NULL;
 
 void FreeGameMem()
 {

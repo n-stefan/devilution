@@ -175,5 +175,6 @@ extern RemoveFile Remove_File;
 extern SetCursor Set_Cursor;
 extern ExitGame Exit_Game;
 extern ExitError Exit_Error;
+extern CurrentSaveId Current_Save_Id;
 
 #endif /* __DIABLO_H__ */

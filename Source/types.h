@@ -153,6 +153,7 @@
   typedef void(*SetCursor)(DWORD x, DWORD y);
   typedef void(*ExitGame)();
   typedef void(*ExitError)(const char* message);
+  typedef void(*CurrentSaveId)(int id);
 
 #define MAKEFOURCC(ch0, ch1, ch2, ch3)                              \
                 ((DWORD)(BYTE)(ch0) | ((DWORD)(BYTE)(ch1) << 8) |   \

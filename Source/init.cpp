@@ -26,9 +26,8 @@ void set_client_version(int v0, int v1, int v2) {
 
 void api_current_save_id(int id) {
 #ifdef EMSCRIPTEN
-  EM_ASM_({
-    self.DApi.current_save_id($0);
-  }, id);
+  // Call C# method
+  Current_Save_Id(id);
 #endif
 }
 
