@@ -106,25 +106,33 @@ void dx_reinit()
 
 #ifdef EMSCRIPTEN
 
-#include <emscripten.h>
+void api_draw_begin() {
+  // Call C# method
+  Draw_Begin();
+};
 
-EM_JS( void, api_draw_begin, (), {
-  self.DApi.draw_begin();
-});
-EM_JS( void, api_draw_blit, (int x, int y, int w, int h, void* ptr), {
-  self.DApi.draw_blit(x, y, w, h, HEAPU8.subarray(ptr, ptr + w * h * 4));
-});
-EM_JS( void, api_draw_end, (), {
-  self.DApi.draw_end();
-});
-EM_JS( void, api_draw_clip_text, (int x0, int y0, int x1, int y1), {
-  self.DApi.draw_clip_text(x0, y0, x1, y1);
-});
-EM_JS( void, api_draw_text, (int x, int y, const char* ptr, int color), {
-  var end = HEAPU8.indexOf(0, ptr);
-  var text = String.fromCharCode.apply(null, HEAPU8.subarray(ptr, end));
-  self.DApi.draw_text(x, y, text, color);
-});
+void api_draw_blit(int x, int y, int w, int h, void* ptr) {
+  uint8_t* copy = (uint8_t*)malloc(w * h * 4 * sizeof(uint8_t));
+  memcpy(copy, ptr, w * h * 4);
+  // Call C# method
+  Draw_Blit(x, y, w, h, copy);
+};
+
+void api_draw_end() {
+  // Call C# method
+  Draw_End();
+};
+
+void api_draw_clip_text(int x0, int y0, int x1, int y1) {
+  // Call C# method
+  Draw_Clip_Text(x0, y0, x1, y1);
+};
+
+void api_draw_text(int x, int y, const char* ptr, int color) {
+  // Call C# method
+  Draw_Text(x, y, ptr, color);
+};
+
 //EM_JS(void, api_draw_belt, (int* items), {
 //  self.DApi.draw_belt(HEAP32.subarray(items / 4, items / 4 + 8));
 //});

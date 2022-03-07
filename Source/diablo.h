@@ -176,5 +176,10 @@ extern SetCursor Set_Cursor;
 extern ExitGame Exit_Game;
 extern ExitError Exit_Error;
 extern CurrentSaveId Current_Save_Id;
+extern DrawBegin Draw_Begin;
+extern DrawEnd Draw_End;
+extern DrawBlit Draw_Blit;
+extern DrawClipText Draw_Clip_Text;
+extern DrawText Draw_Text;
 
 #endif /* __DIABLO_H__ */

@@ -78,6 +78,11 @@ SetCursor Set_Cursor = NULL;
 ExitGame Exit_Game = NULL;
 ExitError Exit_Error = NULL;
 CurrentSaveId Current_Save_Id = NULL;
+DrawBegin Draw_Begin = NULL;
+DrawEnd Draw_End = NULL;
+DrawBlit Draw_Blit = NULL;
+DrawClipText Draw_Clip_Text = NULL;
+DrawText Draw_Text = NULL;
 
 void FreeGameMem()
 {

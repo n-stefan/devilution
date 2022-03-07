@@ -154,6 +154,11 @@
   typedef void(*ExitGame)();
   typedef void(*ExitError)(const char* message);
   typedef void(*CurrentSaveId)(int id);
+  typedef void(*DrawBegin)();
+  typedef void(*DrawEnd)();
+  typedef void(*DrawBlit)(int x, int y, int w, int h, void* ptr);
+  typedef void(*DrawClipText)(int x0, int y0, int x1, int y1);
+  typedef void(*DrawText)(int x, int y, const char* ptr, int color);
 
 #define MAKEFOURCC(ch0, ch1, ch2, ch3)                              \
                 ((DWORD)(BYTE)(ch0) | ((DWORD)(BYTE)(ch1) << 8) |   \

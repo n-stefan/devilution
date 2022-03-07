@@ -107,6 +107,11 @@ void DApi_Init(unsigned int time, int offscreen, int v0, int v1, int v2, int spa
   Exit_Game = (ExitGame)callbacks[5];
   Exit_Error = (ExitError)callbacks[6];
   Current_Save_Id = (CurrentSaveId)callbacks[7];
+  Draw_Begin = (DrawBegin)callbacks[8];
+  Draw_End = (DrawEnd)callbacks[9];
+  Draw_Blit = (DrawBlit)callbacks[10];
+  Draw_Clip_Text = (DrawClipText)callbacks[11];
+  Draw_Text = (DrawText)callbacks[12];
 
   set_client_version(v0, v1, v2);
 
