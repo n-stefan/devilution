@@ -94,7 +94,7 @@ async function run_build(flags, oname, dirs) {
       const list = await fsp.readdir(name);
       await Promise.all(list.map(fn => handle_file(`${name}/${fn}`)));
     } else if (name.match(/\.(?:c|cpp|cc)$/i)) {
-      const out = `${out_dir}/${name}.bc`;
+      const out = `${out_dir}/${name}.o`;
       const srcTime = await file_time(name);
       let statDst = null;
       if (fs.existsSync(out)) {
