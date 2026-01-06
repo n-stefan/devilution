@@ -112,7 +112,7 @@ void api_draw_begin() {
 };
 
 void api_draw_blit(int x, int y, int w, int h, void* ptr) {
-  uint8_t* copy = (uint8_t*)malloc(w * h * 4 * sizeof(uint8_t));
+  BYTE* copy = (BYTE*)malloc(w * h * 4);
   memcpy(copy, ptr, w * h * 4);
   // Call C# method
   Draw_Blit(x, y, w, h, copy);
