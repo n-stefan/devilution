@@ -2,7 +2,7 @@
 #include "rmpq/file.h"
 #include <algorithm>
 
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
 
 int get_file_size(const char* path) {
   // Call C# method
@@ -261,7 +261,7 @@ File::File(const char* name, const char* mode) {
   }
 }
 
-#ifndef EMSCRIPTEN
+#ifndef __EMSCRIPTEN__
 
 #include <io.h>
 

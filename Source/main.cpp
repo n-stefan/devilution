@@ -1,4 +1,4 @@
-#ifndef EMSCRIPTEN
+#ifndef __EMSCRIPTEN__
 #define NOMINMAX
 #include <windows.h>
 #include <windowsx.h>
@@ -20,7 +20,7 @@ DWORD _GetTickCount() {
 
 char _textBuffer[256];
 
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 
 extern "C" {
@@ -193,7 +193,7 @@ void DApi_SyncText(int flags) {
   GameState::syncText(_textBuffer, flags);
 }
 
-#ifndef EMSCRIPTEN
+#ifndef __EMSCRIPTEN__
 
 LRESULT __stdcall MainWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 

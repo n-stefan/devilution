@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #include "diablo.h"
 

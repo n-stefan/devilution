@@ -1,4 +1,4 @@
-#ifndef EMSCRIPTEN
+#ifndef __EMSCRIPTEN__
 #include "websocket_native.hpp"
 #else
 #include "websocket_browser.hpp"

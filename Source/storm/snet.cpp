@@ -123,7 +123,7 @@ void SNet_Poll() {
   dvlnet_inst->poll();
 }
 
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 extern "C" {
 EMSCRIPTEN_KEEPALIVE
@@ -131,6 +131,6 @@ EMSCRIPTEN_KEEPALIVE
 void SNet_InitWebsocket() {
   dvlnet_inst_multi = net::abstract_net::make_net(net::provider_t::WEBSOCKET, "");
 }
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
 }
 #endif

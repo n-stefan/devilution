@@ -156,7 +156,7 @@ GameStatePtr get_network_state(const char* name, const char* game, int difficult
   return new JoinGameState(game, difficulty);
 }
 
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
 
 #include <emscripten.h>
 
@@ -233,7 +233,7 @@ void start_multiplayer() {
     GameState::activate(get_ok_dialog(NO_NETWORK, get_main_menu_dialog(), false));
     return;
   }
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
   GameState::activate(select_twoopt_dialog(nullptr, "Multi Player Characters", "Select Network", "WebRTC (Direct)", "WebSocket (Server)", [](int value) {
     if (value < 0) {
       GameState::activate(get_main_menu_dialog());

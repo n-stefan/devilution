@@ -1,4 +1,4 @@
-#ifndef EMSCRIPTEN
+#ifndef __EMSCRIPTEN__
 #include <windows.h>
 #endif
 #include "diablo.h"
@@ -19,7 +19,7 @@ void lock_buf_priv();
 void unlock_buf_priv();
 void dx_reinit();
 
-#ifndef EMSCRIPTEN
+#ifndef __EMSCRIPTEN__
 HDC hDC;
 HBITMAP hBitmap;
 HDC hPaintDC;
@@ -29,7 +29,7 @@ HRGN hClip = NULL;
 
 void dx_init()
 {
-#ifndef EMSCRIPTEN
+#ifndef __EMSCRIPTEN__
   hDC = GetDC(ghMainWnd);
   int x = GetDeviceCaps(hDC, LOGPIXELSY);
   hPaintDC = CreateCompatibleDC( hDC );
@@ -89,7 +89,7 @@ void unlock_buf_priv()
 
 void dx_cleanup()
 {
-#ifndef EMSCRIPTEN
+#ifndef __EMSCRIPTEN__
 	if (ghMainWnd)
 		ShowWindow(ghMainWnd, SW_HIDE);
 	MemFreeDbg(sgpBackBuf);
@@ -104,7 +104,7 @@ void dx_reinit()
 	ClearCursor();
 }
 
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
 
 void api_draw_begin() {
   // Call C# method

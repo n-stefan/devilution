@@ -1,6 +1,6 @@
 #include "trace.h"
 
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
 
 #include <emscripten.h>
 EM_JS(void, trace_push, (const char* ptr), {

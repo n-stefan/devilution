@@ -1,4 +1,4 @@
-#ifndef EMSCRIPTEN
+#ifndef __EMSCRIPTEN__
 #define NOMINMAX
 #include <dsound.h>
 #endif
@@ -11,7 +11,7 @@
 #include "rmpq/archive.h"
 #include "storm/storm.h"
 
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
 
 #include <emscripten.h>
 
@@ -309,7 +309,7 @@ size_t get_mp3_duration(const uint8_t* data, size_t size);
 size_t get_wave_duration(const uint8_t* data, size_t size);
 
 TSnd *sound_file_load(const char *path) {
-#if 1//def EMSCRIPTEN
+#if 1//def __EMSCRIPTEN__
   MemoryFile file = ((mpq::Archive*)diabdat_mpq)->load(path);
   if (!file) {
     return NULL;
@@ -370,7 +370,7 @@ void snd_init() {
   sound_load_volume("Music Volume", &sglMusicVolume);
   gbMusicOn = sglMusicVolume > VOLUME_MIN;
 
-#ifndef EMSCRIPTEN
+#ifndef __EMSCRIPTEN__
   HMODULE hDsound_dll = LoadLibrary("dsound.dll");
   if (hDsound_dll == NULL) {
     return;

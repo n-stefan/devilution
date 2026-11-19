@@ -1,4 +1,4 @@
-#ifndef EMSCRIPTEN
+#ifndef __EMSCRIPTEN__
 #include <windows.h>
 #include <windowsx.h>
 #else
@@ -25,14 +25,14 @@ void set_client_version(int v0, int v1, int v2) {
 }
 
 void api_current_save_id(int id) {
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
   // Call C# method
   Current_Save_Id(id);
 #endif
 }
 
 
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
 //#include <emscripten.h>
 //EM_JS(void, _api_open_keyboard, (int x0, int y0, int x1, int y1, int len), {
 //  self.DApi.open_keyboard(x0, y0, x1, y1, len);
